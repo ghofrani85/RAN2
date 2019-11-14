@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+		xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+	<head>
+		<title th:text="${'RAN2 - ' + folder.title}"></title>
+		<meta charset="utf-8"></meta>
+		<meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+		<link rel="stylesheet"
+				href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"></link>
+		<script
+				src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<script
+				src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<script type="text/javascript" th:src="@{/js/folder.js}"></script>
+		<script type="text/javascript" th:src="@{/js/chooseAsset.js}"></script>
+		<link rel="stylesheet" th:href="@{/css/style.css}"></link>
+		<link rel="stylesheet" th:href="@{/css/chooseAsset.css}"></link>
+
+	</head>
+	<body>
+
+		<!-- Display navbar -->
+		<nav th:replace="fragments/navbar :: navigation"></nav>
+
+
+		<div class="container-fluid">
+
+			<!-- Row 1: folder Title-->
+			<div class="row content">
+
+				<!-- Padding  -->
+				<div class="col-sm-1"></div>
+
+				<!-- Title   -->
+				<div class="col-sm-6">
+					<header>
+						<h2 th:text="${folder.title}"></h2>
+						<span th:if="${hasEditRights}"> <a th:href="'#editfolder'"
+									data-toggle="modal" data-target="#editfolder"> <span
+										class="glyphicon glyphicon-pencil"></span>
+							</a>
+						</span>
+					</header>
+				</div>
+
+
+				<!-- Padding  -->
+				<div class="col-sm-5"></div>
+			</div>
+
+			<!-- Row 2: Description & Included -->
+			<div class="row content">
+
+				<!-- Padding  -->
+				<div class="col-sm-1"></div>
+
+				<!-- Description  -->
+				<div class="col-sm-6">
+					<p class="folderdesc desc" th:text="${folder.description}"></p>
+				</div>
+
+				<!-- Padding  -->
+				<div class="col-sm-1"></div>
+
+				<!-- List of Projects/folders including folder  -->
+				<div class="col-sm-4">
+					<dl>
+						<dt th:text="#{folder.included}">Included in:</dt>
+						<a th:href="@{\project?id={id}(id=${parentProject.id})}"
+								th:text="${parentProject.title}"></a>
+						<dd th:each="folder : ${parentfolders}">
+							<a th:href="@{\folder?id={id}(id=${folder.id})}"
+									th:text="${folder.title} + '/'"></a>
+						</dd>
+					</dl>
+				</div>
+			</div>
+
+			<!-- Row 3: Padding -->
+			<div class="row content" style="height: 50px">
+
+				<!-- Padding  -->
+				<div class="col-sm-1"></div>
+
+				<!-- Copy folder Button  -->
+				<!-- Copy folder Button Deleted  -->
+				<!-- Padding  -->
+				<div class="col-sm-5"></div>
+
+				<!-- Notification for updated parent -->
+				<div class="col-sm-4">
+					<div class="alert alert-warning" th:if="${parentfolderId}">
+						<a th:href="@{\parentfolder?parentId={parentId}&amp;id={id}(parentId=${parentfolderId},id=${folder.id})}" 
+							 th:text="#{folder.notification}">Notification</a> 
+					</div>
+				</div>
+
+			</div>
+
+			<!-- Row 4: Headers -->
+			<div class="row content">
+				<!-- Padding  -->
+				<div class="col-sm-1"></div>
+
+				<!-- Artefacts Header  -->
+				<div class="col-sm-6">
+					<h3 th:text="#{folder.artefacts}">Artefacts</h3>
+				</div>
+
+				<!-- Padding  -->
+				<div class="col-sm-1"></div>
+
+				<!-- Tracking Header -->
+				<div class="col-sm-4">
+					<h3 th:text="#{folder.tracking}">Tracking</h3>
+				</div>
+
+			</div>
+
+			<!-- Row 4: Artefacts Table & Tracking -->
+			<div class="row content">
+
+				<!-- Padding  -->
+				<div class="col-sm-1"></div>
+
+				<!-- Artefacts  -->
+				<div class="col-sm-6">
+					<div class="row content">
+						<table class="table table-striped">
+							<thead>
+								<tr>
+									<th th:text="#{folder.artTitle}">Title</th>
+									<th th:text="#{folder.artType}">Type</th>
+									<th th:text="#{folder.artAsset}">Asset</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody id="projectTableBody">
+								<tr th:each="artefact : ${artefacts}">
+									<td>
+										<a
+												th:href="@{\asset?id={id}&amp;folderId={folderId}&amp;artefactId={artefactId}(id=${artefact.asset.id},folderId=${artefact.folder.id},artefactId=${artefact.id})}"
+												th:text="${artefact.title}"></a>
+
+										<span th:if="${hasEditRights}"> 
+											<a th:href="'#editArtefactTitle' + ${artefact.id}" data-toggle="modal" th:data-target="'#editArtefactTitle' + ${artefact.id}"> 
+												<span class="glyphicon glyphicon-pencil">
+												</span>
+											</a>
+											<div th:replace="fragments/editArtefactTitle :: editArtefactTitle(artefact=${artefact})"></div>
+										</span>
+
+									</td>
+									<td th:text="${artefact.asset.type}"></td>
+									<td th:text="${artefact.asset.title}"></td>
+									<td>
+										<div class="col-sm-1" th:if="${hasEditRights}">
+											<span th:if="${artefact.asset.type.name() == 'TEXT'}">
+												<button type="button" class="btn btn-xs btn-default"
+														data-toggle="modal"
+														th:attr="data-target='#confirmDeleteTextArtefact' + ${artefact.id}">
+													<span class="glyphicon glyphicon-remove"></span>
+												</button>
+
+
+											</span>
+
+											<div th:id="'confirmDeleteTextArtefact' + ${artefact.id}"
+													class="modal fade">
+												<div class="modal-dialog">
+													<div class="modal-content">
+														<div class="modal-header">
+															<button type="button" class="close" data-dismiss="modal"></button>
+															<h4 class="modal-title" th:text="#{message.confirmDelete}">Delete?</h4>
+														</div>
+														<div class="modal-body">
+															<p
+																	th:text="#{folder.deleteConfirmArtefact}+ ' ' + ${artefact.title}"></p>
+														</div>
+														<div class="modal-footer">
+															<form action="#" th:action="@{removeTextArtefact}"
+																	method="post">
+																<input type="hidden" name="artefactId"
+																		th:value="${artefact.id}" /> <input type="hidden"
+																		name="folderId" th:value="${artefact.folder.id}" />
+																<button class="btn btn-danger btn-sm" type="submit"
+																		th:text="#{message.delete}"></button>
+																<button type="reset" class="btn btn-sm"
+																		data-dismiss="modal" th:text="#{message.cancel}">Cancel</button>
+															</form>
+														</div>
+													</div>
+												</div>
+											</div>
+
+
+											<span th:if="${artefact.asset.type.name() == 'PICTURE'}">
+
+												<button type="button" class="btn btn-xs btn-default"
+														data-toggle="modal"
+														th:attr="data-target='#confirmDeletePictureArtefact' + ${artefact.id}">
+													<span class="glyphicon glyphicon-remove"></span>
+												</button>
+
+											</span>
+
+											<div th:id="'confirmDeletePictureArtefact' + ${artefact.id}"
+													class="modal fade">
+												<div class="modal-dialog">
+													<div class="modal-content">
+														<div class="modal-header">
+															<button type="button" class="close" data-dismiss="modal"></button>
+															<h4 class="modal-title" th:text="#{message.confirmDelete}">Delete?</h4>
+														</div>
+														<div class="modal-body">
+															<p
+																	th:text="#{folder.deleteConfirmArtefact}+ ' ' + ${artefact.title}"></p>
+														</div>
+														<div class="modal-footer">
+															<form action="#" th:action="@{removePictureArtefact}"
+																	method="post">
+																<input type="hidden" name="artefactId"
+																		th:value="${artefact.id}" /> <input type="hidden"
+																		name="folderId" th:value="${artefact.folder.id}" />
+																<button class="btn btn-danger btn-sm" type="submit"
+																		th:text="#{message.delete}"></button>
+																<button type="reset" class="btn btn-sm"
+																		data-dismiss="modal" th:text="#{message.cancel}">Cancel</button>
+															</form>
+														</div>
+													</div>
+												</div>
+											</div>
+
+
+											<span th:if="${artefact.asset.type.name() == 'AUDIO'}">
+
+												<button type="button" class="btn btn-xs btn-default"
+														data-toggle="modal"
+														th:attr="data-target='#confirmDeleteAudioArtefact' + ${artefact.id}">
+													<span class="glyphicon glyphicon-remove"></span>
+												</button>
+
+											</span>
+
+											<div th:id="'confirmDeleteAudioArtefact' + ${artefact.id}"
+													class="modal fade">
+												<div class="modal-dialog">
+													<div class="modal-content">
+														<div class="modal-header">
+															<button type="button" class="close" data-dismiss="modal"></button>
+															<h4 class="modal-title" th:text="#{message.confirmDelete}">Delete?</h4>
+														</div>
+														<div class="modal-body">
+															<p
+																	th:text="#{folder.deleteConfirmArtefact}+ ' ' + ${artefact.title}"></p>
+														</div>
+														<div class="modal-footer">
+															<form action="#" th:action="@{removeAudioArtefact}"
+																	method="post">
+																<input type="hidden" name="artefactId"
+																		th:value="${artefact.id}" /> <input type="hidden"
+																		name="folderId" th:value="${artefact.folder.id}" />
+																<button class="btn btn-danger btn-sm" type="submit"
+																		th:text="#{message.delete}"></button>
+																<button type="reset" class="btn btn-sm"
+																		data-dismiss="modal" th:text="#{message.cancel}">Cancel</button>
+															</form>
+														</div>
+													</div>
+												</div>
+											</div>
+
+
+											<span th:if="${artefact.asset.type.name() == 'VIDEO'}">
+
+												<button type="button" class="btn btn-xs btn-default"
+														data-toggle="modal"
+														th:attr="data-target='#confirmDeleteVideoArtefact' + ${artefact.id}">
+													<span class="glyphicon glyphicon-remove"></span>
+												</button>
+
+											</span>
+
+											<div th:id="'confirmDeleteVideoArtefact' + ${artefact.id}"
+													class="modal fade">
+												<div class="modal-dialog">
+													<div class="modal-content">
+														<div class="modal-header">
+															<button type="button" class="close" data-dismiss="modal"></button>
+															<h4 class="modal-title" th:text="#{message.confirmDelete}">Delete?</h4>
+														</div>
+														<div class="modal-body">
+															<p
+																	th:text="#{folder.deleteConfirmArtefact}+ ' ' + ${artefact.title}"></p>
+														</div>
+														<div class="modal-footer">
+															<form action="#" th:action="@{removeVideoArtefact}"
+																	method="post">
+																<input type="hidden" name="artefactId"
+																		th:value="${artefact.id}" /> <input type="hidden"
+																		name="folderId" th:value="${artefact.folder.id}" />
+																<button class="btn btn-danger btn-sm" type="submit"
+																		th:text="#{message.delete}"></button>
+																<button type="reset" class="btn btn-sm"
+																		data-dismiss="modal" th:text="#{message.cancel}">Cancel</button>
+															</form>
+														</div>
+													</div>
+												</div>
+											</div>
+
+
+											<span th:if="${artefact.asset.type.name() == 'XML'}">
+
+												<button type="button" class="btn btn-xs btn-default"
+														data-toggle="modal"
+														th:attr="data-target='#confirmDeleteXMLArtefact' + ${artefact.id}">
+													<span class="glyphicon glyphicon-remove"></span>
+												</button>
+
+											</span>
+
+											<div th:id="'confirmDeleteXMLArtefact' + ${artefact.id}"
+													class="modal fade">
+												<div class="modal-dialog">
+													<div class="modal-content">
+														<div class="modal-header">
+															<button type="button" class="close" data-dismiss="modal"></button>
+															<h4 class="modal-title" th:text="#{message.confirmDelete}">Delete?</h4>
+														</div>
+														<div class="modal-body">
+															<p
+																	th:text="#{folder.deleteConfirmArtefact}+ ' ' + ${artefact.title}"></p>
+														</div>
+														<div class="modal-footer">
+															<form action="#" th:action="@{removeXMLArtefact}"
+																	method="post">
+																<input type="hidden" name="artefactId"
+																		th:value="${artefact.id}" /> <input type="hidden"
+																		name="folderId" th:value="${artefact.folder.id}" />
+																<button class="btn btn-danger btn-sm" type="submit"
+																		th:text="#{message.delete}"></button>
+																<button type="reset" class="btn btn-sm"
+																		data-dismiss="modal" th:text="#{message.cancel}">Cancel</button>
+															</form>
+														</div>
+													</div>
+												</div>
+											</div>
+
+
+
+											<span th:if="${artefact.asset.type.name() == 'OTHER'}">
+												<button type="button" class="btn btn-xs btn-default"
+														data-toggle="modal"
+														th:attr="data-target='#confirmDeleteOtherArtefact' + ${artefact.id}">
+													<span class="glyphicon glyphicon-remove"></span>
+												</button>
+											</span>
+
+											<div th:id="'confirmDeleteOtherArtefact' + ${artefact.id}"
+													class="modal fade">
+												<div class="modal-dialog">
+													<div class="modal-content">
+														<div class="modal-header">
+															<button type="button" class="close" data-dismiss="modal"></button>
+															<h4 class="modal-title" th:text="#{message.confirmDelete}">Delete?</h4>
+														</div>
+														<div class="modal-body">
+															<p
+																	th:text="#{folder.deleteConfirmArtefact}+ ' ' + ${artefact.title}"></p>
+														</div>
+														<div class="modal-footer">
+															<form action="#" th:action="@{removeOtherArtefact}"
+																	method="post">
+																<input type="hidden" name="artefactId"
+																		th:value="${artefact.id}" /> <input type="hidden"
+																		name="folderId" th:value="${artefact.folder.id}" />
+																<button class="btn btn-danger btn-sm" type="submit"
+																		th:text="#{message.delete}"></button>
+																<button type="reset" class="btn btn-sm"
+																		data-dismiss="modal" th:text="#{message.cancel}">Cancel</button>
+															</form>
+														</div>
+													</div>
+												</div>
+											</div>
+
+
+										</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+
+					</div>
+					<div class="row content">
+						<span th:if="${hasEditRights}">
+							<div class="dropdown">
+								<button class="btn btn-primary dropdown-toggle" type="button"
+										data-toggle="dropdown">
+									<span th:text="#{folder.addArtefact}">Add Artefact</span> <span class="caret"></span>
+								</button>
+								<ul class="dropdown-menu">
+									<li><a class="btn" data-toggle="modal"
+												data-target="#assetUploadModal" th:text="#{folder.fromNewAsset}">From new Asset</a></li>
+									<li><a class="btn" data-toggle="modal"
+												data-target="#chooseAssetModal" th:text="#{folder.fromExistingAsset}">From exisiting Asset</a></li>
+								</ul>
+							</div>
+						</span>
+					</div>
+				</div>
+
+				<!-- Padding  -->
+				<div class="col-sm-1"></div>
+
+				<!-- Tracking  -->
+				<div class="col-sm-4">
+					<div class="panel panel-default">
+						<div class="panel-body" style="height: 100px; overflow-y: scroll">
+							<ul>
+								<li th:each="data : ${history}"><span th:text="${data}"></span></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Row 5: Button DELETED -->
+
+			<!-- Row 6: Folders -->
+			<div class="row content">
+				<!-- Padding  -->
+				<div class="col-sm-1"></div>
+
+				<!-- Artefacts Header  -->
+				<div class="col-sm-6">
+					<h3 th:text="#{folder.folderArtefact}">Folders</h3>
+				</div>
+			</div>
+
+			<div class="row content">
+
+				<!-- Padding  -->
+				<div class="col-sm-1"></div>
+
+				<!-- Folder(folder) Artefacts  -->
+				<div class="col-sm-6">
+					<div class="row content">
+						<table class="table table-striped">
+							<thead>
+								<tr>
+									<th th:text="#{folder.artTitle}">Title</th>
+									<th th:text="#{folder.artNumber}">Sub Folder No.</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody id="projectTableBody">
+								<tr th:each="featart : ${folderArtefacts}">
+									<td> 
+										<a
+											th:href="@{\folder?id={id}(id=${featart.id})}"
+											data-toggle="tooltip" data-placement="bottom"
+											th:title="${featart.title} + '&#13;' + ${featart.description}"
+											th:text="${featart.title}">folder</a>
+
+									</td>
+									<td th:text="${featart.numOfFeatArt}"></td>
+									<td>
+										<div class="col-sm-1" th:if="${hasEditRights}">								
+											<button type="button" class="btn btn-xs btn-default"
+													data-toggle="modal"
+													th:attr="data-target='#confirmDeletefolder' + ${featart.id}">
+												<span class="glyphicon glyphicon-remove"></span>
+											</button>
+
+											<div th:id="'confirmDeletefolder' + ${featart.id}"
+													class="modal fade">
+												<div class="modal-dialog">
+													<div class="modal-content">
+														<div class="modal-header">
+															<button type="button" class="close" data-dismiss="modal"></button>
+															<h4 class="modal-title" th:text="#{message.confirmDelete}">Delete?</h4>
+														</div>
+														<div class="modal-body">
+															<p
+																	th:text="#{folder.deleteConfirmfolderArtefact}+ ' ' + ${featart.title}"></p>
+														</div>
+														<div class="modal-footer">
+															<form action="#" th:action="@{deletefolderartefact}"
+																	method="post">
+																<input type="hidden" name="folderArtefactId"
+																		th:value="${featart.id}" />
+																<button class="btn btn-danger btn-sm" type="submit"
+																		th:text="#{message.delete}"></button>
+																<button type="reset" class="btn btn-sm"
+																		data-dismiss="modal" th:text="#{message.cancel}">Cancel</button>
+															</form>
+														</div>
+													</div>
+												</div>
+											</div>
+
+
+										</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				
+					<div class="row content">
+						<span th:if="${hasEditRights}"><button
+							class="btn btn-primary" type="button" data-toggle="modal"
+							data-target="#createfolderArtefact">
+							<!-- Add folder button -->
+							<span class="glyphicon glyphicon-plus"></span><span
+								th:text="#{folder.newfolderArtefact}">New Folder</span>
+						</button></span>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div th:if="${hasEditRights}"> <!-- Modal for editing the folder details -->
+			<div th:replace="fragments/editfolder :: editfolder"></div> <!-- Modal for uploading Asset -->
+			<div th:replace="fragments/newAsset :: newAsset"></div>
+			<div th:replace="fragments/chooseAssetModal :: chooseAssetModal"></div>
+		</div>
+		<!-- temp replacement for folder copy and edit modal/call buttons -->
+		<div th:replace="fragments/folderPopUps :: copyfolder"></div>
+
+		<!-- Modal for folders -->
+		<div th:if="${hasEditRights}">
+			<div th:replace="fragments/folderArtefactPopUps :: createfolderArtefact"></div>
+		</div>
+
+		<!--Modal to show for duplicateAssetTitleError -->
+		<div th:if="${showAssetDuplicateTitleError}"><div th:replace="fragments/duplicateTitleError :: duplicateTitleError(type='asset',title=${duplicateTitle})"></div></div>
+
+		<!--Modal to show for duplicatefolderTitleError -->
+		<div th:if="${showfolderDuplicateTitleError}"><div th:replace="fragments/duplicateTitleError :: duplicateTitleError(type='folder',title=${duplicateTitle})"></div></div>
+
+		<!--Modal to show for duplicateArtefactTitleError -->
+		<div th:if="${showArtefactDuplicateTitleError}"><div th:replace="fragments/duplicateTitleError :: duplicateTitleError(type='artefact',title=${duplicateTitle})"></div></div>
+
+		<!--Modal to show for invalidFileError -->
+		<div th:if="${showInvalidFileError}"><div th:replace="fragments/invalidFileError :: invalidFileError(type='file')"></div></div>
+		<div th:if="${showInvalidURLError}"><div th:replace="fragments/invalidFileError :: invalidFileError(type='url')"></div></div>
+
+		<!--Modal for ErrorMessage -->
+		<div th:if="${showError}"><div th:replace="fragments/ErrorMessage :: ErrorMessage(title=${errorTitle},message=${errorMessage})"></div></div>
+	</body>
+</html>

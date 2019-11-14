@@ -1,0 +1,58 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Choose Asset</title>
+    <meta charset="utf-8"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"></link>
+    <link rel="stylesheet" href="../../static/css/chooseAsset.css"></link>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../static/js/chooseAsset.js"></script>
+
+</head>
+<body>
+
+<div th:fragment="chooseAssetModal">
+    <div class="modal fade" id="chooseAssetModal" role="dialog">
+        <div class="modal-dialog">
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" data-target="#chooseAssetModal">&times;</button>
+                    <h4 class="modal-title" th:text="#{asset.select}">Choose Asset</h4>
+                </div>
+                <div class="modal-body">
+                    <table id="chooseAssetTable" class="table table-hover">
+                         <thead>
+                         <tr>
+                            <th th:text="#{asset.title}">Title:</th>
+                            <th th:text="#{asset.description}"> Description:</th>
+                        </tr>
+
+                        </thead>
+                        <tbody>
+                            <tr th:each="asset : ${allAssets}">
+                                <td th:attr="data-id=${asset.id}" th:text="${asset.title}" ></td>
+                                <td th:text="${asset.description}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <form method="get" action="asset">
+                        <input id="chooseAssetFormAssetId" type="hidden" name="id"></input>
+                        <input type="hidden" name="featureId" th:value="${feature.id}"></input>
+                        <button id="chooseAssetFormSubmit" type="submit" class="btn btn-primary" disabled="disabled" th:text="#{asset.select}">choose Asset</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal" data-target="#chooseAssetModal" th:text="#{message.cancel}">Close</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

@@ -1,0 +1,28 @@
+#textEditor {
+    /* TODO: use dynamic size */
+    width: 40vw;
+    height: 50vh;
+    margin: 0 auto;
+    border: 1px solid;
+}
+
+#textEditorTextarea {
+    resize: none;
+    width: inherit;
+    height: inherit;
+    overflow-y: scroll;
+    white-space: pre-wrap;
+}
+
+#textEditorControlPanel {
+    text-align: right;
+}
+
+.textEditorError {
+    color:red;
+    text-align: left;
+}
+
+#textEditorSelection {
+    color: red;
+}

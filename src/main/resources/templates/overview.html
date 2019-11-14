@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<title>ProductLinRE - Project Overview</title>
+<meta charset="utf-8"></meta>
+<meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+<meta name="_csrf" th:content="${_csrf.token}" />
+<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"></link>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<link rel="stylesheet" th:href="@{/css/style.css}"></link>
+</head>
+<body>
+
+	<!-- Display navbar -->
+	<nav th:replace="fragments/navbar :: navigation"></nav>
+
+
+	<div class="container-fluid text-center">
+		<div class="row content">
+
+			<!-- Left-Side Bar -->
+			<div class="col-sm-2 sidenav"></div>
+
+			<!-- Pop-Ups -->
+
+
+			<!-- Center Content -->
+			<div class="col-sm-8 text-left">
+
+				<div th:unless="${projectOwner}">
+					<h3 th:text="#{overview.myProjects}">My Projects</h3>
+				</div>
+				<div th:if="${projectOwner}">
+					<h3 th:text="#{overview.projectsOf} + ' ' + ${projectOwner}"></h3>
+				</div>
+				<table class="table table-striped" style="table-layout: fixed">
+					<thead>
+						<tr>
+							<th th:text="#{overview.title}">Name</th>
+							<th th:text="#{overview.description}">Description</th>
+							<th th:text="#{overview.lastChange}">LastChange</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="project : ${projectList}">
+							<td style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><a th:text="${project.title}"
+								th:href="@{\project?id={id}(id=${project.id})}" > </a></td>
+							<td th:text="${project.description}" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></td>
+							<td th:text="${#dates.format(project.lastChange, 'dd.MM.yyyy HH:mm:ss')}" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></td>
+							<td>
+								<!-- Delete Button -->
+								<div class="col-sm-1" th:if="${hasEditRights}">
+
+									<button type="button" class="btn btn-xs btn-default"
+										data-toggle="modal"
+										th:attr="data-target='#confirmDeleteProject' + ${project.id}">
+										<span class="glyphicon glyphicon-remove"></span>
+									</button>
+
+								</div>
+
+								<div th:id="'confirmDeleteProject' + ${project.id}"
+									class="modal fade">
+									<div class="modal-dialog">
+										<div class="modal-content">
+											<div class="modal-header">
+												<button type="button" class="close" data-dismiss="modal">&times;</button>
+												<h4 class="modal-title" th:text="#{message.confirmDelete}">Delete?</h4>
+											</div>
+											<div class="modal-body">
+											<p th:text="#{overview.deleteConfirm}+ ' ' + ${project.title}"></p>
+											</div>
+											<div class="modal-footer">
+												<form action="#" th:action="@{deleteProject}" method="post">
+													<input type="hidden" name="projectId"
+														th:value="${project.id}" />
+													<button class="btn btn-danger btn-sm" type="submit"
+														th:text="#{message.delete}"></button>
+													<button type="reset" class="btn btn-sm"
+														data-dismiss="modal" th:text="#{message.cancel}">Cancel</button>
+												</form>
+											</div>
+										</div>
+									</div>
+								</div>
+
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="col-sm-4" th:if="${hasEditRights}">
+					<button type="button" class="btn btn-primary" data-toggle="modal"
+						data-target="#newProjectModal">
+						<!-- Add Application button -->
+						<span class="glyphicon glyphicon-plus"></span><span th:text="#{overview.newProject}">New Project</span>
+					</button>
+				</div>
+
+			</div>
+
+			<!-- Right Side Bar -->
+			<div class="col-sm-2 sidenav"></div>
+		</div>
+	</div>
+
+	<div th:replace="fragments/newProject :: newProject"></div>
+	
+	<!--Modal to show for duplicateTitleError -->
+	<span th:if="${showDuplicateTitleError}"><div th:replace="fragments/duplicateTitleError :: duplicateTitleError(type='project',title=${duplicateTitle})"></div></span>
+</body>
+</html>

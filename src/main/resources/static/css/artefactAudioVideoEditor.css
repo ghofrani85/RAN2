@@ -1,0 +1,13 @@
+#videoControls div.row, #audioControls div.row {
+    margin-top: 5px;
+}
+
+
+#videoContainer video, #audioContainer audio {
+    width: 100%;
+}
+
+.error {
+    color:red;
+    font-weight: bold;
+}

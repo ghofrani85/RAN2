@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title></title>
+    <meta charset="utf-8"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"></link>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+	<div th:fragment="editfeature" class="modal fade" id="editfeature">
+		<div class="modal-dialog">
+		
+			<div class="modal-content">
+				<form action="#" th:action="@{editfeature}" method="post" onsubmit="closeModal()">
+					<div class="modal-header">
+						<h3 th:text="#{feature.edit}">Edit Feature</h3>
+					</div>
+					<div class="modal-body">
+						<div class="form-group">
+							<label for="title" th:text="#{feature.title}">Title</label>
+							<input name="title" type="text" class="form-control" id="title" th:value="${feature.title}" required="true" maxlength="30" pattern=".*\S.*" />
+						</div>
+						<div class="form-group">
+							<label for="description" th:text="#{feature.description}">Description</label>
+							<textarea name="description" class="form-control" rows="8" id="description" th:text="${feature.description}"></textarea>
+						</div>
+						<input type="hidden" name="id" id="id" th:value="${feature.id}" />
+					</div>
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-primary" th:text="#{feature.edit}"></button>
+						<button type="reset" class="btn" data-dismiss="modal" th:text="#{message.cancel}">Cancel</button>
+					</div>
+				</form>
+			</div>
+			
+		</div>
+	</div>
+</body>
+</html>

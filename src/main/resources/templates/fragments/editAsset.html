@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title></title>
+    <meta charset="utf-8"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"></link>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+	<div th:fragment="editasset" class="modal fade" id="editasset">
+		<div class="modal-dialog">
+		
+			<div class="modal-content">
+				<form action="#" th:action="@{editasset}" method="post" onsubmit="closeModal()">
+					<span th:if="${feature}"><input type="hidden" name="featureId" th:value="${feature.id}"></input></span>
+					<span th:if="${artefact}"><input type="hidden" name="artefactId" th:value="${artefact.id}"></input></span>
+					<div class="modal-header">
+						<h3 th:title="#{asset.edit}">Edit</h3>
+					</div>
+					<div class="modal-body">
+						<div class="form-group">
+							<label for="title" th:title="#{asset.title}">Title</label>
+							<input name="title" type="text" class="form-control" id="title" th:value="${asset.title}" required="true" maxlength="30" pattern=".*\S.*"/>
+						</div>
+						<div class="form-group">
+							<label for="description" th:title="#{asset.description}">Description</label>
+							<textarea name="description" class="form-control" rows="8" id="description" th:text="${asset.description}"></textarea>
+						</div>
+						<input type="hidden" name="id" id="id" th:value="${asset.id}" />
+					</div>
+					<div class="modal-footer">
+						<button type="submit" class="btn" th:text="'Edit Asset'"></button>
+						<button type="reset" class="btn" data-dismiss="modal" th:text="#{message.cancel}" >Cancel</button>
+					</div>
+				</form>
+			</div>
+			
+		</div>
+	</div>
+</body>
+</html>

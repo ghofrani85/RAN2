@@ -1,0 +1,12 @@
+.tableRowSelected,
+.table-hover tbody tr.tableRowSelected:hover td {
+    background-color : lightblue;
+ }
+
+#chooseAssetModal .modal-dialog{
+    overflow-y: initial
+}
+#chooseAssetModal .modal-body{
+    height: 75vh;
+    overflow-y: auto;
+}

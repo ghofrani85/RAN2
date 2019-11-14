@@ -1,0 +1,52 @@
+/*
+* Stylesheet for Project view.
+*/
+
+.projecttitle {
+	margin-right: 20px;
+}
+
+th, td {
+	min-width: 90px;
+	whitespace: nowrap;
+}
+
+.buttonarea {
+	margin-top: 40px;
+}
+
+
+.featuretitle {
+	display: inline-block;
+	max-width: 70px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	whitespace: nowrap;
+	margin: 0px;
+	padding: 0px;
+	height: 1.6em;
+}
+
+.featuredelete {
+	display: inline-block;
+	max-width: 10px;
+	margin: 0px;
+	padding: 0px;
+}
+
+.deletebtn {
+	display: inline-block;
+	margin: 0px;
+	padding: 0px;
+}
+
+.tablecell {
+	margin: 0px;
+	paddin: 0px;
+	width: 90px;
+	overflow:hidden;
+	text-overflow:ellipsis;
+	whitespace: nowrap;
+	display: inline-block;
+	height: 1.6em;
+}

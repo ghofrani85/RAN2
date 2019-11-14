@@ -1,0 +1,47 @@
+.registerWrapper {
+    margin-top: 80px;
+}
+
+.innerRegister {
+    max-width: 600px;
+    padding: 30px 38px 45px;
+    margin: 0 auto;
+    background-color: #eee;
+    border-radius: 10px;
+    border: 3px solid rgba(0,0,0,0.1);
+}
+
+.registerFormHeader {
+    margin-bottom: 30px;
+}
+
+div.innerRegister input {
+    margin-bottom: 10px;
+}
+
+.termsOfUseFooter a {
+    cursor:pointer;
+}
+
+.termsOfUseFooter {
+    padding-left: 14px;
+}
+
+#termsOfUseModal .modal-dialog{
+    overflow-y: initial
+}
+
+#termsOfUseModal .modal-body{
+    height: 75vh;
+    overflow-y: auto;
+}
+
+.error {
+    margin-top: -5px;
+    color:red;
+}
+
+.goToLogin {
+    margin-left: 5px;
+    margin-top: 20px;
+}

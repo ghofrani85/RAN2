@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+    <head>
+        <title>Navbar</title>
+        <meta charset="utf-8"></meta>
+        <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"></link>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    </head>
+    <body>
+        <!-- TODO: implement-->
+        <div class="container-fluid" th:fragment="artefactImageEditor">
+            <div class="row content">
+                <div class="col-sm-12" style="position:relative">
+                    <div id="ImageContainer">
+                        <div id="offsetXMarker" style="position: absolute; top: 0; left: 0; width: 0; height: 100%; background-color: rgb(0,0,0);opacity: 0.5;"></div>
+                        <div id="offsetYMarker" style="position: absolute; top: 0; left: 0; width: 100%; height: 0; background-color: rgb(0,0,0);opacity: 0.5;"></div>
+                        <div id="widthMarker"   style="position: absolute; top: 0; left: 0; width: 0; height: 100%; background-color: rgb(0,0,0);opacity: 0.5;"></div>
+                        <div id="heightMarker"  style="position: absolute; top: 0; left: 0; width: 100%; height: 0; background-color: rgb(0,0,0);opacity: 0.5;"></div>
+                        <img id="artefactImage" th:src="${imageData}" style="width:100%" onload="initImageSelection()"> </img>
+                    </div>
+                </div>
+            </div>
+            <div class="row content">
+                <div class="col-sm-3">
+                    <span>OffsetX</span>
+                </div>
+                <div class="col-sm-3">
+                    <span>OffsetY</span>
+                </div>
+                <div class="col-sm-3">
+                    <span>Width</span>
+                </div>
+                <div class="col-sm-3">
+                    <span>Height</span>
+                </div>
+            </div>
+            <div class="row content">
+                <span th:unless="${artefact}">
+                    <span th:if="${feature}">
+                        <form action="#" th:action="@{addPictureArtefact}" method="post">
+                            <div th:if="${feature}" ><input type="hidden" name="featureId" th:value="${feature.Id}"></input></div>
+                            <input type="hidden" name="assetId" th:value="${asset.Id}"></input>
+                            <div class="col-sm-3">
+                                <input name="x" id="input_offsetX" type="number" value="0" style="width: 100%" min="0" onchange="updateImageSelection()"></input>
+                            </div>
+                            <div class="col-sm-3">
+                                <input  name="y"  id="input_offsetY" type="number" value="0" style="width: 100%" min="0" onchange="updateImageSelection()"></input>
+                            </div>
+                            <div class="col-sm-3">
+                                <input  name="width"  id="input_width" type="number" value="0" style="width: 100%" min="0" onchange="updateImageSelection()"></input>
+                            </div>
+                            <div class="col-sm-3">
+                                <input  name="height"  id="input_height" type="number" value="0" style="width: 100%" min="0" onchange="updateImageSelection()"></input>
+                            </div>
+
+                            <div th:if="${feature}" >
+                                <button th:href="'#inputArtefactTitle'" data-toggle="modal" data-target="#inputArtefactTitle" class="btn" th:text="'Add to feature ' + ${feature.title}"></button>
+                                <a class="btn btn-danger col-sm-2" th:href="'feature?id=' + ${feature.Id}" th:text="#{message.cancel}">cancel</a>
+                            </div>
+                            <div th:replace="fragments/inputArtefactTitle :: inputArtefactTitle"></div>
+                        </form>
+                    </span>
+                </span>
+                <span th:if="${artefact}">
+                    <span th:if="${feature}">
+                        <form action="#" th:action="@{changePictureArtefact}" method="post">
+                            <input type="hidden" name="featureId" th:value="${feature.Id}"></input>
+                            <input type="hidden" name="assetId" th:value="${asset.Id}"></input>
+                            <input type="hidden" name="artefactId" th:value="${artefact.Id}"></input>
+                            <input type="hidden" name="title" th:value="${artefact.title}"></input>
+                            <div class="col-sm-3">
+                                <input name="x" id="input_offsetX" type="number" th:value="${x}" style="width: 100%" min="0" onchange="updateImageSelection()"></input>
+                            </div>
+                            <div class="col-sm-3">
+                                <input  name="y"  id="input_offsetY" type="number" th:value="${y}" style="width: 100%" min="0" onchange="updateImageSelection()"></input>
+                            </div>
+                            <div class="col-sm-3">
+                                <input  name="width"  id="input_width" type="number" th:value="${w}" style="width: 100%" min="0" onchange="updateImageSelection()"></input>
+                            </div>
+                            <div class="col-sm-3">
+                                <input  name="height"  id="input_height" type="number" th:value="${h}" style="width: 100%" min="0" onchange="updateImageSelection()"></input>
+                            </div>
+
+                            <button type="submit" class="btn"  th:text="#{editor.applyChanges}"></button>
+                            <a class="btn btn-danger col-sm-2" th:href="'feature?id=' + ${feature.Id}" th:text="#{editor.cancel}">cancel</a>
+                        </form>
+                    </span>
+                </span>
+            </div>
+        </div>
+    </body>
+</html>

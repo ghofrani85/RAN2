@@ -1,0 +1,30 @@
+.settingsHeader{
+    text-align:center;
+
+}
+
+.settingsWrapper {
+    max-width: 612px;
+    border:3px solid rgba(0, 0,0, 0.1);
+    border-radius: 10px;
+    margin: 0 auto;
+    background-color: #eee;
+}
+
+.settingsBody {
+    padding: 30px 38px 45px;
+
+}
+
+.error {
+    color:red;
+}
+
+.settingsEmailViewable span {
+    vertical-align: top;
+}
+
+.settingsEmailViewable input {
+    margin-right: 3px;
+    margin-left: 14px;
+}

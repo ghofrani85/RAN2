@@ -1,0 +1,70 @@
+{
+	"properties": [
+		{
+			"name": "configdata.ffmpegPath",
+			"type": "java.lang.String",
+			"description": "The path to the FFMPEG executable",
+			"sourceType": "com.ghofrani.htw.RAN2.controller.setup.ConfigData"
+		},
+		{
+			"name": "configdata.ffprobePath",
+			"type": "java.lang.String",
+			"description": "The path to the FFMPEG probe executable",
+			"sourceType": "com.ghofrani.htw.RAN2.controller.setup.ConfigData"
+		},
+		{
+			"name": "setup.email",
+			"type": "java.lang.String",
+			"description": "The email address of the administrator",
+			"sourceType": "com.ghofrani.htw.RAN2.controller.setup.SetupProperties"
+		},
+		{
+			"name": "setup.username",
+			"type": "java.lang.String",
+			"description": "The username of the administrator",
+			"sourceType": "com.ghofrani.htw.RAN2.controller.setup.SetupProperties"
+		},
+		{
+			"name": "setup.password",
+			"type": "java.lang.String",
+			"description": "The password of the administrator",
+			"sourceType": "com.ghofrani.htw.RAN2.controller.setup.SetupProperties"
+		},
+		{
+			"name": "configdata.dailyUploadLimit",
+			"type": "java.lang.String",
+			"description": "The maximum data volume a user can upload each day in byte. May use kB, MB or GB as units.",
+			"sourceType": "com.ghofrani.htw.RAN2.controller.setup.ConfigData"
+		},
+		{
+			"name": "configdata.supportedLanguages",
+			"type": "java.util.List<java.lang.String>",
+			"description": "Locale codes for supported languages.",
+			"sourceType": "com.ghofrani.htw.RAN2.controller.setup.ConfigData"
+		},
+		{
+			"name": "configdata.welcomeTextPath",
+			"type": "java.lang.String",
+			"description": "The path to the file containing the welcome text. May contain html tags.",
+			"sourceType": "com.ghofrani.htw.RAN2.controller.setup.ConfigData"
+		},
+		{
+			"name": "configdata.tosTextPath",
+			"type": "java.lang.String",
+			"description": "The path to the file containing the Terms of Service text.",
+			"sourceType": "com.ghofrani.htw.RAN2.controller.setup.ConfigData"
+		},
+		{
+			"name": "configdata.assetPath",
+			"type": "java.lang.String",
+			"description": "The path to the folder for the asset files.",
+			"sourceType": "com.ghofrani.htw.RAN2.controller.setup.ConfigData"
+		},
+		{
+			"name": "configdata.tempPath",
+			"type": "java.lang.String",
+			"description": "The path to the temp folder.",
+			"sourceType": "com.ghofrani.htw.RAN2.controller.setup.ConfigData"
+		}
+	]
+}

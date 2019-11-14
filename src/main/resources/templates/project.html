@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<title th:text="${'RAN2 - ' + project.title}">Project
+	Page</title>
+<meta charset="utf-8"></meta>
+<meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+<meta name="_csrf" th:content="${_csrf.token}" />
+<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"></link>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script type="text/javascript" th:src="@{/js/project.js}"></script>
+<script type="text/javascript" th:src="@{/js/feature.js}"></script>
+<link rel="stylesheet" th:href="@{/css/style.css}"></link>
+<link rel="stylesheet" th:href="@{/css/project.css}"></link>
+</head>
+<body onload="setCheckboxes()">
+	<!-- Display navbar -->
+	<nav th:replace="fragments/navbar :: navigation"></nav>
+
+	<div class="row">
+		<!-- main content -->
+		<div class="col-sm-2 left-sidebar">
+			<!-- left sidebar -->
+		</div>
+		<!-- /left sidebar -->
+		<div class="col-sm-8 center">
+			<!-- center content -->
+			<div class="row project-abstract">
+				<!-- project abstract -->
+				<div class="col-sm-8">
+					<header>
+						<h2 th:text="${project.title}" class="projecttitle">Project
+							Name</h2>
+						<span th:if="${hasEditRights}"> <span data-toggle="modal"
+							data-target="#editproject"><a th:href="'#editproject'"
+								data-toggle="tooltip" th:title="#{project.editProject}"> <span
+									class="glyphicon glyphicon-pencil"></span>
+							</a></span>
+						</span>
+					</header>
+					<p class="projectdesc desc" th:text="${project.description}">Lorem
+						Ipsum</p>
+					<div class="alert alert-warning" id="dlError"
+						style="display: none;"></div>
+					<div class="alert alert-info" id="downloading"
+						style="display: none;" th:text="#{project.prepareDownload}"></div>
+					<div class="alert alert-success" id="dlSuccess"
+						style="display: none;">
+						<Strong th:text="#{project.dlReady}">Download ready!</Strong>
+					</div>
+					<div class="alert alert-warning" th:if="${param.dberror != null}"
+						th:text="#{project.dbError}"></div>
+					<div class="alert alert-warning" th:if="${param.copyerror != null}"
+						th:text="#{project.copyError}"></div>
+				</div>
+				<div class="col-sm-4">
+					<!--  project metadata -->
+					<p style="margin-top: 30px;">
+						<strong th:text="#{project.created}"></strong> <span
+							th:text="${user.email}"></span>
+					</p>
+					<p>
+						<strong th:text="#{project.lastChange}"></strong><span
+							th:text="${#dates.format(project.lastChange, 'dd.MM.yyyy HH:mm:ss')}"></span>
+					</p>
+				</div>
+				<!--  /project metadata -->
+			</div>
+			<!-- /project abstract -->
+			<div class="row matrix">
+				<!-- product/feature matrix -->
+				<div class="container-fluid">
+					<div class="table-responsive">
+						<table class="table table-striped table-condensed">
+							<thead>
+								<tr>
+									<th th:text="#{project.products}">Application</th>
+									<!-- Feature row -->
+									<th th:each="feature : ${features}" th:class="${feature.updatedparent} ? 'warning' : '' " ><div class="tablecell"> <span
+										class="featuretitle"> <a
+											th:href="@{\feature?id={id}(id=${feature.id})}"
+											data-toggle="tooltip" data-placement="bottom"
+											th:title="${feature.title} + '&#13;' + ${feature.description}"
+											th:text="${feature.title}">Feature</a>
+									</span> <!-- Delete Button Deleted CHANGE -->
+								</div>
+								<!-- Delete Comfirmation Deleted CHANGE -->
+									</th>
+								</tr>
+							</thead>
+							<tbody>
+								<!-- product column -->
+								<tr th:each="prod : ${products}">
+									<td><div class="tablecell"><span data-toggle="modal"
+										th:attr="data-target='#edit' + ${prod.id}"> <a
+											th:href="'#edit' + ${prod.id}" data-toggle="tooltip"
+											th:title="${prod.description}" th:text="${prod.title}"></a>
+									</span></div></td>
+									<td th:each="feature : ${features}">
+										<div>
+											<!-- Checkbox enabled -->
+											<span th:if="${hasEditRights}"><input type="checkbox"
+												class="checkbox"
+												th:name="'p' + ${prod.id} + 'f' + ${feature.id}"
+												th:id="'p' + ${prod.id} + 'f' + ${feature.id}"
+												onchange="boxChanged(this)" /></span>
+											<!-- Checkbox disabled -->
+											<span th:unless="${hasEditRights}"><input
+												type="checkbox" class="checkbox"
+												th:name="'p' + ${prod.id} + 'f' + ${feature.id}"
+												th:id="'p' + ${prod.id} + 'f' + ${feature.id}"
+												onchange="boxChanged(this)" disabled="true" /></span>
+										</div>
+									</td>
+									<td><div class="row">
+											<div class="col-sm-1">
+												<form th:action="@{#}" method="get"
+													th:id="'submit' + ${prod.id}">
+													<!-- Download Button -->
+													<input type="hidden" th:id="'dlpid' + ${prod.id}"
+														th:name="'productId'" th:value="${prod.id}" /> <input
+														type="hidden" th:id="'dlpath' + ${prod.id}"
+														th:name="'path'" th:value="'#'" />
+													<button type="button" class="btn btn-xs btn-default"
+														th:id="'btn' + ${prod.id}"
+														th:onclick="'prepareDownload(' + ${prod.id} +')'"
+														data-toggle="tooltip" th:title="#{project.dlButton}">
+														<div class="glyphicon glyphicon-download-alt"
+															th:id="'dl' + ${prod.id}"></div>
+													</button>
+												</form>
+											</div>
+											<!-- Delete Product Button Deleted CHANGE -->
+										</div></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			<!-- /product/feature matrix -->
+			<div class="row buttonarea">
+				<!-- interaction buttons -->
+				<!-- copy button -->
+				<span th:unless="${isOwner}">
+					<button class="btn btn-primary" type="button" data-toggle="modal"
+						data-target="#copyproject">
+						<span class="glyphicon glyphicon-share-alt"></span><span
+							th:text="#{project.copy}">Copy Project</span>
+					</button>
+				</span>
+				<!-- vote button -->
+				<span th:if="${hasRateRights}">
+					<form action="#" th:action="@{voteupproject}" method="post" th:id="'submit' + ${project.id}">
+						<input type="hidden" name="projectId" th:value="${project.id}" />
+						<button type="submit" class="btn btn-default"
+							th:id="'btn' + ${project.id}"
+							th:onclick="'voteThumbUp(' + ${project.id} +')'"
+							data-toggle="tooltip" th:title="#{project.thumbUpBtn}">
+							<div class="glyphicon glyphicon-thumbs-up"
+								th:id="'btn' + ${project.id}"
+								th:text=" ' ' + ${project.upVote}"></div>
+						</button>
+					</form>
+				</span>
+				<span th:if="${hasRateRights}">
+					<form action="#" th:action="@{votedownproject}" method="post" th:id="'submit' + ${project.id}">
+						<input type="hidden" name="projectId" th:value="${project.id}" />
+						<button type="submit" class="btn btn-default"
+							th:id="'btn' + ${project.id}"
+							th:onclick="'voteThumbDown(' + ${project.id} +')'"
+							data-toggle="tooltip" th:title="#{project.thumbDownBtn}">
+							<div class="glyphicon glyphicon-thumbs-down"
+								th:id="'btn' + ${project.id}"
+								th:text=" ' ' + ${project.downVote}"></div>
+						</button>
+					</form>
+				</span>
+			</div>
+			<!-- /interaction buttons -->
+		</div>
+		<!-- /center content -->
+		<div class="col-sm-2 right-sidebar">
+			<!-- right sidebar -->
+		</div>
+		<!-- /right sidebar -->
+	</div>
+	<!-- /main content -->
+
+	<!-- Modal for editing the Project details -->
+	<div th:if="${hasEditRights}">
+		<div th:replace="fragments/editProject :: editproject"></div>
+	</div>
+
+	<!-- Modal for creating new Products -->
+	<div th:if="${hasEditRights}">
+		<div
+			th:replace="fragments/product :: product (id='createapp',title='Create New',appid='',apptitle='',appdescription='')"></div>
+	</div>
+
+	<!-- Modal for Features -->
+	<div th:if="${hasEditRights}">
+		<div th:replace="fragments/featurePopUps :: createFeature"></div>
+	</div>
+
+
+	<!-- Modals for editing existing Products -->
+	<div th:if="${hasEditRights}">
+		<div th:each="prod : ${products}">
+			<div
+				th:replace="fragments/product :: product (id=${'edit' + prod.id},title='Edit',appid=${prod.id},apptitle=${prod.title},appdescription=${prod.description})"></div>
+		</div>
+	</div>
+
+	<!-- Modal for copying the Project -->
+	<div th:unless="${isOwner}">
+		<div th:replace="fragments/copyProject :: copyproject"></div>
+	</div>
+	
+		<!--Modal to show for duplicateFeatureTitleError -->
+	<div th:if="${showFeatureDuplicateTitleError}"><div th:replace="fragments/duplicateTitleError :: duplicateTitleError(type='feature',title=${duplicateTitle})"></div></div>
+	
+		<!--Modal to show for duplicateProductTitleError -->
+	<div th:if="${showProductDuplicateTitleError}"><div th:replace="fragments/duplicateTitleError :: duplicateTitleError(type='product',title=${duplicateTitle})"></div></div>
+	
+	<!--Modal to show for projectDuplicateTitleError -->
+	<div th:if="${showProjectDuplicateTitleError}"><div th:replace="fragments/duplicateTitleError :: duplicateTitleError(type='project',title=${duplicateTitle})"></div></div>
+	
+</body>
+</html>

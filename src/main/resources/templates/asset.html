@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <title th:text="${'RAN2 - ' + asset.title}"></title>
+    <meta charset="utf-8"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+	<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"></link>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script th:if="${assetIsImage}" type="text/javascript" th:src="@{/js/artefactImageEditor.js}"></script>
+    <script th:if="${assetIsText}" type="text/javascript" th:src="@{/js/artefactTextEditor.js}"></script>
+    <script th:if="${assetIsXML}" type="text/javascript" th:src="@{/js/artefactXMLEditor.js}"></script>
+    <script type="text/javascript" th:src="@{/js/artefactAudioVideoEditor.js}"></script>
+    <script th:if="${assetIsXML}" type="text/javascript" th:src="@{/js/jstree.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/style.css}"></link>
+    <link th:if="${assetIsText}" rel="stylesheet" th:href="@{/css/artefactTextEditor.css}"></link>
+    <link th:if="${assetIsXML}" rel="stylesheet" th:href="@{/css/jstree/style.min.css}"></link>
+    <link rel="stylesheet" th:href="@{/css/artefactAudioVideoEditor.css}"></link>
+
+</head>
+<body>
+
+<!-- Display navbar -->
+<nav th:replace="fragments/navbar :: navigation"></nav>
+
+
+<div class="container-fluid">
+
+    <!-- Super Row -->
+    <div class="row content">
+        
+        <!-- Left Part  -->
+        <div class="col-sm-6">
+            
+            <!-- Row 1 -->
+            <div class="row content">
+            
+                <!-- Padding  -->
+                <div class="col-sm-2"></div>
+                
+                <div class="col-sm-8">
+                
+                    <!-- Title with edit button -->
+                    <header>
+                        <h2 th:text="${asset.title}"></h2>
+						<span th:if="${hasEditRights}">
+                        <a th:href="'#editasset'" data-toggle="modal" data-target="#editasset">
+                            <span class="glyphicon glyphicon-pencil"></span>
+                        </a>
+						</span>
+						
+                    </header>
+                </div>
+				
+                <!-- Padding  -->
+                <div class="col-sm-2"></div>
+                
+            </div>
+            
+            <!-- Row 2 -->
+            <div class="row content">
+            
+                
+                
+                <!-- Padding  -->
+                <div class="col-sm-2"></div>
+                
+                <div class="col-sm-8">
+                
+                    <!-- Description  -->
+                    <p class="assetdesc desc" th:text="${asset.description}"></p>
+                    
+                </div>
+                
+                <!-- Padding  -->
+                <div class="col-sm-2"></div>
+                
+            </div>
+            
+            <!-- Row 3 -->
+            <div class="row content" style="height: 50px"></div>
+            
+            <!-- Row 4 -->
+            <div class="row content">
+                
+                <!-- Padding  -->
+                <div class="col-sm-1"></div>
+                
+                <div class="col-sm-10"> 
+                    <!-- Modal for editing image data -->
+                    <div th:if="${assetIsImage}"><div  th:replace="fragments/artefactImageEditor :: artefactImageEditor"></div></div>
+                    
+                    <!-- Modal for editing xml data -->
+                    <div  th:if="${assetIsXML}"><div th:replace="fragments/artefactXMLEditor :: artefactXMLEditor"></div></div>
+                    
+                    <!-- Modal for editing video data -->
+                    <div th:if="${assetIsVideo}"><div th:replace="fragments/artefactVideoEditor :: artefactVideoEditor"></div></div>
+                    
+                    <!-- Modal for editing audio data -->
+                    <div th:if="${assetIsAudio}"><div th:replace="fragments/artefactAudioEditor :: artefactAudioEditor"></div></div>
+                    
+                    <!-- Modal for editing text data -->
+                    <div th:if="${assetIsText}"><div th:replace="fragments/artefactTextEditor :: artefactTextEditor"></div></div>
+					
+					<!-- Modal for editing other data -->
+                    <div th:if="${assetIsOther}"><div th:replace="fragments/artefactOtherEditor :: artefactOtherEditor"></div></div>
+                </div>
+            </div>
+            
+            
+        </div>
+        
+        <!-- Right Part  -->
+        <div class="col-sm-6">
+            
+            
+            <!-- Row 1(Feature and Artefact Info) -->
+            <div class="row content" style="height: 100px">
+			
+				   <!-- Padding  -->
+                <div class="col-sm-3"></div>
+			
+				 <!-- Current Feature and Artefact  -->
+                <div class="col-sm-8">
+					<h3 th:if="${feature}" th:text="'Feature: ' + ${feature.title}"></h3>
+					<h3 th:if="${artefact}" th:text="'Artefact: ' + ${artefact.title}"></h3>
+				</div>
+				
+				   <!-- Padding  -->
+                <div class="col-sm-1"></div>
+			
+			</div>
+            
+            <!-- Metadata Rows -->
+            <div class="row content" style="margin: 20px">
+                 <!-- Padding  -->
+                <div class="col-sm-2"></div>
+                 <!-- Container  -->
+                <div class="col-sm-6">
+                    <!-- Uploaded by  -->
+                    <p><b th:text="#{asset.size}"></b></p>
+                    <p th:text="${filesize}"></p>
+                </div>
+                 <!-- Padding  -->
+                <div class="col-sm-4"></div>
+            </div>
+            <!-- Metadata Rows -->
+            <div class="row content" style="margin: 20px">
+                 <!-- Padding  -->
+                <div class="col-sm-2"></div>
+                 <!-- Container  -->
+                <div class="col-sm-6">
+                    <!-- Uploaded by  -->
+                    <p><b th:text="#{asset.uploadedby}"></b></p>
+                    <p th:text="${fileUploader}"></p>
+                </div>
+                 <!-- Padding  -->
+                <div class="col-sm-4"></div>
+            </div>
+            <!-- Metadata Rows -->
+            <div class="row content" style="margin: 20px">
+                 <!-- Padding  -->
+                <div class="col-sm-2"></div>
+                 <!-- Container  -->
+                <div class="col-sm-6">
+                    <!-- Uploaded by  -->
+                    <p><b th:text="#{asset.filename}"></b></p>
+                    <p th:text="${fileName}"></p>
+                </div>
+                 <!-- Padding  -->
+                <div class="col-sm-4"></div>
+            </div>
+            <!-- Metadata Rows -->
+            <div class="row content" style="margin: 20px">
+                 <!-- Padding  -->
+                <div class="col-sm-2"></div>
+                 <!-- Container  -->
+                <div class="col-sm-6">
+                    <!-- Uploaded by  -->
+                    <p><b th:text="#{asset.format}"></b></p>
+                    <p th:text="${fileFormat}"></p>
+                </div>
+                 <!-- Padding  -->
+                <div class="col-sm-4"></div>
+            </div>
+            <!-- Metadata Rows -->
+            <div class="row content" style="margin: 20px">
+                 <!-- Padding  -->
+                <div class="col-sm-2"></div>
+                 <!-- Container  -->
+                <div class="col-sm-6">
+                    <!-- Uploaded by  -->
+                    <p><b th:text="#{asset.uploadDate}"></b></p>
+                    <p th:text="${uploadDate}"></p>
+                </div>
+                 <!-- Padding  -->
+                <div class="col-sm-4"></div>
+            </div>
+            
+            <!-- Row under Metadata -->
+            <div class="row content" style="margin: 20px">
+            
+                 <!-- Padding  -->
+                <div class="col-sm-2"></div>
+            
+                 <!-- Container  -->
+                <div class="col-sm-6">
+                
+                    <!-- Included in Features  -->
+                    <table class="table table-striped">
+                        <thead>
+                          <tr>
+                            <th th:text="#{asset.usedin}">Used in Features:</th>
+                          </tr>
+                        </thead>
+                        <tbody id="featureTableBody">
+                            <tr th:each="feature : ${usedInFeatures}">
+                                <td><a th:href="@{\feature?id={id}(id=${feature.id})}" th:text="${feature.title}"></a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                
+                </div>
+                
+                 <!-- Padding  -->
+                <div class="col-sm-4"></div>
+                
+            </div>
+
+        </div>
+        
+    </div>
+    
+</div>
+<div th:if="${hasEditRights}">
+	<!-- Modal for editing the Asset details -->
+	<div th:replace="fragments/editAsset :: editasset"></div>
+</div>
+
+<!--Modal to show for duplicateAssetTitleError -->
+	<div th:if="${showAssetDuplicateTitleError}"><div th:replace="fragments/duplicateTitleError :: duplicateTitleError(type='asset',title=${duplicateTitle})"></div></div>
+
+</body>
+</html>

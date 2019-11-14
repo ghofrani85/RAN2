@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+    <title>RAN2 - Register new account</title>
+    <meta charset="utf-8"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"></link>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" th:href="@{/css/register.css}"></link>
+    <link rel="stylesheet" th:href="@{/css/style.css}"></link>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="registerWrapper">
+        <div class="innerRegister">
+            <h3 class="registerFormHeader" th:text="#{register.head}">Register for ProductLinRE:</h3>
+            <div class="alert alert-success" th:if="${param.success != null}" th:text="#{register.success}">
+                Registration successful!
+            </div>
+            <form th:action="@{/register}" th:object="${user}" method="post" name="Register_Form">
+                <div class="form-group row">
+                    <label for="registerEmail" class="col-sm-4 col-form-label" th:text="#{register.email}">Email: </label>
+                    <div class="col-sm-8">
+                        <input th:field="*{email}" id="registerEmail" type="text" class="form-control"  th:placeholder="#{register.email}"/>
+							<p class="error" th:each="error : ${#fields.errors('email')}"
+								th:text="${error}">Validation Error</p>
+						</div>
+
+                    <label for="registerUsername" class="col-sm-4 col-form-label" th:text="#{register.username}">Username: </label>
+                    <div class="col-sm-8">
+                        <input th:field="*{username}" id="registerUsername" type="text" class="form-control" th:placeholder="#{register.username}" />
+                        <p class="error" th:each="error : ${#fields.errors('username')}" th:text="${error}">Validation Error</p>
+                    </div>
+
+                    <label for="registerPassword" class="col-sm-4 col-form-label" th:text="#{register.password}">Password: </label>
+                    <div class="col-sm-8">
+                        <input th:field="*{password}" id="registerPassword" type="password" class="form-control" th:placeholder="#{register.password}"/>
+                        <p class="error" th:each="error : ${#fields.errors('password')}" th:text="${error}">Validation Error</p>
+                    </div>
+                    
+                    <label for="confirmPassword" class="col-sm-4 col-form-label" th:text="#{register.passwordConfirm}">confirm Password: </label>
+                    <div class="col-sm-8">
+                        <input th:field="*{matchingPassword}" id="confirmPassword" type="password" class="form-control" th:placeholder="#{register.passwordConfirm}"/>
+                        <p class="error" th:each="error : ${#fields.errors('global')}" th:text="${error}">Validation Error</p>
+                    </div>
+
+                    <div class="termsOfUseFooter">
+                        <input th:field="*{acceptTos}" type="checkbox" />
+                        <span th:text="#{register.accept} + ' '">I accept the </span><a data-toggle="modal" data-target="#termsOfUseModal">Terms of use</a>
+
+                        <p class="error" th:each="error : ${#fields.errors('acceptTos')}" th:text="${error}">Validation Error</p>
+                    </div>
+                </div>
+
+                <button class="btn btn-lg btn-primary btn-block registerButton"  name="Submit" type="Submit" th:text="#{register.register}">Register</button>
+
+            </form>
+                <div class="row goToLogin">
+                    <span><span th:text="#{register.existing}"> already have an account? Go to:</span> <a href="login.html">login</a></span>
+                </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="termsOfUseModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Terms of use</h4>
+            </div>
+            <div class="modal-body">
+                <p th:text="${termsOfUse}"/>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" th:text="#{register.close}">close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+</html>

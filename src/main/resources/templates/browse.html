@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+    <title>RAN2 - Browse</title>
+    <meta charset="utf-8"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+	<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"></link>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" th:href="@{/css/style.css}"></link>
+    <link rel="stylesheet" th:href="@{/css/browse.css}"></link>
+</head>
+<body>
+
+<!-- Display navbar -->
+<nav th:replace="fragments/navbar :: navigation"></nav>
+
+
+<div class="container-fluid text-center">    
+  <div class="row content">
+  
+    <!-- Left-Side Bar -->
+    <div class="col-sm-2 sidenav">
+      
+    </div>
+    
+    <!-- Pop-Ups -->
+    
+    
+    <!-- Center Content -->
+    <div class="col-sm-8 text-left"> 
+        <form action="#" th:action="@{browse}" method="get">
+            <div class="input-group stylish-input-group">
+               
+                    <input type="text" class="form-control"  th:value="${searchWord}" th:placeholder="#{browse.search}" name="search"></input>
+                    
+                    <span class="input-group-addon">
+                        <button type="submit">
+                            <span class="glyphicon glyphicon-search"></span>
+                        </button>  
+                    </span>
+                
+            </div>
+            <span th:if="${projectList}"><input type="hidden" value="project" name="type"></input></span>
+            <span th:if="${featureEntries}"><input type="hidden" value="feature" name="type"></input></span>
+            <span th:if="${assetEntries}"><input type="hidden" value="asset" name="type"></input></span>
+        </form>
+        
+        
+        <div th:if="${projectList}"><h3 th:text="#{browse.projects}">Projects</h3></div>
+        <div th:if="${featureEntries}"><h3 th:text="#{browse.features}">Features</h3></div>
+        <div th:if="${assetEntries}"><h3 th:text="#{browse.assets}">Assets</h3></div>
+        <table class="table table-striped" style="table-layout: fixed">
+        <thead>
+          <tr>
+            <th th:text="#{browse.name}">Name</th>
+            <th th:text="#{browse.desc}">Description</th>
+            <th th:text="#{browse.owner}">Owner</th>
+            <!-- Vote rate col added CHANGE -->
+            <th th:text="#{browse.rate}">Review</th>
+          </tr>
+        </thead>
+        <tbody>
+            <div th:if="${projectList}">
+            <tr th:each="project : ${projectList}">
+                <td style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><a th:text="${project.title}" th:href="@{\project?id={id}(id=${project.id})}"> </a></td>
+                <td th:text="${project.description}" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></td>
+                <td th:text="${project.user.username}" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></td>
+                <!-- Vote rate col added CHANGE -->
+                <td th:text="${project.rate + '% users found it helpful'}" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></td>
+            </tr>
+            </div>
+            
+            <div th:if="${featureEntries}">
+            <tr th:each="featureEntry : ${featureEntries}">
+                <td style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><a th:text="${featureEntry.feature.title}" th:href="@{\feature?id={id}(id=${featureEntry.feature.id})}"> </a></td>
+                <td th:text="${featureEntry.feature.description}" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></td>
+                <td th:text="${featureEntry.owner.username}" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></td>
+            </tr>
+            </div>
+            
+            <div th:if="${assetEntries}">
+            <tr th:each="assetEntry : ${assetEntries}">
+                <td style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><a th:text="${assetEntry.asset.title}" th:href="@{\asset?id={id}(id=${assetEntry.asset.id})}"> </a></td>
+                <td th:text="${assetEntry.asset.description}" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></td>
+                <td th:text="${assetEntry.owner.username}" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></td>
+            </tr>
+            </div>
+            
+        </tbody>
+      </table>
+      <div class="col-sm-4">
+	  </div>
+      
+    </div>
+    
+    <!-- Right Side Bar -->
+    <div class="col-sm-2 sidenav">
+      
+    </div>
+  </div>
+</div>
+</body>
+</html>

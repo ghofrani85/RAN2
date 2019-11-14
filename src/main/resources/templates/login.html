@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+    <title>RAN2 - Login</title>
+    <meta charset="utf-8"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"></link>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" th:href="@{/css/login.css}"></link>
+	<link rel="stylesheet" th:href="@{/css/style.css}"></link>
+</head>
+
+<body>
+<div class="loginAndInfoWrapper container">
+	<div class="infoWrapper">
+		<div class="infoContainer" th:utext="${infoText}">
+			Placeholder
+		</div>
+	</div>
+	<div class="loginWrapper">
+		<div class="innerLogin">
+			<form th:action="@{/login}" method="post" name="Login_Form">
+		    	<h3 class="loginFormHeader">Login</h3>
+		    	<div class="alert alert-success" th:if="${param.logout != null}" th:text="#{login.logout}">You were successfully logged out!</div>
+			 	<input type="text" class="form-control" name="username" th:placeholder="#{login.email}" />
+				<input type="password" class="form-control" name="password" th:placeholder="#{login.password}"/>
+				<div class="error" th:if="${param.error != null}" th:text="#{auth.badCredentials}">
+					wrong Password!
+				</div>
+			  	<button class="btn btn-lg btn-primary btn-block loginButton"  name="Submit" value="Sign In" type="Submit">Login</button>
+
+			</form>
+			<a class="forgotPassword" data-toggle="modal" data-target="#forgotPasswordModal" th:text="#{login.forgot}">forgot Password?</a>
+			<a class="register" href="register" th:text="#{login.register}">register</a>
+		</div>
+	</div>
+</div>
+
+<div id="forgotPasswordModal" class="modal fade" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title" th:text="login.newPassword">Request a new password</h4>
+			</div>
+			<form id="requestPasswordForm" method="post" name="forgotPasswordForm" th:action="@{/forgotpassword}">
+				<div class="modal-body">
+						<input type="text" class="form-control" name="email" th:placeholder="#{login.email}"/>
+				</div>
+				<div class="modal-footer">
+					<!-- TODO: post new password request and error handling -->
+					<button type="submit" class="btn btn-primary" th:text="#{login.newPassword}">request new password</button>
+					<button type="reset" class="btn btn-default" data-dismiss="modal" th:text="#{message.cancel}">cancel</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+</body>
+</html>

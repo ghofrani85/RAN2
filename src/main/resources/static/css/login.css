@@ -1,0 +1,51 @@
+
+.loginAndInfoWrapper {
+    margin-top: 8%;
+    border-radius: 10px;
+    border: 3px solid rgba(0,0,0,0.1);
+    width: 80vw;
+    background-color: #eee;
+    display: flex;
+}
+
+.loginWrapper {
+    float:right;
+    width: 29%;
+    max-width: 420px;
+    border-left: 3px solid rgba(0,0,0,0.1);
+}
+
+.innerLogin {
+    padding: 30px 38px 60px;
+}
+
+.infoWrapper {
+    width: 70%;
+    float: left;
+}
+
+.loginFormHeader {
+    /*text-align:center;*/
+    margin-bottom: 30px;
+}
+
+.loginButton {
+    margin-top: 30px;
+    margin-bottom: 25px;
+}
+
+.forgotPassword {
+    float:left;
+    font-size:120%;
+    cursor:pointer;
+}
+
+.register {
+    float:right;
+    font-size:120%;
+    cursor:pointer;
+}
+
+.error {
+    color: red;
+}

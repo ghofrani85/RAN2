@@ -1,0 +1,75 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+
+<div th:fragment="newAsset">
+    <div class="modal fade" id="assetUploadModal" role="dialog">
+		<div class="modal-dialog">	
+			<div class="modal-content">
+                <form method="POST" enctype="multipart/form-data" action="#" th:action="@{fileUpload}">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title" th:text="#{asset.new}">New Asset</h4>
+				</div>
+                
+				<div class="modal-body">
+					<div class="form-group">
+                    
+						<label for="titleTextbar" th:text="#{asset.title}">Title:</label>
+						<input type="text" class="form-control" name="title" id="titleTextbar" required="true" maxlength="30" pattern=".*\S.*"></input>
+                        <input type="hidden" name="featureId" th:value="${feature.id}"></input>
+						<label for="descriptionTextarea" th:text="#{asset.description}">Description:</label>
+						<textarea class="form-control" name="description" rows="8" id="descriptionTextarea"></textarea>
+                        
+                        <label for="Radiobuttons" th:text="#{asset.file}">Asset File:</label>
+                        
+                        <div class="radio" id="Radiobuttons">
+                          <label><input type="radio" name="assetUploadType" onclick="OnRadioFile(this);"  value="file" checked="true"></input><span th:text="#{asset.local}">From local file</span></label>
+                        </div>
+                        <input type="file" name="file" id="fileUpload"></input>
+                        
+                        <div class="radio">
+                          <label><input type="radio" name="assetUploadType" onclick="OnRadioURL(this);" value="url" ></input><span th:text="#{asset.url}">From URL</span></label>
+                        </div>
+                        <input type="text" class="form-control" name="url" id="urlInput" disabled="true"></input>
+                        
+                        <script>
+                            
+                            function OnRadioFile(object) {
+                                document.getElementById("fileUpload").disabled = false;
+                                document.getElementById("urlInput").disabled = true;
+                            }
+                            
+                             function OnRadioURL(object) {
+                                 document.getElementById("urlInput").disabled = false;
+                                 document.getElementById("fileUpload").disabled = true;
+                            }
+                        
+                        </script>
+                        
+					</div>
+				</div>
+				<div class="modal-footer">
+                    <div  id="loader" style="display: none"><div class="loader" style="width: 5vw;height: 5vw"></div><span th:text="#{message.fileUpload}"></span></div>
+					<input onclick="onUpload()" type="submit"  class="btn btn-primary" th:value="#{asset.new}" />
+                    <button type="button" class="btn" data-dismiss="modal" th:text="#{message.cancel}">Cancel</button>
+				</div>
+                 </form>
+			</div>		
+		</div>
+	</div>
+        <script>
+    
+        function onUpload() {   
+            document.getElementById("loader").style.display = 'inline';
+        }
+        
+    </script>
+</div>
+
+
+</body>
+</html>

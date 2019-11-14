@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+	<div th:fragment="duplicateTitleError(type, title)">
+		<div class="modal fade" id="duplicateTitleError">
+			<div class="modal-dialog">
+			
+				<div class="modal-content">
+					<form>
+						<div class="modal-header">
+							<h3 th:text="#{message.duplicateTitle}">DuplicateTitleError</h3>
+						</div>
+						<div class="modal-body">
+							<span th:if="${type} == 'project'" th:text="#{project.duplicateTitleError} + ${title}"></span>
+							<span th:if="${type} == 'feature'" th:text="#{feature.duplicateTitleError} + ${title}"></span>
+							<span th:if="${type} == 'asset'" th:text="#{asset.duplicateTitleError} + ${title}"></span>
+							<span th:if="${type} == 'artefact'" th:text="#{artefact.duplicateTitleError} + ${title}"></span>
+							<span th:if="${type} == 'product'" th:text="#{product.duplicateTitleError} + ${title}"></span>
+						</div>
+						<div class="modal-footer">
+							<button type="reset" class="btn" data-dismiss="modal" th:text="#{message.ok}">Ok</button>
+						</div>
+					</form>
+				</div>
+				
+			</div>
+			
+			<script type="text/javascript">
+
+				$(document).ready(function(){
+
+					$("#duplicateTitleError").modal('show');
+
+				});
+
+			</script>
+		</div>
+	</div>
+	
+	
+</body>
+</html>

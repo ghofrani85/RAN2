@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+	<div th:fragment="invalidFileError(type)">
+		<div class="modal" id="invalidFileError">
+			<div class="modal-dialog">
+			
+				<div class="modal-content">
+					<form>
+						<div class="modal-header">
+							
+							<h3 th:if="${type} == 'file'" th:text="#{asset.invalidFileError}">InvalidFileError</h3>
+							<h3 th:if="${type} == 'url'" th:text="#{asset.invalidURLError}">InvalidURLError</h3>
+						</div>
+						<div class="modal-body">
+							<span th:if="${type} == 'file'" th:text="#{asset.invalidFile}"></span>
+							<span th:if="${type} == 'url'" th:text="#{asset.invalidURL}"></span>
+						</div>
+						<div class="modal-footer">
+							<button type="reset" class="btn" data-dismiss="modal" >Ok</button>
+						</div>
+					</form>
+				</div>
+				
+			</div>
+			
+			<script type="text/javascript">
+
+				$(document).ready(function(){
+
+					$("#invalidFileError").modal('show');
+
+				});
+
+			</script>
+		</div>
+	</div>
+	
+	
+</body>
+</html>

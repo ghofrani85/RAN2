@@ -1,0 +1,7 @@
+#Ignore all files
+*.*
+*/
+
+#except these
+!.gitignore
+!PLACE_ASSETS_HERE.txt

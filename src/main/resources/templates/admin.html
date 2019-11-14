@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+        xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+    <head>
+        <title>RAN2 - Administration</title>
+        <meta charset="utf-8"></meta>
+        <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+        <meta name="_csrf" th:content="${_csrf.token}"/>
+        <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"></link>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" th:href="@{/css/style.css}"></link>
+    </head>
+    <body>
+
+        <!-- Display navbar -->
+        <nav th:replace="fragments/navbar :: navigation"></nav>
+
+        <!-- Header Row -->
+        <div class="row content">
+
+            <!-- Padding -->
+            <div class="col-sm-4"> </div>
+
+            <!-- Header -->
+            <div class="col-sm-4"> 
+
+                <h2 th:text="#{admin.title}"> Administration </h2>
+
+            </div>
+
+            <!-- Padding -->
+            <div class="col-sm-4"> </div>
+
+        </div>
+
+        <div class="container-fluid">
+
+            <!-- Super Row -->
+            <div class="row content">
+
+                <!-- Padding -->
+                <div class="col-sm-3"> </div>
+
+                <!-- UserList -->
+                <div class="col-sm-6"> 
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th th:text="#{admin.username}">Username</th>
+                                <th th:text="#{admin.email}">Email</th>
+                                <th th:text="#{admin.registered}">Uploaded Data</th>
+                                <th th:text="#{admin.totalUploadData}">Uploaded Data</th>
+                                <th th:text="#{admin.status}">Status</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${admin}">
+                                <td >
+                                    <a th:text="${admin.username}"  th:href="@{\overview?userId={id}(id=${admin.id})}"></a>
+                                </td>
+                                <td th:text="${admin.email}"></td>
+                                <td style="min-width: 50px">   </td>
+                                <td th:text="${admin.totalDataVolume} + 'B'"></td>
+                                <td style="min-width: 50px"> 
+                                    <span th:text="#{admin.name}" >Admin</span>
+                                </td>
+                                <td style="min-width: 50px"></td>
+                             </tr>
+                            <tr th:each="user : ${userList}">
+                                <td ><a th:text="${user.username}"  th:href="@{\overview?userId={id}(id=${user.id})}"></a></td>
+                                <td th:text="${user.email}"></td>
+                                <td th:text="${user.registrationDate.toString()}"></td>
+                                <td th:text="${user.totalDataVolume} + 'B'"></td>
+                                <td style="min-width: 50px"> 
+                                    <span th:if="${user.locked} == true" th:text="#{admin.locked}" >Deactivated</span>
+                                    <span th:if="${user.locked} == false" th:text="#{admin.active}" >Deactivated</span>
+                                </td>
+                                <td th:if="${user.locked} == false" >
+
+                                    <!-- Deactivation Button -->
+                                    <div class="col-sm-1">
+                                        <form action="#" th:action="@{deactivateUser}" method="post"> 
+                                            <input type="hidden" name="id" id="id" th:value="${user.id}" />
+                                            <button type="submit" class="btn btn-xs">
+                                                <span class="glyphicon glyphicon-minus" data-toggle="tooltip" th:title="#{admin.lock}">
+
+                                                </span>
+                                            </button>
+                                        </form>
+                                    </div>
+
+                                </td>
+                                <td th:if="${user.locked} == true">
+
+                                    <!-- Reactivation Button -->
+                                    <div class="col-sm-1">
+                                        <form action="#" th:action="@{reactivateUser}" method="post"> 
+                                            <input type="hidden" name="id" id="id" th:value="${user.id}" />
+                                            <button type="submit" class="btn btn-xs">
+                                                <span class="glyphicon glyphicon-plus" data-toggle="tooltip" th:title="#{admin.unlock}">
+                                                </span>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Padding -->
+                <div class="col-sm-3"> </div>
+
+            </div>
+
+        </div>
+
+    </body>
+</html>

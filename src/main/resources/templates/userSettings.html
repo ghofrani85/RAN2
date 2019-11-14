@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+    <title th:text="'RAN2 - ' + #{settings.title}">Settings</title>
+    <meta charset="utf-8"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"></link>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" th:href="@{/css/userSettings.css}"></link>
+    <link rel="stylesheet" th:href="@{/css/style.css}"></link>
+</head>
+
+
+<body>
+
+<!-- Display navbar -->
+<nav th:replace="fragments/navbar :: navigation"></nav>
+
+<div class="container">
+
+    <div class="settingsWrapper">
+        <div class="settingsHeader">
+            <h3 th:text="#{settings.title}">Settings</h3>
+            <!-- TODO: success or error message here -->
+        </div>
+
+        <div class="settingsBody">
+            <!-- TODO: fill inputs with thymeleaf and show errors -->
+            <form th:action="@{/userSettings}" th:object="${user}" method="post" name="settingsForm">
+                <div class="form-group row">
+                    <div class="row">
+                        <label for="settingsEmail" class="col-sm-4 col-form-label" th:text="#{settings.email}">Email:</label>
+                        <div class="col-sm-8" >
+                            <input id="settingsEmail" th:field="*{email}" type="text" class="form-control" th:placeholder="#{settings.email}"/>
+                            <p class="error" th:each="error : ${#fields.errors('email')}" th:text="${error}">Validation Error</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <label for="settingsUsername" class="col-sm-4 col-form-label" th:text="#{settings.username}">Username:</label>
+                        <div class="col-sm-8" >
+                            <input id="settingsUsername" th:field="*{username}" type="text" class="form-control" th:placeholder="#{settings.username}" />
+                            <p class="error" th:each="error : ${#fields.errors('username')}" th:text="${error}">Validation Error</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <label for="oldPassword" class="col-sm-4 col-form-label" th:text="#{settings.oldPassword}">old Password:</label>
+                        <div class="col-sm-8" >
+                            <input id="oldPassword" th:field="*{oldPassword}" type="password" class="form-control" th:placeholder="#{settings.oldPassword}"/>
+                            <p class="error" th:each="error : ${#fields.errors('oldPassword')}" th:text="${error}">Validation Error</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <label for="settingsPassword" class="col-sm-4 col-form-label" th:text="#{settings.newPassword}">new Password:</label>
+                        <div class="col-sm-8" >
+                            <input id="settingsPassword" th:field="*{newPassword}" type="password" class="form-control" th:placeholder="#{settings.newPassword}"/>
+                            <p class="error" th:each="error : ${#fields.errors('newPassword')}" th:text="${error}">Validation Error</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <label for="settingsRepeatPassword" class="col-sm-4 col-form-label" th:text="#{settings.confirmPassword}">confirm Password:</label>
+                        <div class="col-sm-8" >
+                            <input id="settingsRepeatPassword" th:field="*{repeatNewPassword}" type="password" class="form-control" th:placeholder="#{settings.confirmPassword}"/>
+                            <p class="error" th:each="error : ${#fields.errors('repeatNewPassword')}" th:text="${error}">Validation Error</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <label for="settingsLanguage" class="col-sm-4 col-form-label" th:text="#{settings.language}">language</label>
+                        <div class="col-sm-8">
+                            <select id="settingsLanguage" class="form-control" name="lang">
+                                <option th:each="language : ${user.languageMap}" th:value="${language.key}" th:text="${language.value}">language</option>
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- submit -->
+                <div class="row">
+                    <button class="btn btn-lg btn-primary btn-block col"  name="Submit" type="Submit" th:text="#{settings.apply}">apply Changes</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+
+</html>
+
