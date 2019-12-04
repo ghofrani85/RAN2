@@ -3,13 +3,13 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.swp17-18</groupId>
-	<artifactId>ProductlinRE2</artifactId>
+	<groupId>com.ghofrani.htw</groupId>
+	<artifactId>RAN2</artifactId>
 	<version>0.1.0</version>
 	<packaging>war</packaging>
 
-	<name>ProductlinRE2</name>
-	<description>Productline Management Tool</description>
+	<name>RAN2</name>
+	<description>Repository for Reusing Artifacts </description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
