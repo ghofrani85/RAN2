@@ -2,7 +2,6 @@ package com.ghofrani.htw.RAN2.controller;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -15,7 +14,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
-
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,14 +22,14 @@ import org.springframework.stereotype.Component;
 
 import com.ghofrani.htw.RAN2.Application;
 import com.ghofrani.htw.RAN2.controller.setup.ConfigData;
-import com.ghofrani.htw.RAN2.model.Artefact;
+import com.ghofrani.htw.RAN2.model.File;
 import com.ghofrani.htw.RAN2.model.Asset;
-import com.ghofrani.htw.RAN2.model.AudioArtefact;
-import com.ghofrani.htw.RAN2.model.OtherArtefact;
-import com.ghofrani.htw.RAN2.model.PictureArtefact;
-import com.ghofrani.htw.RAN2.model.TextArtefact;
-import com.ghofrani.htw.RAN2.model.VideoArtefact;
-import com.ghofrani.htw.RAN2.model.XMLArtefact;
+import com.ghofrani.htw.RAN2.model.AudioFile;
+import com.ghofrani.htw.RAN2.model.OtherFile;
+import com.ghofrani.htw.RAN2.model.PictureFile;
+import com.ghofrani.htw.RAN2.model.TextFile;
+import com.ghofrani.htw.RAN2.model.VideoFile;
+import com.ghofrani.htw.RAN2.model.XMLFile;
 
 import net.bramp.ffmpeg.FFmpeg;
 import net.bramp.ffmpeg.FFmpegExecutor;
@@ -40,7 +38,7 @@ import net.bramp.ffmpeg.builder.FFmpegBuilder;
 import net.bramp.ffmpeg.probe.FFmpegProbeResult;
 
 /**
- * Controller for editing assets to become artefacts
+ * Controller for editing assets to become files
  * 
  * @author Vivian Holzapfel
  *
@@ -56,105 +54,105 @@ public class EditAssetController {
 
 	/**
 	 * 
-	 * Creates a file for the other Artefact type, file formats, which aren't
+	 * Creates a file for the other File type, file formats, which aren't
 	 * supported by the program
 	 * 
-	 * @param artefact
-	 *            the artefact to be edited
-	 * @param featurePath
-	 *            the path to the feature folder, where the file will be saved
+	 * @param file
+	 *            the file to be edited
+	 * @param folderPath
+	 *            the path to the folder folder, where the file will be saved
 	 * @throws IOException
 	 *             is thrown when there was an error when reading a file
 	 * 
 	 * @author Vivian Holzapfel
 	 */
-	public void createOtherArtefactData(Artefact artefact, String featurePath) throws IOException {
-		log.info("Called createOtherArtefactData with artefact={}, featurePath={} ", artefact, featurePath);
+	public void createOtherFileData(File file, String folderPath) throws IOException {
+		log.info("Called createOtherFileData with file={}, folderPath={} ", file, folderPath);
 
-		OtherArtefact otherArtefact = (OtherArtefact) artefact;
+		OtherFile otherFile = (OtherFile) file;
 
-		Asset asset = otherArtefact.getAsset();
+		Asset asset = otherFile.getAsset();
 		InputStream input = asset.getURLResource().getInputStream();
 		String format = asset.getMetadata().get("FileFormat");
-		String fileName = otherArtefact.getTitle() + "." + format;
+		String fileName = otherFile.getTitle() + "." + format;
 		fileName = createFileName(fileName);
 
-		File targetFile = new File(featurePath + "/" + fileName);
+		java.io.File targetFile = new java.io.File(folderPath + "/" + fileName);
 		FileUtils.copyInputStreamToFile(input, targetFile);
 
 	}
 
 	/**
-	 * The Method edits a TextArtefact and writes the new String into a file
+	 * The Method edits a TextFile and writes the new String into a file
 	 * 
-	 * @param artefact
-	 *            Artefact to be edited
-	 * @param featurePath
-	 *            Path to the featurefolder
+	 * @param file
+	 *            File to be edited
+	 * @param folderPath
+	 *            Path to the folderfolder
 	 * @throws SQLException
 	 *             When there was an database error
 	 * @throws IOException
 	 *             When files couldn't be created
 	 * @author Vivian Holzapfel
 	 */
-	public void createTextArtefactData(Artefact artefact, String featurePath) throws SQLException, IOException {
-		log.info("Called createTextArtefactData with artefact={}, path={} ", artefact, featurePath);
+	public void createTextFileData(File file, String folderPath) throws SQLException, IOException {
+		log.info("Called createTextFileData with file={}, path={} ", file, folderPath);
 
-		TextArtefact textArtefact = (TextArtefact) artefact;
+		TextFile textFile = (TextFile) file;
 
 		int start;
 		int end;
 
-		Asset asset = textArtefact.getAsset();
+		Asset asset = textFile.getAsset();
 		InputStream input = asset.getURLResource().getInputStream();
 
 		String content = new BufferedReader(new InputStreamReader(input)).lines().parallel()
 				.collect(Collectors.joining("\n"));
 
 		String editedContent = content;
-		if (!textArtefact.getStart().equals("") || !textArtefact.getEnd().equals("")) {
-			start = Integer.parseInt(textArtefact.getStart());
-			end = Integer.parseInt(textArtefact.getEnd());
+		if (!textFile.getStart().equals("") || !textFile.getEnd().equals("")) {
+			start = Integer.parseInt(textFile.getStart());
+			end = Integer.parseInt(textFile.getEnd());
 			editedContent = content.substring(start, end); // edit the text
 		}
 
 		String format = asset.getMetadata().get("FileFormat");
-		String fileName = textArtefact.getTitle() + "." + format;
+		String fileName = textFile.getTitle() + "." + format;
 		fileName = createFileName(fileName);
 
-		Files.write(Paths.get(featurePath + "/" + fileName), editedContent.getBytes()); // write into file
+		Files.write(Paths.get(folderPath + "/" + fileName), editedContent.getBytes()); // write into file
 	}
 
 	/**
-	 * The Method edits a XMLArtefact and writes the new xml into a file
+	 * The Method edits a XMLFile and writes the new xml into a file
 	 * 
-	 * @param artefact
-	 *            the artefact that needs to be edited
-	 * @param featurePath
-	 *            the path where the artefact will be saved
+	 * @param file
+	 *            the file that needs to be edited
+	 * @param folderPath
+	 *            the path where the file will be saved
 	 * @throws SQLException
 	 *             When there was an database error
 	 * @throws IOException
 	 *             When files couldn't be created
 	 * @author Robert Völkner
 	 */
-	public void createXMLArtefactData(Artefact artefact, String featurePath) throws IOException, SQLException {
+	public void createXMLFileData(File file, String folderPath) throws IOException, SQLException {
 
-		log.info("Called createXMLArtefactData with artefact={}, path={} ", artefact, featurePath);
+		log.info("Called createXMLFileData with file={}, path={} ", file, folderPath);
 
 		int[] nodes;
-		XMLArtefact xmlArtefact = (XMLArtefact) artefact;
-		if (xmlArtefact.getNodes().length() == 0) {
+		XMLFile xmlFile = (XMLFile) file;
+		if (xmlFile.getNodes().length() == 0) {
 			nodes = new int[] { 1 };
 		} else {
-			String[] stringNodes = xmlArtefact.getNodes().split(",");
+			String[] stringNodes = xmlFile.getNodes().split(",");
 			nodes = new int[stringNodes.length];
 			for (int i = 0; i < stringNodes.length; i++) { // fill with by user selected node positions
 				nodes[i] = Integer.parseInt(stringNodes[i]);
 			}
 		}
 
-		Asset asset = xmlArtefact.getAsset();
+		Asset asset = xmlFile.getAsset();
 		InputStream input = asset.getURLResource().getInputStream();
 
 		String content = new BufferedReader(new InputStreamReader(input)).lines().parallel() // load the file
@@ -242,18 +240,18 @@ public class EditAssetController {
 		}
 
 		editedContent += "\n" + "</content>";
-		String fileName = xmlArtefact.getTitle() + ".xml";
+		String fileName = xmlFile.getTitle() + ".xml";
 		fileName = createFileName(fileName);
 
-		Files.write(Paths.get(featurePath + "/" + fileName), editedContent.getBytes()); // write into file
+		Files.write(Paths.get(folderPath + "/" + fileName), editedContent.getBytes()); // write into file
 	}
 
 	/**
-	 * The Method edits a PictureArtefact and writes the new Image into a file
+	 * The Method edits a PictureFile and writes the new Image into a file
 	 * 
-	 * @param artefact
-	 *            the pictureArtefact to be edited
-	 * @param featurePath
+	 * @param file
+	 *            the pictureFile to be edited
+	 * @param folderPath
 	 *            the path to the file
 	 * @throws SQLException
 	 *             When there was an database error
@@ -261,55 +259,55 @@ public class EditAssetController {
 	 *             When files couldn't be created
 	 * @author Vivian Holzapfel
 	 */
-	public void createPictureArtefactData(Artefact artefact, String featurePath) throws SQLException, IOException {
-		log.info("Called createPictureArtefactData with artefact={}, path={} ", artefact, featurePath);
+	public void createPictureFileData(File file_a, String folderPath) throws SQLException, IOException {
+		log.info("Called createPictureFileData with file={}, path={} ", file_a, folderPath);
 
-		PictureArtefact pictureArtefact = (PictureArtefact) artefact;
+		PictureFile pictureFile = (PictureFile) file_a;
 
-		int x = Integer.parseInt(pictureArtefact.getX());
-		int y = Integer.parseInt(pictureArtefact.getY());
-		int width = Integer.parseInt(pictureArtefact.getWidth());
-		int height = Integer.parseInt(pictureArtefact.getHeight());
+		int x = Integer.parseInt(pictureFile.getX());
+		int y = Integer.parseInt(pictureFile.getY());
+		int width = Integer.parseInt(pictureFile.getWidth());
+		int height = Integer.parseInt(pictureFile.getHeight());
 
-		Asset asset = pictureArtefact.getAsset();
+		Asset asset = pictureFile.getAsset();
 		InputStream input = asset.getURLResource().getInputStream();
 		String format = asset.getMetadata().get("FileFormat");
-		String fileName = pictureArtefact.getTitle() + "." + format;
+		String fileName = pictureFile.getTitle() + "." + format;
 		fileName = createFileName(fileName);
 
 		BufferedImage content = ImageIO.read(input);
 		BufferedImage editedPicture = content.getSubimage(x, y, width, height); // edit picture to use only chosen part
 
-		File file = createFile(featurePath, fileName);
+		java.io.File file = createFile(folderPath, fileName);
 		ImageIO.write(editedPicture, format, file); // writes picture into file
 	}
 
 	/**
-	 * This method gets a audio artefact and creates a file in the feature path from
-	 * the range saved in teh artefact and the asset
+	 * This method gets a audio file and creates a file in the folder path from
+	 * the range saved in teh file and the asset
 	 * 
-	 * @param artefact
-	 *            The audio artefact to edit (The artefact will be casted to video
+	 * @param file
+	 *            The audio file to edit (The file will be casted to video
 	 *            type)
-	 * @param featurePath
-	 *            The path where the artefact file is saved
+	 * @param folderPath
+	 *            The path where the file file is saved
 	 * @throws SQLException
 	 *             When there was an database error
 	 * @throws IOException
 	 *             When files couldn't be created
 	 * @author Stefan Schmidt
 	 */
-	public void createAudioArtefactData(Artefact artefact, String featurePath) throws IOException, SQLException {
-		log.info("Called createAudioArtefactData with artefact={}, path={} ", artefact, featurePath);
+	public void createAudioFileData(File file, String folderPath) throws IOException, SQLException {
+		log.info("Called createAudioFileData with file={}, path={} ", file, folderPath);
 
-		AudioArtefact audioArtefact = (AudioArtefact) artefact;
+		AudioFile audioFile = (AudioFile) file;
 
 		// Required information
-		Asset asset = audioArtefact.getAsset();
+		Asset asset = audioFile.getAsset();
 		InputStream in = asset.getURLResource().getInputStream();
-		String fileName = audioArtefact.getTitle();
+		String fileName = audioFile.getTitle();
 		fileName = createFileName(fileName);
-		File audio = new File(featurePath + "/" + "Input_" + audioArtefact.getId() + fileName + ".mp3");
+		java.io.File audio = new java.io.File(folderPath + "/" + "Input_" + audioFile.getId() + fileName + ".mp3");
 		FileUtils.copyInputStreamToFile(in, audio);
 
 		FFmpeg ffmpeg = new FFmpeg(configData.getFfmpegPath());
@@ -319,10 +317,10 @@ public class EditAssetController {
 
 		// Set information to cut the audio
 		FFmpegBuilder builder = new FFmpegBuilder()
-				.setInput(featurePath + "/" + "Input_" + audioArtefact.getId() + fileName + ".mp3")
-				.addOutput(featurePath + "/" + fileName + ".mp3").setAudioCodec("copy")
-				.setStartOffset(Long.valueOf(audioArtefact.getStart()), TimeUnit.MILLISECONDS)
-				.setDuration(Long.valueOf(audioArtefact.getEnd()) - Long.valueOf(audioArtefact.getStart()),
+				.setInput(folderPath + "/" + "Input_" + audioFile.getId() + fileName + ".mp3")
+				.addOutput(folderPath + "/" + fileName + ".mp3").setAudioCodec("copy")
+				.setStartOffset(Long.valueOf(audioFile.getStart()), TimeUnit.MILLISECONDS)
+				.setDuration(Long.valueOf(audioFile.getEnd()) - Long.valueOf(audioFile.getStart()),
 						TimeUnit.MILLISECONDS)
 				.done();
 
@@ -332,39 +330,39 @@ public class EditAssetController {
 		executor.createJob(builder).run();
 
 		log.info("create file for audio");
-		createFile(featurePath, fileName + ".mp3");
-		// addFileToZip(file, featurePath + ".mp3", zos);
+		createFile(folderPath, fileName + ".mp3");
+		// addFileToZip(file, folderPath + ".mp3", zos);
 
 		log.info("delete file: {}", audio.getName());
 		deleteFiles(audio);
 	}
 
 	/**
-	 * This method gets a video artefact and creates a file in the feature path from
-	 * the range saved in the artefact and the asset
+	 * This method gets a video file and creates a file in the folder path from
+	 * the range saved in the file and the asset
 	 * 
-	 * @param artefact
-	 *            The video artefact to edit (The artefact will be casted to video
+	 * @param file
+	 *            The video file to edit (The file will be casted to video
 	 *            type)
-	 * @param featurePath
-	 *            The path where the artefact file is saved
+	 * @param folderPath
+	 *            The path where the file file is saved
 	 * @throws SQLException
 	 *             When there was an database error
 	 * @throws IOException
 	 *             When files couldn't be created
 	 * @author Stefan Schmidt
 	 */
-	public void createVideoArtefactData(Artefact artefact, String featurePath) throws SQLException, IOException {
-		log.info("Called createVideoArtefactData with artefact={}, path={} ", artefact, featurePath);
+	public void createVideoFileData(File file, String folderPath) throws SQLException, IOException {
+		log.info("Called createVideoFileData with file={}, path={} ", file, folderPath);
 
-		VideoArtefact videoArtefact = (VideoArtefact) artefact;
+		VideoFile videoFile = (VideoFile) file;
 
 		// Required information
-		Asset asset = videoArtefact.getAsset();
+		Asset asset = videoFile.getAsset();
 		InputStream in = asset.getURLResource().getInputStream();
-		String fileName = videoArtefact.getTitle();
+		String fileName = videoFile.getTitle();
 		fileName = createFileName(fileName);
-		File video = new File(featurePath + "/" + "Input_" + videoArtefact.getId() + fileName + ".mp4");
+		java.io.File video = new java.io.File(folderPath + "/" + "Input_" + videoFile.getId() + fileName + ".mp4");
 		FileUtils.copyInputStreamToFile(in, video);
 
 		FFmpeg ffmpeg = new FFmpeg(configData.getFfmpegPath());
@@ -375,10 +373,10 @@ public class EditAssetController {
 		log.info("Ready to cut video: {}", video.getName());
 		// Set information to cut the video
 		FFmpegBuilder builder = new FFmpegBuilder()
-				.setInput(featurePath + "/" + "Input_" + videoArtefact.getId() + fileName + ".mp4")
-				.addOutput(featurePath + "/" + fileName + ".mp4").setAudioCodec("copy").setVideoCodec("copy")
-				.setStartOffset(Long.valueOf(videoArtefact.getStart()), TimeUnit.MILLISECONDS)
-				.setDuration(Long.valueOf(videoArtefact.getEnd()) - Long.valueOf(videoArtefact.getStart()),
+				.setInput(folderPath + "/" + "Input_" + videoFile.getId() + fileName + ".mp4")
+				.addOutput(folderPath + "/" + fileName + ".mp4").setAudioCodec("copy").setVideoCodec("copy")
+				.setStartOffset(Long.valueOf(videoFile.getStart()), TimeUnit.MILLISECONDS)
+				.setDuration(Long.valueOf(videoFile.getEnd()) - Long.valueOf(videoFile.getStart()),
 						TimeUnit.MILLISECONDS)
 				.done();
 
@@ -389,7 +387,7 @@ public class EditAssetController {
 		executor.createJob(builder).run();
 
 		log.info("create file for video");
-		createFile(featurePath, fileName + ".mp4");
+		createFile(folderPath, fileName + ".mp4");
 
 		log.info("delete file");
 		deleteFiles(video);
@@ -407,10 +405,10 @@ public class EditAssetController {
 	 *             When file couldn't be created
 	 * @author Vivian Holzapfel
 	 */
-	public File createFile(String filePath, String fileName) throws IOException {
+	public java.io.File createFile(String filePath, String fileName) throws IOException {
 		log.info("Called createFile with filePath={}, fileName={} ", filePath, fileName);
 
-		File file = new File(filePath, fileName);
+		java.io.File file = new java.io.File(filePath, fileName);
 
 		if (!file.getParentFile().exists()) {
 			file.getParentFile().mkdirs();
@@ -428,14 +426,14 @@ public class EditAssetController {
 	 * @param file
 	 *            The file or folder to be deleted
 	 */
-	public void deleteFiles(File file) {
+	public void deleteFiles(java.io.File file) {
 		log.info("Called deleteFiles with file={}", file);
 
 		if (file != null) {
 			if (file.isDirectory()) { // directory can be empty
-				File[] files = file.listFiles();
+				java.io.File[] files = file.listFiles();
 				if (files.length != 0) {
-					for (File f : files) {
+					for (java.io.File f : files) {
 						deleteFiles(f);
 					}
 				}

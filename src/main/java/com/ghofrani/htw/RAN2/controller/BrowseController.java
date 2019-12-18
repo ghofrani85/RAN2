@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.ghofrani.htw.RAN2.controller.service.IUserService;
 import com.ghofrani.htw.RAN2.database.AssetAccess;
-import com.ghofrani.htw.RAN2.database.FeatureAccess;
+import com.ghofrani.htw.RAN2.database.FolderAccess;
 import com.ghofrani.htw.RAN2.database.ProjectAccess;
 import com.ghofrani.htw.RAN2.database.UserAccess;
 import com.ghofrani.htw.RAN2.model.Asset;
-import com.ghofrani.htw.RAN2.model.Feature;
+import com.ghofrani.htw.RAN2.model.Folder;
 import com.ghofrani.htw.RAN2.model.Project;
 import com.ghofrani.htw.RAN2.model.User;
 
@@ -37,7 +37,7 @@ public class BrowseController {
 	private ProjectAccess projectAccess;
 
 	@Autowired
-	private FeatureAccess featureAccess;
+	private FolderAccess folderAccess;
 
 	@Autowired
 	private AssetAccess assetAccess;
@@ -75,19 +75,19 @@ public class BrowseController {
 
 			model.addAttribute("projectList", projectList);
 
-		} else if (type.equals("feature")) {
-			// Retrieve all features
-			List<Feature> featureList = featureAccess.selectFeatures();
+		} else if (type.equals("folder")) {
+			// Retrieve all folders
+			List<Folder> folderList = folderAccess.selectFolders();
 
-			Iterator<Feature> iter = featureList.iterator();
+			Iterator<Folder> iter = folderList.iterator();
 
-			List<FeatureEntry> entries = new LinkedList<FeatureEntry>();
+			List<FolderEntry> entries = new LinkedList<FolderEntry>();
 			
 			User u;
 			
 			while (iter.hasNext()) {
-				Feature f = iter.next();
-				List<Project> projectList = projectAccess.selectProjectsByFeatureID(f.getId());
+				Folder f = iter.next();
+				List<Project> projectList = projectAccess.selectProjectsByFolderID(f.getId());
 				if(projectList.size() == 0) {
 					u = new User();
 				}
@@ -97,12 +97,12 @@ public class BrowseController {
 
 				// Filter for searchWord
 				if (searchWord == null || f.getTitle().toLowerCase().contains(searchWord.toLowerCase())) {
-					entries.add(new FeatureEntry(f, u));
+					entries.add(new FolderEntry(f, u));
 				}
 
 			}
 
-			model.addAttribute("featureEntries", entries);
+			model.addAttribute("folderEntries", entries);
 		} else if (type.equals("asset")) {
 			// Retrieve all assets
 			List<Asset> assetList = assetAccess.selectAssets();
@@ -133,30 +133,30 @@ public class BrowseController {
 		return "browse";
 	}
 
-	private class FeatureEntry {
+	private class FolderEntry {
 
-		Feature feature;
+		Folder folder;
 		User owner;
 
-		public FeatureEntry(Feature feature, User owner) {
+		public FolderEntry(Folder folder, User owner) {
 			super();
-			this.feature = feature;
+			this.folder = folder;
 			this.owner = owner;
 		}
 
 		/**
-		 * @return the feature
+		 * @return the folder
 		 */
-		public Feature getFeature() {
-			return feature;
+		public Folder getFolder() {
+			return folder;
 		}
 
 		/**
-		 * @param feature
-		 *            the feature to set
+		 * @param folder
+		 *            the folder to set
 		 */
-		public void setFeature(Feature feature) {
-			this.feature = feature;
+		public void setFolder(Folder folder) {
+			this.folder = folder;
 		}
 
 		/**

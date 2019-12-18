@@ -15,7 +15,7 @@ public class Project {
 	private String description;
 	private Date lastChange;
 	private List<Product> productList;
-	private List<Feature> projectFeatureList;
+	private List<Folder> projectFolderList;
 	private User user;
 	private Project parent;
 	private boolean updatedparent;
@@ -39,8 +39,8 @@ public class Project {
 	 *            date of the last change made
 	 * @param productList
 	 *            list of all products in the project
-	 * @param projectfeatureList
-	 *            list of all features in the project
+	 * @param projectfolderList
+	 *            list of all folders in the project
 	 * @param user
 	 *            the owner of the project
 	 * @param parent
@@ -49,7 +49,7 @@ public class Project {
 	 *            flag for notification about changes in the parent
 	 */
 	public Project(Integer id, String title, String description, Date lastChange, List<Product> productList,
-			List<Feature> projectfeatureList, User user, Project parent, boolean updatedparent) {
+			List<Folder> projectfolderList, User user, Project parent, boolean updatedparent) {
 		this.id = id;
 		this.title = title;
 		this.description = description;
@@ -60,7 +60,7 @@ public class Project {
 		}
 
 		this.productList = productList;
-		this.projectFeatureList = projectfeatureList;
+		this.projectFolderList = projectfolderList;
 		this.user = user;
 		this.parent = parent;
 		this.updatedparent = updatedparent;
@@ -79,7 +79,7 @@ public class Project {
 		this.description = "";
 		this.lastChange = new Date();
 		this.productList = new LinkedList<>();
-		this.projectFeatureList = new LinkedList<>();
+		this.projectFolderList = new LinkedList<>();
 		this.user = null;
 		this.parent = null;
 		this.updatedparent = false;
@@ -105,7 +105,7 @@ public class Project {
 		this.description = description;
 		this.lastChange = new Date();
 		this.productList = new LinkedList<>();
-		this.projectFeatureList = new LinkedList<>();
+		this.projectFolderList = new LinkedList<>();
 		this.user = owner;
 		this.trackingList = new LinkedList<>();
 		this.upVote = 0;
@@ -137,26 +137,26 @@ public class Project {
 	}
 
 	/**
-	 * Adds a feature to a project
+	 * Adds a folder to a project
 	 * 
 	 * @param feat
-	 *            the feature to be added
+	 *            the folder to be added
 	 */
-	public void addFeature(Feature feat) {
-		if (this.projectFeatureList == null) {
-			this.projectFeatureList = new LinkedList<>();
+	public void addFolder(Folder feat) {
+		if (this.projectFolderList == null) {
+			this.projectFolderList = new LinkedList<>();
 		}
-		this.projectFeatureList.add(feat);
+		this.projectFolderList.add(feat);
 	}
 
 	/**
-	 * Removes a feature to a project
+	 * Removes a folder to a project
 	 * 
 	 * @param feat
-	 *            the feature to be removed
+	 *            the folder to be removed
 	 */
-	public void removeFeature(Feature feat) {
-		this.projectFeatureList.remove(feat);
+	public void removeFolder(Folder feat) {
+		this.projectFolderList.remove(feat);
 	}
 
 	/**
@@ -235,18 +235,18 @@ public class Project {
 	}
 
 	/**
-	 * @return the list of all features in the project
+	 * @return the list of all folders in the project
 	 */
-	public List<Feature> getFeatureList() {
-		return projectFeatureList;
+	public List<Folder> getFolderList() {
+		return projectFolderList;
 	}
 
 	/**
-	 * @param featureList
-	 *            the list of all features in the project
+	 * @param folderList
+	 *            the list of all folders in the project
 	 */
-	public void setFeatureList(List<Feature> featureList) {
-		this.projectFeatureList = featureList;
+	public void setFolderList(List<Folder> folderList) {
+		this.projectFolderList = folderList;
 	}
 
 	/**
@@ -445,7 +445,7 @@ public class Project {
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((lastChange == null) ? 0 : lastChange.hashCode());
 		result = prime * result + ((productList == null) ? 0 : productList.hashCode());
-		result = prime * result + ((projectFeatureList == null) ? 0 : projectFeatureList.hashCode());
+		result = prime * result + ((projectFolderList == null) ? 0 : projectFolderList.hashCode());
 		result = prime * result + ((title == null) ? 0 : title.hashCode());
 		result = prime * result + ((trackingList == null) ? 0 : trackingList.hashCode());
 		result = prime * result + ((user == null) ? 0 : user.hashCode());

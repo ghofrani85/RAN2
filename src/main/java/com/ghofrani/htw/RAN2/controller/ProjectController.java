@@ -20,15 +20,15 @@ import org.springframework.web.servlet.LocaleResolver;
 import com.ghofrani.htw.RAN2.Application;
 import com.ghofrani.htw.RAN2.controller.error.DatabaseException;
 import com.ghofrani.htw.RAN2.controller.error.SameUserException;
-import com.ghofrani.htw.RAN2.controller.service.IFeatureService;
+import com.ghofrani.htw.RAN2.controller.service.IFolderService;
 import com.ghofrani.htw.RAN2.controller.service.IProductService;
 import com.ghofrani.htw.RAN2.controller.service.IProjectService;
 import com.ghofrani.htw.RAN2.controller.service.IUserService;
 import com.ghofrani.htw.RAN2.controller.service.TrackingService;
-import com.ghofrani.htw.RAN2.database.ArtefactAccess;
-import com.ghofrani.htw.RAN2.database.FeatureAccess;
+import com.ghofrani.htw.RAN2.database.FileAccess;
+import com.ghofrani.htw.RAN2.database.FolderAccess;
 import com.ghofrani.htw.RAN2.database.ProjectAccess;
-import com.ghofrani.htw.RAN2.model.Feature;
+import com.ghofrani.htw.RAN2.model.Folder;
 import com.ghofrani.htw.RAN2.model.Product;
 import com.ghofrani.htw.RAN2.model.Project;
 import com.ghofrani.htw.RAN2.model.User;
@@ -58,7 +58,7 @@ public class ProjectController {
 	private TrackingService trackingService;
 
 	@Autowired
-	private IFeatureService featureService;
+	private IFolderService folderService;
 
 	@Autowired
 	private IProductService productService;
@@ -67,13 +67,13 @@ public class ProjectController {
 	private IUserService userService;
 	
 	@Autowired
-	private ArtefactAccess artefactAccess;
+	private FileAccess fileAccess;
 	
 	@Autowired
 	private ProjectAccess projectAccess;
 	
 	@Autowired
-	private FeatureAccess featureAccess;
+	private FolderAccess folderAccess;
 	
 	@Autowired
 	private MessageSource messageSource;
@@ -84,7 +84,7 @@ public class ProjectController {
 	/**
 	 * 
 	 * @param id  The Project id.
-	 * @param featureDuplicateTitleError if not null there was a duplicate FeatureTitle
+	 * @param folderDuplicateTitleError if not null there was a duplicate FolderTitle
 	 * @param productDuplicateTitleError if not null there was a duplicate ProductTitle
 	 * @param projectDuplicateTitleError if not null there was a duplicate ProjectTitle
 	 * @param duplicateTitle Title that was duplicate
@@ -94,7 +94,7 @@ public class ProjectController {
 	@RequestMapping(path = "/project", params = "id")
 	@Secured("ROLE_USER")
 	public String loadProject(@RequestParam(value = "id", required = true) Integer id,
-			@RequestParam(value = "FeatureDuplicateTitleError", required = false) String featureDuplicateTitleError,
+			@RequestParam(value = "FolderDuplicateTitleError", required = false) String folderDuplicateTitleError,
 			@RequestParam(value = "ProductDuplicateTitleError", required = false) String productDuplicateTitleError,
 			@RequestParam(value = "ProjectDuplicateTitleError", required = false) String projectDuplicateTitleError,
 			@RequestParam(value = "title", required = false) String duplicateTitle, Model model, HttpServletRequest request) {
@@ -125,8 +125,8 @@ public class ProjectController {
 			}
 		}
 
-		if (featureDuplicateTitleError != null) {
-			model.addAttribute("showFeatureDuplicateTitleError", true);
+		if (folderDuplicateTitleError != null) {
+			model.addAttribute("showFolderDuplicateTitleError", true);
 			model.addAttribute(DUPLICATE_TITLE, duplicateTitle);
 		}
 
@@ -140,20 +140,20 @@ public class ProjectController {
 			model.addAttribute(DUPLICATE_TITLE, duplicateTitle);
 		}
 
-		// Check if link to updated parent feature is needed
+		// Check if link to updated parent folder is needed
 		if (project.isUpdatedparent()) {
-			model.addAttribute("parentFeatureId", project.getParent().getId());
+			model.addAttribute("parentFolderId", project.getParent().getId());
 		}
 		
-		String message = messageSource.getMessage("project.nrArtefacts", null, resolver.resolveLocale(request));
-		for (Feature f :project.getFeatureList()) {
-			int artefactCount = artefactAccess.selectArtefactsByFeatureID(f.getId()).size();
-			f.setDescription(message + " " + artefactCount +"\n" + f.getDescription());
+		String message = messageSource.getMessage("project.nrFiles", null, resolver.resolveLocale(request));
+		for (Folder f :project.getFolderList()) {
+			int fileCount = fileAccess.selectFilesByFolderID(f.getId()).size();
+			f.setDescription(message + " " + fileCount +"\n" + f.getDescription());
 		}
 
 		model.addAttribute("project", project);
 		model.addAttribute("products", project.getProductList());
-		model.addAttribute("features", project.getFeatureList());
+		model.addAttribute("folders", project.getFolderList());
 		model.addAttribute("user", project.getUser());
 
 		// Retrieve currently active User Moved
@@ -343,24 +343,24 @@ public class ProjectController {
 	}
 
 	/**
-	 * Deletes the feature with the given id.
+	 * Deletes the folder with the given id.
 	 * 
 	 * @param projectId
 	 *            The id of the current project.
-	 * @param featureId
-	 *            The id of the feature to delete.
+	 * @param folderId
+	 *            The id of the folder to delete.
 	 * @param httpRequest
 	 *            httpRequestObject
 	 * @return redirect to the project view.
 	 */
-	@PostMapping("/deletefeature")
+	@PostMapping("/deletefolder")
 	@Secured("ROLE_USER")
-	public String deleteFeature(@RequestParam(value = "projectId", required = true) Integer projectId,
-			@RequestParam(value = "featureId", required = true) Integer featureId, HttpServletRequest httpRequest) {
+	public String deleteFolder(@RequestParam(value = "projectId", required = true) Integer projectId,
+			@RequestParam(value = "folderId", required = true) Integer folderId, HttpServletRequest httpRequest) {
 
-		trackingService.trackDeletedFeature(projectId, featureId, httpRequest);
+		trackingService.trackDeletedFolder(projectId, folderId, httpRequest);
 
-		featureService.deleteFeature(featureId);
+		folderService.deleteFolder(folderId);
 
 		Project project = projectService.loadProject(projectId);
 		projectService.notifyChildren(project);

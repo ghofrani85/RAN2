@@ -45,13 +45,13 @@
                 
             </div>
             <span th:if="${projectList}"><input type="hidden" value="project" name="type"></input></span>
-            <span th:if="${featureEntries}"><input type="hidden" value="feature" name="type"></input></span>
+            <span th:if="${folderEntries}"><input type="hidden" value="folder" name="type"></input></span>
             <span th:if="${assetEntries}"><input type="hidden" value="asset" name="type"></input></span>
         </form>
         
         
         <div th:if="${projectList}"><h3 th:text="#{browse.projects}">Projects</h3></div>
-        <div th:if="${featureEntries}"><h3 th:text="#{browse.features}">Features</h3></div>
+        <div th:if="${folderEntries}"><h3 th:text="#{browse.folders}">Folders</h3></div>
         <div th:if="${assetEntries}"><h3 th:text="#{browse.assets}">Assets</h3></div>
         <table class="table table-striped" style="table-layout: fixed">
         <thead>
@@ -74,11 +74,11 @@
             </tr>
             </div>
             
-            <div th:if="${featureEntries}">
-            <tr th:each="featureEntry : ${featureEntries}">
-                <td style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><a th:text="${featureEntry.feature.title}" th:href="@{\feature?id={id}(id=${featureEntry.feature.id})}"> </a></td>
-                <td th:text="${featureEntry.feature.description}" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></td>
-                <td th:text="${featureEntry.owner.username}" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></td>
+            <div th:if="${folderEntries}">
+            <tr th:each="folderEntry : ${folderEntries}">
+                <td style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><a th:text="${folderEntry.folder.title}" th:href="@{\folder?id={id}(id=${folderEntry.folder.id})}"> </a></td>
+                <td th:text="${folderEntry.folder.description}" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></td>
+                <td th:text="${folderEntry.owner.username}" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></td>
             </tr>
             </div>
             

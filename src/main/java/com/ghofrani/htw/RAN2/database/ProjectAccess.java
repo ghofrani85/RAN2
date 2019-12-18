@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 
 import com.ghofrani.htw.RAN2.Application;
 import com.ghofrani.htw.RAN2.database.helper.TrackingType;
-import com.ghofrani.htw.RAN2.database.rowmapper.FeatureRowMapper;
+import com.ghofrani.htw.RAN2.database.rowmapper.FolderRowMapper;
 import com.ghofrani.htw.RAN2.database.rowmapper.ProductRowMapper;
 import com.ghofrani.htw.RAN2.database.rowmapper.ProjectRowMapper;
 import com.ghofrani.htw.RAN2.database.rowmapper.UserRowMapper;
@@ -45,8 +45,8 @@ public class ProjectAccess {
 	private static final String UPDATE_PARENT_SQL = "UPDATE projects SET parentid = ?, updatedparent = ? WHERE parentid = ?";
 	private static final String DELETE_SQL = "DELETE FROM projects WHERE id = ?";
 	private static final String SELECT_SQL = "SELECT id, title, description, projects.userid, updatedparent, parentid, last_change, up_vote, down_vote FROM projects";
-	private static final String INSERT_PROJECTSXFEATURES_SQL = "INSERT INTO projectsxfeatures(projectid, featureid) VALUES(?, ?)";
-	private static final String DELETE_PROJECTSXFEATURES_SQL = "DELETE FROM projectsxfeatures WHERE projectid = ?";
+	private static final String INSERT_PROJECTSXFOLDERS_SQL = "INSERT INTO projectsxfolders(projectid, folderid) VALUES(?, ?)";
+	private static final String DELETE_PROJECTSXFOLDERS_SQL = "DELETE FROM projectsxfolders WHERE projectid = ?";
 	private static final String INSERT_PROJECTSXPRODUCTS_SQL = "INSERT INTO projectsxproducts(projectid, productid) VALUES(?, ?)";
 	private static final String DELETE_PROJECTSXPRODUCTS_SQL = "DELETE FROM projectsxproducts WHERE projectid = ?";
 	private static final String INSERT_PROJECTSXRATEDUSERS_SQL = "INSERT INTO projectsxratedusers(ratedprojectid, rateduserid) VALUES(?, ?)";
@@ -56,7 +56,7 @@ public class ProjectAccess {
 	private JdbcTemplate jdbc;
 
 	@Autowired
-	private FeatureAccess featacc;
+	private FolderAccess featacc;
 
 	@Autowired
 	private ProductAccess prodacc;
@@ -86,8 +86,8 @@ public class ProjectAccess {
 		jdbc.query(SELECT_SQL, new ProjectRowMapper()).forEach(project -> result.add(project));
 
 		result.forEach(proj -> {
-			// get features for the project...
-			selectProjectsXFeatures(proj);
+			// get folders for the project...
+			selectProjectsXFolders(proj);
 
 			// get products for the project...
 			selectProjectsXProducts(proj);
@@ -128,8 +128,8 @@ public class ProjectAccess {
 		if (!resultlist.isEmpty()) {
 			result = resultlist.get(0);
 
-			// get features for the project...
-			selectProjectsXFeatures(result);
+			// get folders for the project...
+			selectProjectsXFolders(result);
 
 			// get products for the project...
 			selectProjectsXProducts(result);
@@ -161,21 +161,21 @@ public class ProjectAccess {
 	}
 
 	/**
-	 * Returns the projects associated with the given feature id.
+	 * Returns the projects associated with the given folder id.
 	 * 
 	 * @param id
 	 *            the id to select the projects
 	 * @return a list of found projects
 	 */
-	public List<Project> selectProjectsByFeatureID(int id) {
+	public List<Project> selectProjectsByFolderID(int id) {
 		List<Project> result = null;
 
-		result = jdbc.query(SELECT_SQL + " JOIN projectsxfeatures ON projectid = id WHERE featureid = ?",
+		result = jdbc.query(SELECT_SQL + " JOIN projectsxfolders ON projectid = id WHERE folderid = ?",
 				new Object[] { id }, new ProjectRowMapper());
 
 		result.forEach(proj -> {
-			// get features for the project...
-			selectProjectsXFeatures(proj);
+			// get folders for the project...
+			selectProjectsXFolders(proj);
 
 			// get products for the project...
 			selectProjectsXProducts(proj);
@@ -214,8 +214,8 @@ public class ProjectAccess {
 				.forEach(project -> result.add(project));
 
 		result.forEach(proj -> {
-			// get features for the project...
-			selectProjectsXFeatures(proj);
+			// get folders for the project...
+			selectProjectsXFolders(proj);
 
 			// get products for the project...
 			selectProjectsXProducts(proj);
@@ -257,8 +257,8 @@ public class ProjectAccess {
 				.forEach(project -> result.add(project));
 
 		result.forEach(proj -> {
-			// get features for the project...
-			selectProjectsXFeatures(proj);
+			// get folders for the project...
+			selectProjectsXFolders(proj);
 
 			// get products for the project...
 			selectProjectsXProducts(proj);
@@ -282,19 +282,19 @@ public class ProjectAccess {
 	}
 	
 	/**
-	 * Fills the projectFeatureList of the given project model.
+	 * Fills the projectFolderList of the given project model.
 	 * 
 	 * @param project
-	 *            the project to get the projectFeatureList for
+	 *            the project to get the projectFolderList for
 	 */
-	private void selectProjectsXFeatures(Project project) {
-		log.debug("Getting features for the project {}", project.getId());
+	private void selectProjectsXFolders(Project project) {
+		log.debug("Getting folders for the project {}", project.getId());
 
 		jdbc.query(
-				"SELECT features.id, title, description, parentid, updatedparent "
-						+ "FROM projectsxfeatures JOIN features ON featureid = features.id WHERE projectid = ?",
-				new Object[] { project.getId() }, new FeatureRowMapper())
-				.forEach(feature -> project.addFeature(feature));
+				"SELECT folders.id, title, description, parentid, updatedparent "
+						+ "FROM projectsxfolders JOIN folders ON folderid = folders.id WHERE projectid = ?",
+				new Object[] { project.getId() }, new FolderRowMapper())
+				.forEach(folder -> project.addFolder(folder));
 	}
 
 	/**
@@ -348,14 +348,14 @@ public class ProjectAccess {
 			result = updateProject(project);
 		}
 
-		// save features...
-		result.getFeatureList().forEach(feat -> featacc.saveFeature(feat));
+		// save folders...
+		result.getFolderList().forEach(feat -> featacc.saveFolder(feat));
 
 		// save products...
 		result.getProductList().forEach(prod -> prodacc.saveProduct(prod));
 
-		// save features for the project...
-		saveProjectsXFeatures(result);
+		// save folders for the project...
+		saveProjectsXFolders(result);
 
 		// save products for the project...
 		saveProjectsXProducts(result);
@@ -431,19 +431,19 @@ public class ProjectAccess {
 	}
 
 	/**
-	 * Inserts the features in the given projects projectFeatureList into the
+	 * Inserts the folders in the given projects projectFolderList into the
 	 * database.
 	 * 
 	 * @param project
-	 *            the project whose projectFeatureList entries should be saved
+	 *            the project whose projectFolderList entries should be saved
 	 */
-	private void saveProjectsXFeatures(Project project) {
-		// delete every projectxfeature connection beforehand...
-		jdbc.update(DELETE_PROJECTSXFEATURES_SQL, project.getId());
+	private void saveProjectsXFolders(Project project) {
+		// delete every projectxfolder connection beforehand...
+		jdbc.update(DELETE_PROJECTSXFOLDERS_SQL, project.getId());
 
 		// redo connections...
-		project.getFeatureList()
-				.forEach(feat -> jdbc.update(INSERT_PROJECTSXFEATURES_SQL, project.getId(), feat.getId()));
+		project.getFolderList()
+				.forEach(feat -> jdbc.update(INSERT_PROJECTSXFOLDERS_SQL, project.getId(), feat.getId()));
 	}
 
 	/**
@@ -487,14 +487,14 @@ public class ProjectAccess {
 
 		// delete connections...
 		jdbc.update(DELETE_PROJECTSXPRODUCTS_SQL, project.getId());
-		jdbc.update(DELETE_PROJECTSXFEATURES_SQL, project.getId());
+		jdbc.update(DELETE_PROJECTSXFOLDERS_SQL, project.getId());
 		jdbc.update(DELETE_PROJECTSXRATEDUSERS_SQL, project.getId());
 
 		// set childrens id to null...
 		jdbc.update(UPDATE_PARENT_SQL, null, false, project.getId());
 
-		// delete features...
-		project.getFeatureList().forEach(feat -> featacc.deleteFeature(feat));
+		// delete folders...
+		project.getFolderList().forEach(feat -> featacc.deleteFolder(feat));
 
 		int resultcount = jdbc.update(DELETE_SQL, project.getId());
 

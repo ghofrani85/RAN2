@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+    <title></title>
+    <meta charset="utf-8"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"></link>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="../../static/css/fileTextEditor.css"></link>
+    <script type="text/javascript" src="../../static/js/fileTextEditor.js"></script>
+</head>
+<body>
+    <div id="wrapper" class="container-fluid" th:fragment="fileTextEditor">
+        <div id="errorMsgSelectRelevant" th:text="#{textEditor.selectWithMouse}" hidden="hidden">
+
+        </div>
+        <div id="errorMsgOnlyTextInArea" th:text="#{textEditor.onlyInArea}" hidden="hidden">
+
+        </div>
+        <div id="textEditor">
+            <div id="textEditorTextarea" th:text="${textData}" readonly="readonly"></div>
+            <form action="#" th:action="${action}" method="post">
+                <div th:if="${folder}" id="textEditorControlPanel" class="row">
+                    <div class="btn btn-default col-sm-2" onclick="btn_fileTextEditorSelect()" th:text = "#{textEditor.select}"></div>
+                    <div id="textEditorErrorMsg" class="textEditorError col-sm-4"></div>
+
+                    <input type="hidden" name="folderId" th:value="${folder.Id}"></input>
+                    <input type="hidden" name="assetId" th:value="${asset.Id}"></input>
+                    <input type="hidden" name="fileId" th:value="${fileId}" th:if="${fileExists}"></input>
+                    <input type="hidden" name="title" th:value="${title}" th:if="${fileExists}"></input>
+                    <input id="textEditorStart" type="hidden" name="start" th:value="${startPos}"></input>
+                    <input id="textEditorEnd" type="hidden" name="end" th:value="${endPos}"></input>
+
+                    <button th:if="${fileExists}" type="submit" class="btn btn-success col-sm-3" th:text="#{editor.applyChanges}"></button>
+                    <button th:if="${fileExists == false}" th:href="'#inputFileTitle'" data-toggle="modal" data-target="#inputFileTitle" class="btn btn-success col-sm-3" th:text="#{file.addtofolder} + ' ' + ${folder.title}"></button>
+
+                    <a class="btn btn-danger col-sm-3" th:href="'folder?id=' + ${folder.Id}" th:text="#{message.cancel}">cancel</a>
+                    <div th:if="${fileExists == false}">
+                        <div th:replace="fragments/inputFileTitle :: inputFileTitle"></div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+
+</body>
+</html>

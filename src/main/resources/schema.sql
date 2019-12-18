@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS assets(
   PRIMARY KEY (id),
   FOREIGN KEY (last_change_userid) REFERENCES users(id));
 
-CREATE TABLE IF NOT EXISTS features(
+CREATE TABLE IF NOT EXISTS folders(
   id SERIAL,
   title VARCHAR(255),
   description TEXT,
@@ -55,20 +55,20 @@ CREATE TABLE IF NOT EXISTS features(
   last_change TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   last_change_userid INTEGER,
   PRIMARY KEY (id),
-  FOREIGN KEY (parentid) REFERENCES features(id),
+  FOREIGN KEY (parentid) REFERENCES folders(id),
   FOREIGN KEY (last_change_userid) REFERENCES users(id));
 
-CREATE TABLE IF NOT EXISTS artefacts(
+CREATE TABLE IF NOT EXISTS files(
   id SERIAL,
   title VARCHAR(255) NOT NULL,
   start VARCHAR(255),
   endmark VARCHAR(255),
   picturewidth VARCHAR(255),
   pictureheight VARCHAR(255),
-  featureid INTEGER NOT NULL,
+  folderid INTEGER NOT NULL,
   assetid INTEGER NOT NULL,
   PRIMARY KEY (id),
-  FOREIGN KEY (featureid) REFERENCES features(id),
+  FOREIGN KEY (folderid) REFERENCES folders(id),
   FOREIGN KEY (assetid) REFERENCES assets(id));
 
 CREATE TABLE IF NOT EXISTS products(
@@ -98,25 +98,25 @@ CREATE TABLE IF NOT EXISTS projectsXproducts(
   FOREIGN KEY (projectid) REFERENCES projects(id),
   FOREIGN KEY (productid) REFERENCES products(id));
 
-CREATE TABLE IF NOT EXISTS projectsXfeatures(
+CREATE TABLE IF NOT EXISTS projectsXfolders(
   projectid INTEGER NOT NULL,
-  featureid INTEGER NOT NULL,
-  PRIMARY KEY (projectid, featureid),
+  folderid INTEGER NOT NULL,
+  PRIMARY KEY (projectid, folderid),
   FOREIGN KEY (projectid) REFERENCES projects(id),
-  FOREIGN KEY (featureid) REFERENCES features(id));
+  FOREIGN KEY (folderid) REFERENCES folders(id));
 
-CREATE TABLE IF NOT EXISTS productsXfeatures(
+CREATE TABLE IF NOT EXISTS productsXfolders(
   productid INTEGER NOT NULL,
-  featureid INTEGER NOT NULL,
-  PRIMARY KEY (productid, featureid),
+  folderid INTEGER NOT NULL,
+  PRIMARY KEY (productid, folderid),
   FOREIGN KEY (productid) REFERENCES products(id),
-  FOREIGN KEY (featureid) REFERENCES features(id));
+  FOREIGN KEY (folderid) REFERENCES folders(id));
 
-CREATE TABLE IF NOT EXISTS featuresXassets(
-  featureid INTEGER NOT NULL,
+CREATE TABLE IF NOT EXISTS foldersXassets(
+  folderid INTEGER NOT NULL,
   assetid INTEGER NOT NULL,
-  PRIMARY KEY (featureid, assetid),
-  FOREIGN KEY (featureid) REFERENCES features(id),
+  PRIMARY KEY (folderid, assetid),
+  FOREIGN KEY (folderid) REFERENCES folders(id),
   FOREIGN KEY (assetid) REFERENCES assets(id));
 
 CREATE TABLE IF NOT EXISTS verificationtokens(
@@ -127,9 +127,9 @@ CREATE TABLE IF NOT EXISTS verificationtokens(
   PRIMARY KEY (id),
   FOREIGN KEY (userid) REFERENCES users(id));
 
-CREATE TABLE IF NOT EXISTS featuresxfeatureartefacts (
-    featureid integer NOT NULL,
-    featureartefactid integer NOT NULL
+CREATE TABLE IF NOT EXISTS foldersxfolderfiles (
+    folderid integer NOT NULL,
+    folderfileid integer NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS folders (

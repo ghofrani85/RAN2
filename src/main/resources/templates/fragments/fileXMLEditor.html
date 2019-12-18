@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+    <head>
+        <title th:text="${'RAN2 - ' + asset.title}"></title>
+        <meta charset="utf-8"></meta>
+        <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+        <meta name="_csrf" th:content="${_csrf.token}"/>
+        <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"></link>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script type="text/javascript" th:src="@{/js/overview.js}"></script>
+        <script type="text/javascript" th:src="@{/js/fileImageEditor.js}"></script>
+        <script type="text/javascript" th:src="@{/js/fileTextEditor.js}"></script>
+        <script type="text/javascript" th:src="@{/js/fileXMLEditor.js}"></script>
+        <script type="text/javascript" th:src="@{/js/jstree.min.js}"></script>
+        <link rel="stylesheet" th:href="@{/css/style.css}"></link>
+        <link rel="stylesheet" th:href="@{/css/fileTextEditor.css}"></link>
+        <link rel="stylesheet" th:href="@{/css/jstree/style.min.css}"></link>
+    </head>
+    <body>
+
+        <div class="container-fluid" th:fragment="fileXMLEditor">
+            <div class="row content">
+                <div class="col-sm-1"></div>
+                <div class="col-sm-10" style="overflow-x:scroll">
+                    <div th:text="${xmlContent}" id="xmlContainer" style="display:none"></div>
+                    <div id="jstree_container"></div>
+
+                </div>
+            </div>
+            <div class="row content">
+                <div class="col-sm-4"></div>
+                <div class="col-sm-4">
+                    <span th:if="${file}">
+                    <span th:if="${folder}">
+                        <form action="#" th:action="@{changeXMLFile}" method="post">
+                        <input type="hidden" id="selectedXML" name="nodes" th:value="${nodes}"></input>
+                        <input type="hidden" name="assetId" th:value="${asset.id}"></input>
+                        <input type="hidden" name="folderId" th:value="${folder.id}"></input>
+                        <input type="hidden" name="fileId" th:value="${file.id}"></input>
+                        <input type="hidden" name="title" th:value="${file.title}"></input>
+                        <button class="btn" th:text="#{editor.applyChanges}"></button>
+						<a class="btn btn-danger col-sm-4" th:href="'folder?id=' + ${folder.Id}" th:text="#{message.cancel}">cancel</a>
+                    </form>
+                    </span>
+                    </span>
+                    
+                    <span th:unless="${file}">
+                    <span th:if="${folder}">
+                        <form action="#" th:action="@{addXMLFile}" method="post">
+                        <input type="hidden" id="selectedXML" name="nodes"></input>
+                        <input type="hidden" name="assetId" th:value="${asset.id}"></input>
+                        <input type="hidden" name="folderId" th:value="${folder.id}"></input>
+                        <button th:href="'#inputFileTitle'" data-toggle="modal" data-target="#inputFileTitle" class="btn" th:text="#{file.addtofolder} + ' ' + ${folder.title}"></button>
+						<a class="btn btn-danger col-sm-4" th:href="'folder?id=' + ${folder.Id}" th:text="#{message.cancel}">cancel</a>
+                        <div th:replace="fragments/inputFileTitle :: inputFileTitle"></div>
+                    </form>
+                    </span>
+                    </span>
+                
+                    
+                </div>
+                <div class="col-sm-4"></div>
+            </div>
+            
+
+            <script type="text/javascript">
+                initXMLEditor();
+            </script>
+        </div>
+    </body>
+</html>

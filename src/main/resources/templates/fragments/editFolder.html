@@ -9,27 +9,27 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 <body>
-	<div th:fragment="editfeature" class="modal fade" id="editfeature">
+	<div th:fragment="editfolder" class="modal fade" id="editfolder">
 		<div class="modal-dialog">
 		
 			<div class="modal-content">
-				<form action="#" th:action="@{editfeature}" method="post" onsubmit="closeModal()">
+				<form action="#" th:action="@{editfolder}" method="post" onsubmit="closeModal()">
 					<div class="modal-header">
-						<h3 th:text="#{feature.edit}">Edit Feature</h3>
+						<h3 th:text="#{folder.edit}">Edit Folder</h3>
 					</div>
 					<div class="modal-body">
 						<div class="form-group">
-							<label for="title" th:text="#{feature.title}">Title</label>
-							<input name="title" type="text" class="form-control" id="title" th:value="${feature.title}" required="true" maxlength="30" pattern=".*\S.*" />
+							<label for="title" th:text="#{folder.title}">Title</label>
+							<input name="title" type="text" class="form-control" id="title" th:value="${folder.title}" required="true" maxlength="30" pattern=".*\S.*" />
 						</div>
 						<div class="form-group">
-							<label for="description" th:text="#{feature.description}">Description</label>
-							<textarea name="description" class="form-control" rows="8" id="description" th:text="${feature.description}"></textarea>
+							<label for="description" th:text="#{folder.description}">Description</label>
+							<textarea name="description" class="form-control" rows="8" id="description" th:text="${folder.description}"></textarea>
 						</div>
-						<input type="hidden" name="id" id="id" th:value="${feature.id}" />
+						<input type="hidden" name="id" id="id" th:value="${folder.id}" />
 					</div>
 					<div class="modal-footer">
-						<button type="submit" class="btn btn-primary" th:text="#{feature.edit}"></button>
+						<button type="submit" class="btn btn-primary" th:text="#{folder.edit}"></button>
 						<button type="reset" class="btn" data-dismiss="modal" th:text="#{message.cancel}">Cancel</button>
 					</div>
 				</form>

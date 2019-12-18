@@ -16,7 +16,7 @@ th, td {
 }
 
 
-.featuretitle {
+.foldertitle {
 	display: inline-block;
 	max-width: 70px;
 	overflow: hidden;
@@ -27,7 +27,7 @@ th, td {
 	height: 1.6em;
 }
 
-.featuredelete {
+.folderdelete {
 	display: inline-block;
 	max-width: 10px;
 	margin: 0px;

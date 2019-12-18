@@ -14,12 +14,12 @@ import org.springframework.stereotype.Service;
 import com.ghofrani.htw.RAN2.Application;
 import com.ghofrani.htw.RAN2.controller.error.DatabaseException;
 import com.ghofrani.htw.RAN2.controller.error.SameUserException;
-import com.ghofrani.htw.RAN2.database.ArtefactAccess;
-import com.ghofrani.htw.RAN2.database.FeatureAccess;
+import com.ghofrani.htw.RAN2.database.FileAccess;
+import com.ghofrani.htw.RAN2.database.FolderAccess;
 import com.ghofrani.htw.RAN2.database.ProductAccess;
 import com.ghofrani.htw.RAN2.database.ProjectAccess;
-import com.ghofrani.htw.RAN2.model.Artefact;
-import com.ghofrani.htw.RAN2.model.Feature;
+import com.ghofrani.htw.RAN2.model.File;
+import com.ghofrani.htw.RAN2.model.Folder;
 import com.ghofrani.htw.RAN2.model.Product;
 import com.ghofrani.htw.RAN2.model.Project;
 import com.ghofrani.htw.RAN2.model.User;
@@ -43,10 +43,10 @@ public class ProjectService implements IProjectService {
 	private ProductAccess productAccess;
 
 	@Autowired
-	private FeatureAccess featureAccess;
+	private FolderAccess folderAccess;
 
 	@Autowired
-	private ArtefactAccess artefactAccess;
+	private FileAccess fileAccess;
 
 	/**
 	 * Loads the Project with the given id.
@@ -100,44 +100,44 @@ public class ProjectService implements IProjectService {
 		Project newProject = projectAccess.saveProject(new Project(null, newTitle, newDescription,
 				Calendar.getInstance().getTime(), new ArrayList<>(), new ArrayList<>(), newUser, oldProject, false));
 
-		// Set ids of Features, Products and Artefacts to null so that new database
+		// Set ids of Folders, Products and Files to null so that new database
 		// entries are created.
-		for (Feature feature : oldProject.getFeatureList()) {
+		for (Folder folder : oldProject.getFolderList()) {
 
-			Feature tmpFeature = featureAccess.selectFeaturesByID(feature.getId());
+			Folder tmpFolder = folderAccess.selectFoldersByID(folder.getId());
 
-			List<Artefact> tempList = new ArrayList<>();
-			for (Artefact artefact : tmpFeature.getArtefactList()) {
-				Artefact tmpArtefact = artefactAccess.selectArtefactsByID(artefact.getId());
-				tmpArtefact.setId(null);
-				Artefact newArtefact = artefactAccess.saveArtefact(tmpArtefact);
-				tempList.add(newArtefact);
+			List<File> tempList = new ArrayList<>();
+			for (File file : tmpFolder.getFileList()) {
+				File tmpFile = fileAccess.selectFilesByID(file.getId());
+				tmpFile.setId(null);
+				File newFile = fileAccess.saveFile(tmpFile);
+				tempList.add(newFile);
 			}
-			tmpFeature.setArtefactList(tempList);
+			tmpFolder.setFileList(tempList);
 			
-			List<Feature> tempFeatArtList = copyFeatureArtefactsHelper(tmpFeature); // Added
-			tmpFeature.setFeatureArtefactList(tempFeatArtList);
+			List<Folder> tempFeatArtList = copyFolderFilesHelper(tmpFolder); // Added
+			tmpFolder.setFolderFileList(tempFeatArtList);
 			
-			tmpFeature.setId(null);
-			Feature newFeature = featureAccess.saveFeature(tmpFeature);
-			newProject.addFeature(newFeature);
+			tmpFolder.setId(null);
+			Folder newFolder = folderAccess.saveFolder(tmpFolder);
+			newProject.addFolder(newFolder);
 		}
 		newProject = projectAccess.saveProject(newProject);
 
-		// Saving the associations of Features with Products
+		// Saving the associations of Folders with Products
 		List<Product> products = oldProject.getProductList();
-		Map<String, List<Feature>> productFeatures = new HashMap<>();
+		Map<String, List<Folder>> productFolders = new HashMap<>();
 		for (Product product : products) {
 			product.setId(null);
-			productFeatures.put(product.getTitle(), product.getFeatureList());
-			product.setFeatureList(new ArrayList<>());
+			productFolders.put(product.getTitle(), product.getFolderList());
+			product.setFolderList(new ArrayList<>());
 		}
 		newProject.setProductList(products);
 
 		newProject = projectAccess.saveProject(newProject);
 
-		// Add the new Features to the Products
-		List<Product> newProducts = copyFeatureAssociations(newProject, productFeatures);
+		// Add the new Folders to the Products
+		List<Product> newProducts = copyFolderAssociations(newProject, productFolders);
 
 		newProject.setProductList(newProducts);
 		newProject.setLastChange(Calendar.getInstance().getTime());
@@ -146,12 +146,12 @@ public class ProjectService implements IProjectService {
 		return newProject;
 	}
 	
-//	private Map<Integer, List<Feature>> createFeatIdFeatArtsMap(Map<Integer, List<Feature>> tmpFeatArtList) {
-//		Map<Integer, List<Feature>> featIdFeatArtsMap = new HashMap<>();
+//	private Map<Integer, List<Folder>> createFeatIdFeatArtsMap(Map<Integer, List<Folder>> tmpFeatArtList) {
+//		Map<Integer, List<Folder>> featIdFeatArtsMap = new HashMap<>();
 //		if (tmpFeatArtList.isEmpty() == true) {
 //			return featIdFeatArtsMap;
 //		} else {
-//			for (Feature featArt: tmpFeatArtList) {
+//			for (Folder featArt: tmpFeatArtList) {
 //				featIdFeatArtsMap.put(featArt.getId(), );
 //			}
 //		}
@@ -159,45 +159,45 @@ public class ProjectService implements IProjectService {
 	
 	/**
 	 * 
-	 * @param tmpFeature
+	 * @param tmpFolder
 	 * @return
 	 * @author Hongfei Chen
 	 */
-	private List<Feature> copyFeatureArtefactsHelper(Feature tmpFeature) {
-		log.info("Called copyHelper with feat art id={}", tmpFeature.getId());
-		List<Feature> tempFeatArtList = new ArrayList<>();
-		List<Feature> currentFeatArtList = tmpFeature.getFeatureArtefactList(); //featureAccess.selectFeatureArtefactsByFeatureID(tmpFeature.getId());
+	private List<Folder> copyFolderFilesHelper(Folder tmpFolder) {
+		log.info("Called copyHelper with feat art id={}", tmpFolder.getId());
+		List<Folder> tempFeatArtList = new ArrayList<>();
+		List<Folder> currentFeatArtList = tmpFolder.getFolderFileList(); //folderAccess.selectFolderFilesByFolderID(tmpFolder.getId());
 		if (currentFeatArtList.isEmpty() == true) {
 			return tempFeatArtList;
 		} else {
-			for (Feature featArt : currentFeatArtList) {
-				Feature tmpFeatArt = featureAccess.selectFeaturesByID(featArt.getId());
-				Feature newFeatArt = tmpFeatArt;
+			for (Folder featArt : currentFeatArtList) {
+				Folder tmpFeatArt = folderAccess.selectFoldersByID(featArt.getId());
+				Folder newFeatArt = tmpFeatArt;
 				newFeatArt.setId(null);
-				newFeatArt = featureAccess.saveFeature(newFeatArt);
+				newFeatArt = folderAccess.saveFolder(newFeatArt);
 				tempFeatArtList.add(newFeatArt);	
-				newFeatArt.setFeatureArtefactList(copyFeatureArtefactsHelper(tmpFeatArt));
+				newFeatArt.setFolderFileList(copyFolderFilesHelper(tmpFeatArt));
 			}
 			return tempFeatArtList;
 		}
 	}
 
 	/**
-	 * Copies the associations of Features with Products.
+	 * Copies the associations of Folders with Products.
 	 * 
 	 * @param newProject The new copy of Project
-	 * @param productFeatures The matrix of product and features of original project
+	 * @param productFolders The matrix of product and folders of original project
 	 * @return List of new products
 	 */
-	private List<Product> copyFeatureAssociations(Project newProject, Map<String, List<Feature>> productFeatures) {
+	private List<Product> copyFolderAssociations(Project newProject, Map<String, List<Folder>> productFolders) {
 		List<Product> newProducts = newProject.getProductList();
-		List<Feature> newFeatures = newProject.getFeatureList();
+		List<Folder> newFolders = newProject.getFolderList();
 		for (Product product : newProducts) {
-			List<Feature> features = productFeatures.get(product.getTitle());
-			for (Feature feature : newFeatures) {
-				for (Feature f : features) {
-					if (feature.getTitle().equals(f.getTitle())) {
-						product.addFeature(feature);
+			List<Folder> folders = productFolders.get(product.getTitle());
+			for (Folder folder : newFolders) {
+				for (Folder f : folders) {
+					if (folder.getTitle().equals(f.getTitle())) {
+						product.addFolder(folder);
 					}
 				}
 			}

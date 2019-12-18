@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+	</head>
+	<body>
+		<div th:fragment="inputFileTitle" class="modal" id="inputFileTitle">
+			<div class="modal-dialog" style="text-align: left;">
+				<div class="modal-content">
+
+					<div class="modal-header">
+						<h4 class="modal-title" th:text="#{file.newTitle}">Title for new File</h4>
+					</div>
+					<div class="modal-body">
+						<label for="title" th:text="#{file.title}">Title</label> 
+						<input name="title" type="text" class="form-control" id="title" required="true" maxlength="30" />
+					</div>
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-primary" th:text="#{file.confirm}">Submit</button>
+						<button type="reset" class="btn" data-dismiss="modal" th:text="#{message.cancel}">Cancel</button>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

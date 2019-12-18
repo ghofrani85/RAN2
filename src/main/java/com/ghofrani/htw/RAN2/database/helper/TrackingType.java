@@ -7,7 +7,7 @@ package com.ghofrani.htw.RAN2.database.helper;
  *
  */
 public enum TrackingType {
-	PROJECT(0), PRODUCT(1), FEATURE(2), ASSET(3), ARTEFACT(4), USER(5);
+	PROJECT(0), PRODUCT(1), FOLDER(2), ASSET(3), FILE(4), USER(5);
 
 	private final int value;
 

@@ -1,6 +1,5 @@
 package com.ghofrani.htw.RAN2.controller;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -29,11 +28,11 @@ import org.springframework.web.servlet.LocaleResolver;
 import com.ghofrani.htw.RAN2.Application;
 import com.ghofrani.htw.RAN2.controller.setup.ConfigData;
 import com.ghofrani.htw.RAN2.controller.transmission.DownloadData;
-import com.ghofrani.htw.RAN2.database.ArtefactAccess;
+import com.ghofrani.htw.RAN2.database.FileAccess;
 import com.ghofrani.htw.RAN2.database.ProductAccess;
-import com.ghofrani.htw.RAN2.model.Artefact;
+import com.ghofrani.htw.RAN2.model.File;
 import com.ghofrani.htw.RAN2.model.Asset;
-import com.ghofrani.htw.RAN2.model.Feature;
+import com.ghofrani.htw.RAN2.model.Folder;
 import com.ghofrani.htw.RAN2.model.Product;
 
 /**
@@ -52,7 +51,7 @@ public class GenerateZipController {
 	private ProductAccess productAccess;
 
 	@Autowired
-	private ArtefactAccess artefactAccess;
+	private FileAccess fileAccess;
 
 	@Autowired
 	private EditAssetController editAssetController;
@@ -73,7 +72,7 @@ public class GenerateZipController {
 
 	
 	/**
-	 * Generates Zip Archive with artefact files for product
+	 * Generates Zip Archive with file files for product
 	 * @param productId ID of the product for which the zip will be generated
 	 * @param request Request Object
 	 * @return ErrorHandler for errors or download when successfull
@@ -87,8 +86,8 @@ public class GenerateZipController {
 		Product product = productAccess.selectProductsByID(productId);
 		String path = configData.getTempPath();
 
-		// product has no features
-		if (product.getFeatureList().isEmpty()) {
+		// product has no folders
+		if (product.getFolderList().isEmpty()) {
 			String message = messages.getMessage("message.emptyProduct", null, resolver.resolveLocale(request));
 			return errorHandler(message + product.getTitle(), true, "");
 		}
@@ -114,41 +113,41 @@ public class GenerateZipController {
 
 		
 
-		// iterate over feature list of a product
-		List<Feature> featureList = product.getFeatureList();
-		for (int i = 0; i < featureList.size(); i++) {
-			Feature feature = (Feature) featureList.get(i);
-			Integer featureID = feature.getId();
+		// iterate over folder list of a product
+		List<Folder> folderList = product.getFolderList();
+		for (int i = 0; i < folderList.size(); i++) {
+			Folder folder = (Folder) folderList.get(i);
+			Integer folderID = folder.getId();
 
-			String featureFileName = editAssetController.createFileName(feature.getTitle());
-			String featurePath = path + "/" + featureFileName; // folder for a features artefacts
-			File featureDirectory = new File(featurePath);
+			String folderFileName = editAssetController.createFileName(folder.getTitle());
+			String folderPath = path + "/" + folderFileName; // folder for a folders files
+			java.io.File folderDirectory = new java.io.File(folderPath);
 
-			//create a directory for feature
-			boolean createFeatureFolderSuccessful = createDirectory(featurePath, featureDirectory, true);
-			if (!createFeatureFolderSuccessful) {
-				log.info("Feature Folder couldn't be created.");
+			//create a directory for folder
+			boolean createFolderFolderSuccessful = createDirectory(folderPath, folderDirectory, true);
+			if (!createFolderFolderSuccessful) {
+				log.info("Folder Folder couldn't be created.");
 				String message = messages.getMessage("message.filesystemError", null, resolver.resolveLocale(request));
 				return errorHandler(message, true, "");
 			}
 
 			
-			//feature has artefacts
-			if (!artefactAccess.selectArtefactsByFeatureID(featureID).isEmpty()) {
-				List<Artefact> artefactList = artefactAccess.selectArtefactsByFeatureID(feature.getId());
+			//folder has files
+			if (!fileAccess.selectFilesByFolderID(folderID).isEmpty()) {
+				List<File> fileList = fileAccess.selectFilesByFolderID(folder.getId());
 
-				//create the artefacts
+				//create the files
 				try {
-					createArtefacts(featurePath, artefactList);
+					createFiles(folderPath, fileList);
 				} catch (Exception ex) {
-					log.info("Create Artefacts fails. Exception={}", ex.getMessage());
+					log.info("Create Files fails. Exception={}", ex.getMessage());
 					String message = messages.getMessage("message.filesystemError", null, resolver.resolveLocale(request));
 					return errorHandler(message, true, "");
 				}
 				
-				//add the feature folder to the zip file
+				//add the folder folder to the zip file
 				try {
-					addFileToZip(featureDirectory, featureFileName, zos); // adds feature folder to zip archive
+					addFileToZip(folderDirectory, folderFileName, zos); // adds folder folder to zip archive
 				} catch (Exception ex) {
 					log.info("File couldn't be added to zip. Exception={}", ex.getMessage());
 					String message = messages.getMessage("message.filesystemError", null, resolver.resolveLocale(request));
@@ -156,8 +155,8 @@ public class GenerateZipController {
 				}
 
 			} else {
-				String message = messages.getMessage("message.emptyFeature", null, resolver.resolveLocale(request));
-				return errorHandler(message + feature.getTitle(), true, "");
+				String message = messages.getMessage("message.emptyFolder", null, resolver.resolveLocale(request));
+				return errorHandler(message + folder.getTitle(), true, "");
 			}
 		}
 
@@ -173,20 +172,20 @@ public class GenerateZipController {
 	/**
 	 * Creates a new directory
 	 * @param path Path where directory should be created
-	 * @param featureDirectory directory to be created
-	 * @param isFeatureDirectory if directory is supposed to be for a feature
+	 * @param folderDirectory directory to be created
+	 * @param isFolderDirectory if directory is supposed to be for a folder
 	 * @return true if success, else false
 	 */
-	public boolean createDirectory(String path, File featureDirectory, boolean isFeatureDirectory) {
-		log.info("called createDirectory with path={}, featureDirectory={}, isFeatureDirectory={}",path, featureDirectory, isFeatureDirectory );
+	public boolean createDirectory(String path, java.io.File folderDirectory, boolean isFolderDirectory) {
+		log.info("called createDirectory with path={}, folderDirectory={}, isFolderDirectory={}",path, folderDirectory, isFolderDirectory );
 		Path pa = Paths.get(path);
 		if (!pa.toFile().exists()) {
-			return (new File(path).mkdir()); // create directory
+			return (new java.io.File(path).mkdir()); // create directory
 		} else {
-			if (isFeatureDirectory) {
-				editAssetController.deleteFiles(featureDirectory);
-				featureDirectory = new File(path);
-				return (featureDirectory.mkdir());
+			if (isFolderDirectory) {
+				editAssetController.deleteFiles(folderDirectory);
+				folderDirectory = new java.io.File(path);
+				return (folderDirectory.mkdir());
 			} else {
 				return true;
 			}
@@ -196,61 +195,61 @@ public class GenerateZipController {
 	}
 
 	/**
-	 * Method calls the correct artefact editor depending on the asset type
-	 * @param featurePath Path to the folder where file lies
-	 * @param artefactList List of artefacts to be edited
+	 * Method calls the correct file editor depending on the asset type
+	 * @param folderPath Path to the folder where file lies
+	 * @param fileList List of files to be edited
 	 * @throws IOException When file could not be read
 	 * @throws SQLException When database encountered an error
 	 */
-	public void createArtefacts(String featurePath, List<Artefact> artefactList) throws IOException, SQLException {
-		// iterate over artefact list of a feature
-		log.info("called createDirectory with featurePath={}, artefactList={}",featurePath, artefactList);
+	public void createFiles(String folderPath, List<File> fileList) throws IOException, SQLException {
+		// iterate over file list of a folder
+		log.info("called createDirectory with folderPath={}, fileList={}",folderPath, fileList);
 		
-		for (int j = 0; j < artefactList.size(); j++) {
-			Artefact artefact = (Artefact) artefactList.get(j);
-			Asset asset = artefact.getAsset();
+		for (int j = 0; j < fileList.size(); j++) {
+			File file = (File) fileList.get(j);
+			Asset asset = file.getAsset();
 
 			switch (asset.getType()) {
 			case TEXT:
 				try {
-					editAssetController.createTextArtefactData(artefact, featurePath);
+					editAssetController.createTextFileData(file, folderPath);
 				}catch(Exception ex) {
-					log.info("CreateTextArtefact Exception={}", ex.getMessage());
+					log.info("CreateTextFile Exception={}", ex.getMessage());
 				}
 				break;
 			case XML:
 				try {
-					editAssetController.createXMLArtefactData(artefact, featurePath);
+					editAssetController.createXMLFileData(file, folderPath);
 				}catch(Exception ex) {
-					log.info("CreateXMLArtefact Exception={}", ex.getMessage());
+					log.info("CreateXMLFile Exception={}", ex.getMessage());
 				}
 				break;
 			case PICTURE:
 				try {
-					editAssetController.createPictureArtefactData(artefact, featurePath);
+					editAssetController.createPictureFileData(file, folderPath);
 				}catch(Exception ex) {
-					log.info("CreatePictureArtefact Exception={}", ex.getMessage());
+					log.info("CreatePictureFile Exception={}", ex.getMessage());
 				}
 				break;
 			case AUDIO:
 				try {
-					editAssetController.createAudioArtefactData(artefact, featurePath);
+					editAssetController.createAudioFileData(file, folderPath);
 				}catch(Exception ex) {
-					log.info("CreateAudioArtefact Exception={}", ex.getMessage());
+					log.info("CreateAudioFile Exception={}", ex.getMessage());
 				}
 				break;
 			case VIDEO:
 				try {
-					editAssetController.createVideoArtefactData(artefact, featurePath);
+					editAssetController.createVideoFileData(file, folderPath);
 				}catch(Exception ex) {
-					log.info("CreateVideoArtefact Exception={}", ex.getMessage());
+					log.info("CreateVideoFile Exception={}", ex.getMessage());
 				}
 				break;
 			case OTHER:
 				try {
-					editAssetController.createOtherArtefactData(artefact, featurePath);
+					editAssetController.createOtherFileData(file, folderPath);
 				}catch(Exception ex) {
-					log.info("CreateOtherArtefact Exception={}", ex.getMessage());
+					log.info("CreateOtherFile Exception={}", ex.getMessage());
 				}
 				break;
 			default:
@@ -274,14 +273,14 @@ public class GenerateZipController {
 	 * @throws Exception When en error occured during process
 	 */
 
-	public static void addFileToZip(File file, String path, ZipOutputStream zos) throws Exception {
+	public static void addFileToZip(java.io.File file, String path, ZipOutputStream zos) throws Exception {
 
 		log.info("Called addToZipFile with file={}, fileName={}, zipOutputStream={} ", file, path, zos);
 
 		if (file.isDirectory()) {
-			File[] listOfFiles = file.listFiles();
+			java.io.File[] listOfFiles = file.listFiles();
 			if (listOfFiles != null) {
-				for (File f : listOfFiles) {
+				for (java.io.File f : listOfFiles) {
 					addFileToZip(f, path, zos);
 				}
 			}

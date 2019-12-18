@@ -14,8 +14,8 @@
 		
 			<div class="modal-content">
 				<form action="#" th:action="@{editasset}" method="post" onsubmit="closeModal()">
-					<span th:if="${feature}"><input type="hidden" name="featureId" th:value="${feature.id}"></input></span>
-					<span th:if="${artefact}"><input type="hidden" name="artefactId" th:value="${artefact.id}"></input></span>
+					<span th:if="${folder}"><input type="hidden" name="folderId" th:value="${folder.id}"></input></span>
+					<span th:if="${file}"><input type="hidden" name="fileId" th:value="${file.id}"></input></span>
 					<div class="modal-header">
 						<h3 th:title="#{asset.edit}">Edit</h3>
 					</div>

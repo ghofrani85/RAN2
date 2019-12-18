@@ -18,11 +18,11 @@ import org.springframework.stereotype.Component;
 
 import com.ghofrani.htw.RAN2.Application;
 import com.ghofrani.htw.RAN2.database.helper.TrackingType;
-import com.ghofrani.htw.RAN2.database.rowmapper.FeatureRowMapper;
-import com.ghofrani.htw.RAN2.model.Feature;
+import com.ghofrani.htw.RAN2.database.rowmapper.FolderRowMapper;
+import com.ghofrani.htw.RAN2.model.Folder;
 
 /**
- * Class to handle feature interaction with the database.
+ * Class to handle folder interaction with the database.
  * 
  * @author Tobias Powelske
  *
@@ -39,13 +39,13 @@ public class FolderAccess {
 	private static final String DELETE_SQL = "DELETE FROM folders WHERE id = ?";
 	private static final String SELECT_SQL = "SELECT folders.id, folders.title, folders.description, folders.parentid, "
 			+ "folders.updatedparent FROM folders";
-	private static final String SELECT_DISTINCT_SQL = "SELECT DISTINCT features.id, folders.title, "
+	private static final String SELECT_DISTINCT_SQL = "SELECT DISTINCT folders.id, folders.title, "
 			+ "folders.description, folders.parentid, folders.updatedparent FROM folders";
-	private static final String DELETE_PROJECTSXFEATURES_SQL = "DELETE FROM projectsxfolders WHERE featureid = ?";
-	private static final String DELETE_PRODUCTSXFEATURES_SQL = "DELETE FROM productsxfolders WHERE featureid = ?";
-	private static final String INSERT_FEATURESXFEATUREARTEFACTS_SQL = "INSERT INTO foldersxfeatureartefacts(featureid, featureartefactid) VALUES(?, ?)";
-	private static final String DELETE_FEATURESXFEATUREARTEFACTS_FEATURE_SQL = "DELETE FROM foldersxfeatureartefacts WHERE featureid = ?";
-	private static final String DELETE_FEATURESXFEATUREARTEFACTS_FEATUREARTEFACT_SQL = "DELETE FROM foldersxfeatureartefacts WHERE featureartefactid = ?";
+	private static final String DELETE_PROJECTSXFOLDERS_SQL = "DELETE FROM projectsxfolders WHERE folderid = ?";
+	private static final String DELETE_PRODUCTSXFOLDERS_SQL = "DELETE FROM productsxfolders WHERE folderid = ?";
+	private static final String INSERT_FOLDERSXFOLDERFILES_SQL = "INSERT INTO foldersxfolderfiles(folderid, folderfileid) VALUES(?, ?)";
+	private static final String DELETE_FOLDERSXFOLDERFILES_FOLDER_SQL = "DELETE FROM foldersxfolderfiles WHERE folderid = ?";
+	private static final String DELETE_FOLDERSXFOLDERFILES_FOLDERARTEFACT_SQL = "DELETE FROM foldersxfolderfiles WHERE folderfileid = ?";
 
 	@Autowired
 	private JdbcTemplate jdbc;
@@ -54,7 +54,7 @@ public class FolderAccess {
 	private TrackingAccess trackacc;
 
 	@Autowired
-	private ArtefactAccess artacc;
+	private FileAccess artacc;
 
 	/**
 	 * Prevent instances of the class.
@@ -63,67 +63,67 @@ public class FolderAccess {
 	}
 
 	/**
-	 * Returns a list of all features.
+	 * Returns a list of all folders.
 	 * 
-	 * @return list of all features
+	 * @return list of all folders
 	 */
-	public List<Feature> selectFeatures() {
-		LinkedList<Feature> result = new LinkedList<>();
+	public List<Folder> selectFolders() {
+		LinkedList<Folder> result = new LinkedList<>();
 
-		log.debug("Getting features...");
+		log.debug("Getting folders...");
 
-		jdbc.query(SELECT_SQL, new FeatureRowMapper()).forEach(feature -> result.add(feature));
+		jdbc.query(SELECT_SQL, new FolderRowMapper()).forEach(folder -> result.add(folder));
 
 		// load changed parent...
 		result.forEach(feat -> {
 			if (feat.getParent() != null) {
-				feat.setParent(selectFeaturesByID(feat.getParent().getId()));
+				feat.setParent(selectFoldersByID(feat.getParent().getId()));
 			}
 		});
 
-		// load artefacts...
-		result.forEach(feat -> feat.setArtefactList(artacc.selectArtefactsByFeatureID(feat.getId())));
+		// load files...
+		result.forEach(feat -> feat.setFileList(artacc.selectFilesByFolderID(feat.getId())));
 
 		// load tracking...
 		result.forEach(
-				feat -> feat.setTrackingList(trackacc.selectTrackingByItemID(feat.getId(), TrackingType.FEATURE)));
+				feat -> feat.setTrackingList(trackacc.selectTrackingByItemID(feat.getId(), TrackingType.FOLDER)));
 
 		return result;
 	}
 
 	/**
-	 * Returns the feature with the given id.
+	 * Returns the folder with the given id.
 	 * 
 	 * @param id
-	 *            id of the feature to be retrieved
-	 * @return the retrieved feature
+	 *            id of the folder to be retrieved
+	 * @return the retrieved folder
 	 */
-	public Feature selectFeaturesByID(int id) {
-		Feature result = null;
+	public Folder selectFoldersByID(int id) {
+		Folder result = null;
 
-		log.debug("Getting feature with ID {}", id);
+		log.debug("Getting folder with ID {}", id);
 
-		List<Feature> resultlist = jdbc.query(SELECT_SQL + " WHERE id = ?", new Object[] { id },
-				new FeatureRowMapper());
+		List<Folder> resultlist = jdbc.query(SELECT_SQL + " WHERE id = ?", new Object[] { id },
+				new FolderRowMapper());
 
 		if (!resultlist.isEmpty()) {
 			result = resultlist.get(0);
 
 			// load changed parent...
 			if (result.getParent() != null) {
-				result.setParent(selectFeaturesByID(result.getParent().getId()));
+				result.setParent(selectFoldersByID(result.getParent().getId()));
 			}
 		}
 
 		if (result != null) {
-			// load artefacts...
-			result.setArtefactList(artacc.selectArtefactsByFeatureID(result.getId(), false));
+			// load files...
+			result.setFileList(artacc.selectFilesByFolderID(result.getId(), false));
 
 			// load tracking...
-			result.setTrackingList(trackacc.selectTrackingByItemID(result.getId(), TrackingType.FEATURE));
+			result.setTrackingList(trackacc.selectTrackingByItemID(result.getId(), TrackingType.FOLDER));
 			
-			// load featureArtefacts...
-			result.setFeatureArtefactList(selectFeatureArtefactsByFeatureID(result.getId()));
+			// load folderFiles...
+			result.setFolderFileList(selectFolderFilesByFolderID(result.getId()));
 
 		}
 
@@ -131,222 +131,222 @@ public class FolderAccess {
 	}
 
 	/**
-	 * Returns a list of features for the given project id.
+	 * Returns a list of folders for the given project id.
 	 * 
 	 * @param id
-	 *            the id of the project to return the features for
-	 * @return a list of found features
+	 *            the id of the project to return the folders for
+	 * @return a list of found folders
 	 */
-	public List<Feature> selectFeaturesByProjectID(int id) {
-		LinkedList<Feature> result = new LinkedList<>();
+	public List<Folder> selectFoldersByProjectID(int id) {
+		LinkedList<Folder> result = new LinkedList<>();
 
-		log.debug("Getting features for project {}...", id);
+		log.debug("Getting folders for project {}...", id);
 
-		jdbc.query(SELECT_SQL + " JOIN projectsxfeatures on featureid = features.id WHERE projectid = ?",
-				new Object[] { id }, new FeatureRowMapper()).forEach(feature -> result.add(feature));
+		jdbc.query(SELECT_SQL + " JOIN projectsxfolders on folderid = folders.id WHERE projectid = ?",
+				new Object[] { id }, new FolderRowMapper()).forEach(folder -> result.add(folder));
 
 		// load changed parent...
 		result.forEach(feat -> {
 			if (feat.getParent() != null) {
-				feat.setParent(selectFeaturesByID(feat.getParent().getId()));
+				feat.setParent(selectFoldersByID(feat.getParent().getId()));
 			}
 		});
 
-		// load artefacts...
-		result.forEach(feat -> feat.setArtefactList(artacc.selectArtefactsByFeatureID(feat.getId())));
+		// load files...
+		result.forEach(feat -> feat.setFileList(artacc.selectFilesByFolderID(feat.getId())));
 
 		// load tracking...
 		result.forEach(
-				feat -> feat.setTrackingList(trackacc.selectTrackingByItemID(feat.getId(), TrackingType.FEATURE)));
+				feat -> feat.setTrackingList(trackacc.selectTrackingByItemID(feat.getId(), TrackingType.FOLDER)));
 
-		// load featureArtefacts...
+		// load folderFiles...
 		result.forEach(
-				feat -> feat.setFeatureArtefactList(selectFeatureArtefactsByFeatureID(feat.getId())));
+				feat -> feat.setFolderFileList(selectFolderFilesByFolderID(feat.getId())));
 
 		
 		return result;
 	}
 
 	/**
-	 * Returns a list of features for the given asset id.
+	 * Returns a list of folders for the given asset id.
 	 * 
 	 * @param id
-	 *            the id of the asset to return the features for
-	 * @return a list of found features
+	 *            the id of the asset to return the folders for
+	 * @return a list of found folders
 	 */
-	public List<Feature> selectFeaturesByAssetID(int id) {
-		List<Feature> result;
+	public List<Folder> selectFoldersByAssetID(int id) {
+		List<Folder> result;
 
-		log.debug("Getting features for asset {}...", id);
+		log.debug("Getting folders for asset {}...", id);
 
-		result = jdbc.query(SELECT_DISTINCT_SQL + " JOIN artefacts on featureid = features.id WHERE assetid = ?",
-				new Object[] { id }, new FeatureRowMapper());
+		result = jdbc.query(SELECT_DISTINCT_SQL + " JOIN files on folderid = folders.id WHERE assetid = ?",
+				new Object[] { id }, new FolderRowMapper());
 
 		// load changed parent...
 		result.forEach(feat -> {
 			if (feat.getParent() != null) {
-				feat.setParent(selectFeaturesByID(feat.getParent().getId()));
+				feat.setParent(selectFoldersByID(feat.getParent().getId()));
 			}
 		});
 
-		// load artefacts...
-		result.forEach(feat -> feat.setArtefactList(artacc.selectArtefactsByFeatureID(feat.getId())));
+		// load files...
+		result.forEach(feat -> feat.setFileList(artacc.selectFilesByFolderID(feat.getId())));
 
 		// load tracking...
 		result.forEach(
-				feat -> feat.setTrackingList(trackacc.selectTrackingByItemID(feat.getId(), TrackingType.FEATURE)));
+				feat -> feat.setTrackingList(trackacc.selectTrackingByItemID(feat.getId(), TrackingType.FOLDER)));
 
-		// load featureArtefacts...
+		// load folderFiles...
 		result.forEach(
-				feat -> feat.setFeatureArtefactList(selectFeatureArtefactsByFeatureID(feat.getId())));
+				feat -> feat.setFolderFileList(selectFolderFilesByFolderID(feat.getId())));
 		
 		return result;
 	}
 	
-	public List<Feature> selectFeatureArtefactsByFeatureID(int id) {
-		List<Feature> result = new LinkedList<>();
+	public List<Folder> selectFolderFilesByFolderID(int id) {
+		List<Folder> result = new LinkedList<>();
 		
-		log.debug("Getting featureArtefacts list fot feature {}...", id);
+		log.debug("Getting folderFiles list fot folder {}...", id);
 		
-		jdbc.query(SELECT_SQL + " JOIN featuresxfeatureartefacts on featureartefactid = features.id WHERE featureid = ?",
-		new Object[] { id }, new FeatureRowMapper()).forEach(featureartefact -> result.add(featureartefact));
+		jdbc.query(SELECT_SQL + " JOIN foldersxfolderfiles on folderfileid = folders.id WHERE folderid = ?",
+		new Object[] { id }, new FolderRowMapper()).forEach(folderfile -> result.add(folderfile));
 
 //		// load changed parent...
 //		result.forEach(feat -> {
 //			if (feat.getParent() != null) {
-//				feat.setParent(selectFeaturesByID(feat.getParent().getId()));
+//				feat.setParent(selectFoldersByID(feat.getParent().getId()));
 //			}
 //		});
 		
-		// load artefacts...
-		result.forEach(feat -> feat.setArtefactList(artacc.selectArtefactsByFeatureID(feat.getId())));
+		// load files...
+		result.forEach(feat -> feat.setFileList(artacc.selectFilesByFolderID(feat.getId())));
 		
 		// load tracking...
 		result.forEach(
-				feat -> feat.setTrackingList(trackacc.selectTrackingByItemID(feat.getId(), TrackingType.FEATURE)));
+				feat -> feat.setTrackingList(trackacc.selectTrackingByItemID(feat.getId(), TrackingType.FOLDER)));
 		
-		// load featureArtefacts...
+		// load folderFiles...
 		result.forEach(
 				feat -> {
-					if (feat.getFeatureArtefactList() != null && feat.getFeatureArtefactList().isEmpty() == false) {
-						feat.setFeatureArtefactList(selectFeatureArtefactsByFeatureID(feat.getId()));
+					if (feat.getFolderFileList() != null && feat.getFolderFileList().isEmpty() == false) {
+						feat.setFolderFileList(selectFolderFilesByFolderID(feat.getId()));
 					}
 				});
 		
 		return result;
 	}
 	
-	public List<Feature> selectFeatureByFeatureArtefactID(int id) {
-		List<Feature> result = new LinkedList<>();
+	public List<Folder> selectFolderByFolderFileID(int id) {
+		List<Folder> result = new LinkedList<>();
 		
-		log.debug("Getting feature for the featureArtefact {}", id);
+		log.debug("Getting folder for the folderFile {}", id);
 		
-		jdbc.query(SELECT_DISTINCT_SQL + " JOIN featuresxfeatureartefacts on featureid = features.id WHERE featureartefactid = ?",
-		new Object[] { id }, new FeatureRowMapper()).forEach(feature -> result.add(feature));
+		jdbc.query(SELECT_DISTINCT_SQL + " JOIN foldersxfolderfiles on folderid = folders.id WHERE folderfileid = ?",
+		new Object[] { id }, new FolderRowMapper()).forEach(folder -> result.add(folder));
 		
-		// load artefacts...
+		// load files...
 		result.forEach(
-				feat -> feat.setArtefactList(artacc.selectArtefactsByFeatureID(feat.getId())));
+				feat -> feat.setFileList(artacc.selectFilesByFolderID(feat.getId())));
 		
 		// load tracking...
 		result.forEach(
-				feat -> feat.setTrackingList(trackacc.selectTrackingByItemID(feat.getId(), TrackingType.FEATURE)));
+				feat -> feat.setTrackingList(trackacc.selectTrackingByItemID(feat.getId(), TrackingType.FOLDER)));
 		
-		// load featureArtefacts...
+		// load folderFiles...
 		result.forEach(
 				feat -> {
-					if (feat.getFeatureArtefactList() != null && feat.getFeatureArtefactList().isEmpty() == false) {
-						feat.setFeatureArtefactList(selectFeatureArtefactsByFeatureID(feat.getId()));
+					if (feat.getFolderFileList() != null && feat.getFolderFileList().isEmpty() == false) {
+						feat.setFolderFileList(selectFolderFilesByFolderID(feat.getId()));
 					}
 				});
 		
 		return result;
 	}
 	
-	public void selectFeaturesXFeatureArtefacts (Feature feature) {
-		log.debug("Getting featureArtefacts for the feature {}", feature.getId());
+	public void selectFoldersXFolderFiles (Folder folder) {
+		log.debug("Getting folderFiles for the folder {}", folder.getId());
 		
 		jdbc.query(
-				"SELECT features.id, title, description, parentid, updatedparent "
-				+ "FROM featuresxfeatureartefacts JOIN features ON featureartefactid = features.id WHERE featureid = ?",
-		new Object[] { feature.getId() }, new FeatureRowMapper())
-		.forEach(featureArtefact -> feature.addFeatureArtefact(featureArtefact));
+				"SELECT folders.id, title, description, parentid, updatedparent "
+				+ "FROM foldersxfolderfiles JOIN folders ON folderfileid = folders.id WHERE folderid = ?",
+		new Object[] { folder.getId() }, new FolderRowMapper())
+		.forEach(folderFile -> folder.addFolderFile(folderFile));
 
 	}
 
 	/**
-	 * Inserts a new feature, if id is null or updates an existing one.
+	 * Inserts a new folder, if id is null or updates an existing one.
 	 * 
-	 * @param feature
-	 *            the feature to be inserted or updated
-	 * @return the updated feature model
+	 * @param folder
+	 *            the folder to be inserted or updated
+	 * @return the updated folder model
 	 */
-	public Feature saveFeature(Feature feature) {
-		Feature result;
+	public Folder saveFolder(Folder folder) {
+		Folder result;
 
-		if (feature.getId() == null) {
-			result = insertFeature(feature);
+		if (folder.getId() == null) {
+			result = insertFolder(folder);
 
 			final int id = result.getId();
 			result.getTrackingList().forEach(tra -> tra.setItemid(id));
-			result.getArtefactList().forEach(art -> art.getFeature().setId(id));
+			result.getFileList().forEach(art -> art.getFolder().setId(id));
 		} else {
-			result = updateFeature(feature);
+			result = updateFolder(folder);
 		}
 
 		// save tracking...
 		trackacc.saveTracking(result.getTrackingList());
 
-		// save artefacts...
-		result.getArtefactList().forEach(art -> artacc.saveArtefact(art));
+		// save files...
+		result.getFileList().forEach(art -> artacc.saveFile(art));
 		
-		// save featureArtefacts for feature...
-		saveFeaturesXFeatureArtefacts(result);
+		// save folderFiles for folder...
+		saveFoldersXFolderFiles(result);
 		
-		// save featureArtefacts
-		if (result.getFeatureArtefactList().isEmpty() == false) {
-			result.getFeatureArtefactList().forEach(featart -> saveFeature(featart));
+		// save folderFiles
+		if (result.getFolderFileList().isEmpty() == false) {
+			result.getFolderFileList().forEach(featart -> saveFolder(featart));
 		}
 
 		return result;
 	}
 	
 	/**
-	 * Inserts the features in the given feature featureArtefactList into the database.
+	 * Inserts the folders in the given folder folderFileList into the database.
 	 * 
-	 * @param feature
+	 * @param folder
 	 * 
 	 * @author Hongfei Chen
 	 */
-	public void saveFeaturesXFeatureArtefacts(Feature feature) {
-		jdbc.update(DELETE_FEATURESXFEATUREARTEFACTS_FEATURE_SQL, feature.getId());
+	public void saveFoldersXFolderFiles(Folder folder) {
+		jdbc.update(DELETE_FOLDERSXFOLDERFILES_FOLDER_SQL, folder.getId());
 		
-		feature.getFeatureArtefactList()
-				.forEach(featart -> jdbc.update(INSERT_FEATURESXFEATUREARTEFACTS_SQL, feature.getId(), featart.getId()));
+		folder.getFolderFileList()
+				.forEach(featart -> jdbc.update(INSERT_FOLDERSXFOLDERFILES_SQL, folder.getId(), featart.getId()));
 	}
 
 	/**
-	 * Inserts a new feature.
+	 * Inserts a new folder.
 	 * 
-	 * @param feature
-	 *            the feature to be inserted
-	 * @return the updated feature model
+	 * @param folder
+	 *            the folder to be inserted
+	 * @return the updated folder model
 	 */
-	private Feature insertFeature(Feature feature) {
+	private Folder insertFolder(Folder folder) {
 		KeyHolder holder = new GeneratedKeyHolder();
 
 		jdbc.update(new PreparedStatementCreator() {
 			@Override
 			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
 				PreparedStatement ps = connection.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
-				ps.setString(1, feature.getTitle());
-				ps.setString(2, feature.getDescription());
-				if (feature.getParent() != null) {
-					ps.setInt(3, feature.getParent().getId());
+				ps.setString(1, folder.getTitle());
+				ps.setString(2, folder.getDescription());
+				if (folder.getParent() != null) {
+					ps.setInt(3, folder.getParent().getId());
 				} else {
 					ps.setNull(3, java.sql.Types.INTEGER);
 				}
-				ps.setBoolean(4, feature.isUpdatedparent());
+				ps.setBoolean(4, folder.isUpdatedparent());
 				return ps;
 			}
 		}, holder);
@@ -357,62 +357,62 @@ public class FolderAccess {
 		} else {
 			newId = holder.getKey().intValue();
 		}
-		feature.setId(newId);
+		folder.setId(newId);
 
-		return feature;
+		return folder;
 	}
 
 	/**
-	 * Updates the given feature.
+	 * Updates the given folder.
 	 * 
-	 * @param feature
-	 *            the feature to be updated
-	 * @return the updated feature model
+	 * @param folder
+	 *            the folder to be updated
+	 * @return the updated folder model
 	 */
-	private Feature updateFeature(Feature feature) {
+	private Folder updateFolder(Folder folder) {
 		Integer parentid = null;
 
-		if (feature.getParent() != null) {
-			parentid = feature.getParent().getId();
+		if (folder.getParent() != null) {
+			parentid = folder.getParent().getId();
 		}
 
-		jdbc.update(UPDATE_SQL, feature.getTitle(), feature.getDescription(), parentid, feature.isUpdatedparent(),
-				feature.getId());
+		jdbc.update(UPDATE_SQL, folder.getTitle(), folder.getDescription(), parentid, folder.isUpdatedparent(),
+				folder.getId());
 
-		return feature;
+		return folder;
 	}
 	
 	
 
 	/**
-	 * Deletes the given feature.
+	 * Deletes the given folder.
 	 * 
-	 * @param feature
-	 *            the feature to be deleted
+	 * @param folder
+	 *            the folder to be deleted
 	 * @return true, if successful, false, if not
 	 */
-	public boolean deleteFeature(Feature feature) {
+	public boolean deleteFolder(Folder folder) {
 		int resultcount = 0;
 
 		// delete tracking...
-		trackacc.deleteTracking(feature.getId(), TrackingType.FEATURE);
+		trackacc.deleteTracking(folder.getId(), TrackingType.FOLDER);
 
 		// delete connections...
-		jdbc.update(DELETE_PRODUCTSXFEATURES_SQL, feature.getId());
-		jdbc.update(DELETE_PROJECTSXFEATURES_SQL, feature.getId());
-		jdbc.update(DELETE_FEATURESXFEATUREARTEFACTS_FEATURE_SQL, feature.getId());
-		jdbc.update(DELETE_FEATURESXFEATUREARTEFACTS_FEATUREARTEFACT_SQL, feature.getId());
+		jdbc.update(DELETE_PRODUCTSXFOLDERS_SQL, folder.getId());
+		jdbc.update(DELETE_PROJECTSXFOLDERS_SQL, folder.getId());
+		jdbc.update(DELETE_FOLDERSXFOLDERFILES_FOLDER_SQL, folder.getId());
+		jdbc.update(DELETE_FOLDERSXFOLDERFILES_FOLDERARTEFACT_SQL, folder.getId());
 
-		// delete artefacts...
-		artacc.deleteArtefactsByFeatureID(feature.getId());
+		// delete files...
+		artacc.deleteFilesByFolderID(folder.getId());
 		
-		// delete featureArtefacts...
-		feature.getFeatureArtefactList().forEach(featart -> deleteFeature(featart));
+		// delete folderFiles...
+		folder.getFolderFileList().forEach(featart -> deleteFolder(featart));
 		
 		// set childrens id to null...
-		jdbc.update(UPDATE_PARENT_SQL, null, false, feature.getId());
+		jdbc.update(UPDATE_PARENT_SQL, null, false, folder.getId());
 
-		resultcount = jdbc.update(DELETE_SQL, feature.getId());
+		resultcount = jdbc.update(DELETE_SQL, folder.getId());
 
 		return resultcount >= 1;
 	}

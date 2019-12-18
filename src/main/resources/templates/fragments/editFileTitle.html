@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<title></title>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	</head>
+	<body>
+		<div th:fragment="editFileTitle(file)">
+			<div  class="modal fade" th:id="'editFileTitle' + ${file.id}">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<span th:if="${file.asset.type.name() == 'TEXT'}" > 
+							<form action="#" th:action="@{changeTextFile}" method="post" onsubmit="closeModal()">
+								<input type="hidden" name="start" th:value="${file.start}" />
+								<input type="hidden" name="end" th:value="${file.end}" />
+
+								<div class="modal-header">
+									<h3 th:text="#{file.titleEdit}">Edit File Title</h3>
+								</div>
+								<div class="modal-body">
+									<div class="form-group">
+										<label for="title" th:text="#{file.title}">Title</label>
+										<input name="title" type="text" class="form-control" id="title" th:value="${file.title}" required="true" maxlength="30" pattern=".*\S.*" />
+									</div>
+									<input type="hidden" name="fileId" th:value="${file.id}" />
+									<input type="hidden" name="folderId" th:value="${file.folder.id}" />
+									<input type="hidden" name="assetId" th:value="${file.asset.id}" />
+								</div>
+								<div class="modal-footer">
+									<button type="submit" class="btn btn-primary" th:text="#{file.edit}"></button>
+									<button type="reset" class="btn" data-dismiss="modal" th:text="#{message.cancel}">Cancel</button>
+								</div>
+							</form>
+						</span>
+						<span th:if="${file.asset.type.name() == 'AUDIO'}" > 
+							<form action="#" th:action="@{changeAudioFile}" method="post" onsubmit="closeModal()">
+								<input type="hidden" name="start" th:value="${file.start}" />
+								<input type="hidden" name="end" th:value="${file.end}" />
+
+								<div class="modal-header">
+									<h3 th:text="#{file.titleEdit}">Edit File Title</h3>
+								</div>
+								<div class="modal-body">
+									<div class="form-group">
+										<label for="title" th:text="#{file.title}">Title</label>
+										<input name="title" type="text" class="form-control" id="title" th:value="${file.title}" required="true" maxlength="30" pattern=".*\S.*" />
+									</div>
+									<input type="hidden" name="fileId" th:value="${file.id}" />
+									<input type="hidden" name="folderId" th:value="${file.folder.id}" />
+									<input type="hidden" name="assetId" th:value="${file.asset.id}" />
+								</div>
+								<div class="modal-footer">
+									<button type="submit" class="btn btn-primary" th:text="#{file.edit}"></button>
+									<button type="reset" class="btn" data-dismiss="modal" th:text="#{message.cancel}">Cancel</button>
+								</div>
+							</form>
+						</span>
+						<span th:if="${file.asset.type.name() == 'VIDEO'}" > 
+							<form action="#" th:action="@{changeVideoFile}" method="post" onsubmit="closeModal()">
+								<input type="hidden" name="start" th:value="${file.start}" />
+								<input type="hidden" name="end" th:value="${file.end}" />
+
+								<div class="modal-header">
+									<h3 th:text="#{file.titleEdit}">Edit File Title</h3>
+								</div>
+								<div class="modal-body">
+									<div class="form-group">
+										<label for="title" th:text="#{file.title}">Title</label>
+										<input name="title" type="text" class="form-control" id="title" th:value="${file.title}" required="true" maxlength="30" pattern=".*\S.*" />
+									</div>
+									<input type="hidden" name="fileId" th:value="${file.id}" />
+									<input type="hidden" name="folderId" th:value="${file.folder.id}" />
+									<input type="hidden" name="assetId" th:value="${file.asset.id}" />
+								</div>
+								<div class="modal-footer">
+									<button type="submit" class="btn btn-primary" th:text="#{file.edit}"></button>
+									<button type="reset" class="btn" data-dismiss="modal" th:text="#{message.cancel}">Cancel</button>
+								</div>
+							</form>
+						</span>
+						<span th:if="${file.asset.type.name() == 'XML'}" > 
+							<form action="#" th:action="@{changeXMLFile}" method="post" onsubmit="closeModal()">
+								<input type="hidden" name="nodes" th:value="${file.nodes}" />
+
+								<div class="modal-header">
+									<h3 th:text="#{file.titleEdit}">Edit File Title</h3>
+								</div>
+								<div class="modal-body">
+									<div class="form-group">
+										<label for="title" th:text="#{file.title}">Title</label>
+										<input name="title" type="text" class="form-control" id="title" th:value="${file.title}" required="true" maxlength="30" pattern=".*\S.*" />
+									</div>
+									<input type="hidden" name="fileId" th:value="${file.id}" />
+									<input type="hidden" name="folderId" th:value="${file.folder.id}" />
+									<input type="hidden" name="assetId" th:value="${file.asset.id}" />
+								</div>
+								<div class="modal-footer">
+									<button type="submit" class="btn btn-primary" th:text="#{file.edit}"></button>
+									<button type="reset" class="btn" data-dismiss="modal" th:text="#{message.cancel}">Cancel</button>
+								</div>
+							</form>
+						</span>
+						<span th:if="${file.asset.type.name() == 'PICTURE'}" > 
+							<form action="#" th:action="@{changePictureFile}" method="post" onsubmit="closeModal()">
+								<input type="hidden" name="x" th:value="${file.x}" />
+								<input type="hidden" name="y" th:value="${file.y}" />
+								<input type="hidden" name="width" th:value="${file.width}" />
+								<input type="hidden" name="height" th:value="${file.height}" />
+
+								<div class="modal-header">
+									<h3 th:text="#{file.titleEdit}">Edit File Title</h3>
+								</div>
+								<div class="modal-body">
+									<div class="form-group">
+										<label for="title" th:text="#{file.title}">Title</label>
+										<input name="title" type="text" class="form-control" id="title" th:value="${file.title}" required="true" maxlength="30" pattern=".*\S.*" />
+									</div>
+									<input type="hidden" name="fileId" th:value="${file.id}" />
+									<input type="hidden" name="folderId" th:value="${file.folder.id}" />
+									<input type="hidden" name="assetId" th:value="${file.asset.id}" />
+								</div>
+								<div class="modal-footer">
+									<button type="submit" class="btn btn-primary" th:text="#{file.edit}"></button>
+									<button type="reset" class="btn" data-dismiss="modal" th:text="#{message.cancel}">Cancel</button>
+								</div>
+							</form>
+						</span>
+						<span th:if="${file.asset.type.name() == 'OTHER'}" > 
+							<form action="#" th:action="@{changeOtherFile}" method="post" onsubmit="closeModal()">
+
+								<div class="modal-header">
+									<h3 th:text="#{file.titleEdit}">Edit File Title</h3>
+								</div>
+								<div class="modal-body">
+									<div class="form-group">
+										<label for="title" th:text="#{file.title}">Title</label>
+										<input name="title" type="text" class="form-control" id="title" th:value="${file.title}" required="true" maxlength="30" pattern=".*\S.*" />
+									</div>
+									<input type="hidden" name="fileId" th:value="${file.id}" />
+									<input type="hidden" name="folderId" th:value="${file.folder.id}" />
+									<input type="hidden" name="assetId" th:value="${file.asset.id}" />
+								</div>
+								<div class="modal-footer">
+									<button type="submit" class="btn btn-primary" th:text="#{file.edit}"></button>
+									<button type="reset" class="btn" data-dismiss="modal" th:text="#{message.cancel}">Cancel</button>
+								</div>
+							</form>
+						</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

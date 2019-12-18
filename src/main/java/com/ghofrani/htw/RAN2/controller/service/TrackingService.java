@@ -16,13 +16,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.LocaleResolver;
 
 import com.ghofrani.htw.RAN2.database.AssetAccess;
-import com.ghofrani.htw.RAN2.database.FeatureAccess;
+import com.ghofrani.htw.RAN2.database.FolderAccess;
 import com.ghofrani.htw.RAN2.database.ProductAccess;
 import com.ghofrani.htw.RAN2.database.ProjectAccess;
 import com.ghofrani.htw.RAN2.database.helper.TrackingType;
-import com.ghofrani.htw.RAN2.model.Artefact;
+import com.ghofrani.htw.RAN2.model.File;
 import com.ghofrani.htw.RAN2.model.Asset;
-import com.ghofrani.htw.RAN2.model.Feature;
+import com.ghofrani.htw.RAN2.model.Folder;
 import com.ghofrani.htw.RAN2.model.Product;
 import com.ghofrani.htw.RAN2.model.Project;
 import com.ghofrani.htw.RAN2.model.Tracking;
@@ -37,7 +37,7 @@ import com.ghofrani.htw.RAN2.model.Tracking;
 public class TrackingService implements ITrackingService {
 
 	@Autowired
-	FeatureAccess featureAccess;
+	FolderAccess folderAccess;
 
 	@Autowired
 	ProjectAccess projectAccess;
@@ -57,112 +57,112 @@ public class TrackingService implements ITrackingService {
 	DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 
 	/**
-	 * Adds tracking information to the feature after adding an artefact
+	 * Adds tracking information to the folder after adding an file
 	 * 
-	 * @param artefact Artefact to be tracked
-	 * @param feature Feature that contains artefact 
+	 * @param file File to be tracked
+	 * @param folder Folder that contains file 
 	 * @param httpRequest RequestObject RequestObject
-	 * @return return the updated feature
+	 * @return return the updated folder
 	 */
 	@Override
-	public Feature trackAddedArtefact(Artefact artefact, Feature feature, HttpServletRequest httpRequest) {
+	public Folder trackAddedFile(File file, Folder folder, HttpServletRequest httpRequest) {
 
 		Locale locale = resolver.resolveLocale(httpRequest);
 		String mod = messages.getMessage("track.modified", null, locale);
-		String addArt = messages.getMessage("track.addArtefact", null, locale);
+		String addArt = messages.getMessage("track.addFile", null, locale);
 		String fromAsset = messages.getMessage("track.fromAsset", null, locale);
 
 		Date currentDate = Calendar.getInstance().getTime();
-		Asset asset = artefact.getAsset();
+		Asset asset = file.getAsset();
 
 		// Setup the message for the new tracking entry
 		String modified = mod + SecurityContextHolder.getContext().getAuthentication().getName() + addArt
-				+ artefact.getTitle() + " " + fromAsset + asset.getTitle() + " - " + dateFormat.format(currentDate);
-		Tracking newTrack = new Tracking(feature.getId(), TrackingType.FEATURE, currentDate, modified);
-		feature.addTrackingEntry(newTrack);
+				+ file.getTitle() + " " + fromAsset + asset.getTitle() + " - " + dateFormat.format(currentDate);
+		Tracking newTrack = new Tracking(folder.getId(), TrackingType.FOLDER, currentDate, modified);
+		folder.addTrackingEntry(newTrack);
 
 		// Setup the message for the new tracking entry
 		String used = "Used by " + SecurityContextHolder.getContext().getAuthentication().getName()
-				+ "; created Artefact: " + artefact.getTitle();
+				+ "; created File: " + file.getTitle();
 		newTrack = new Tracking(asset.getId(), TrackingType.ASSET, currentDate, used);
 		asset.addTrackingEntry(newTrack);
 		assetAccess.saveAsset(asset);
 
-		return feature;
+		return folder;
 	}
 
 	/**
-	 * Adds tracking information to the feature and asset after editing an artefact
+	 * Adds tracking information to the folder and asset after editing an file
 	 * 
-	 * @param artefact Artefact to be tracked
-	 * @param feature Feature that contains artefact 
+	 * @param file File to be tracked
+	 * @param folder Folder that contains file 
 	 * @param httpRequest RequestObject RequestObject
-	 * @return return the updated feature
+	 * @return return the updated folder
 	 */
 	@Override
-	public Feature trackArtefactInformation(Artefact artefact, Feature feature, HttpServletRequest httpRequest) {
+	public Folder trackFileInformation(File file, Folder folder, HttpServletRequest httpRequest) {
 
 		Locale locale = resolver.resolveLocale(httpRequest);
 		String mod = messages.getMessage("track.modified", null, locale);
-		String altArtefact = messages.getMessage("track.altArtefact", null, locale);
+		String altFile = messages.getMessage("track.altFile", null, locale);
 
 		Date currentDate = Calendar.getInstance().getTime();
 
 		// Setup the message for the new tracking entry
-		String modified = mod + SecurityContextHolder.getContext().getAuthentication().getName() + altArtefact
-				+ artefact.getTitle() + " - " + dateFormat.format(currentDate);
-		Tracking newTrack = new Tracking(feature.getId(), TrackingType.FEATURE, currentDate, modified);
-		feature.addTrackingEntry(newTrack);
+		String modified = mod + SecurityContextHolder.getContext().getAuthentication().getName() + altFile
+				+ file.getTitle() + " - " + dateFormat.format(currentDate);
+		Tracking newTrack = new Tracking(folder.getId(), TrackingType.FOLDER, currentDate, modified);
+		folder.addTrackingEntry(newTrack);
 
-		Asset asset = artefact.getAsset();
+		Asset asset = file.getAsset();
 		newTrack = new Tracking(asset.getId(), TrackingType.ASSET, currentDate, modified);
 		asset.addTrackingEntry(newTrack);
 		assetAccess.saveAsset(asset);
 
-		return featureAccess.saveFeature(feature);
+		return folderAccess.saveFolder(folder);
 	}
 
 	/**
-	 * Adds tracking information to the feature and asset after deleting an artefact
+	 * Adds tracking information to the folder and asset after deleting an file
 	 * 
-	 * @param artefact Artefact to be tracked
-	 * @param feature Feature that contains artefact 
+	 * @param file File to be tracked
+	 * @param folder Folder that contains file 
 	 * @param httpRequest RequestObject RequestObject
-	 * @return return the updated feature
+	 * @return return the updated folder
 	 */
 	@Override
-	public Feature trackDeletedArtefact(Artefact artefact, Feature feature, HttpServletRequest httpRequest) {
+	public Folder trackDeletedFile(File file, Folder folder, HttpServletRequest httpRequest) {
 
 		Locale locale = resolver.resolveLocale(httpRequest);
-		String delArtefact = messages.getMessage("track.delArtefact", null, locale);
+		String delFile = messages.getMessage("track.delFile", null, locale);
 		String by = messages.getMessage("track.by", null, locale);
 
 		Date currentDate = Calendar.getInstance().getTime();
 
 		// Setup the message for the new tracking entry
-		String deleted = delArtefact + artefact.getTitle() + by
+		String deleted = delFile + file.getTitle() + by
 				+ SecurityContextHolder.getContext().getAuthentication().getName() + " - "
 				+ dateFormat.format(currentDate);
-		Tracking newTrack = new Tracking(feature.getId(), TrackingType.FEATURE, currentDate, deleted);
-		feature.addTrackingEntry(newTrack);
+		Tracking newTrack = new Tracking(folder.getId(), TrackingType.FOLDER, currentDate, deleted);
+		folder.addTrackingEntry(newTrack);
 
-		Asset asset = artefact.getAsset();
+		Asset asset = file.getAsset();
 		newTrack = new Tracking(asset.getId(), TrackingType.ASSET, currentDate, deleted);
 		asset.addTrackingEntry(newTrack);
 		assetAccess.saveAsset(asset);
 
-		return featureAccess.saveFeature(feature);
+		return folderAccess.saveFolder(folder);
 	}
 
 	/**
-	 * Adds tracking information for the creation to the feature
+	 * Adds tracking information for the creation to the folder
 	 * 
-	 * @param savedFeature Feature to be tracked
+	 * @param savedFolder Folder to be tracked
 	 * @param httpRequest RequestObject RequestObject
-	 * @return return the updated feature
+	 * @return return the updated folder
 	 */
 	@Override
-	public Feature trackCreatedFeature(Feature savedFeature, HttpServletRequest httpRequest) {
+	public Folder trackCreatedFolder(Folder savedFolder, HttpServletRequest httpRequest) {
 
 		Locale locale = resolver.resolveLocale(httpRequest);
 		String created = messages.getMessage("track.created", null, locale);
@@ -172,32 +172,32 @@ public class TrackingService implements ITrackingService {
 		// Setup the message for the new tracking entry
 		String create = created + SecurityContextHolder.getContext().getAuthentication().getName() + " - "
 				+ dateFormat.format(currentDate);
-		Tracking newTrack = new Tracking(savedFeature.getId(), TrackingType.FEATURE, currentDate, create);
-		savedFeature.addTrackingEntry(newTrack);
-		return featureAccess.saveFeature(savedFeature);
+		Tracking newTrack = new Tracking(savedFolder.getId(), TrackingType.FOLDER, currentDate, create);
+		savedFolder.addTrackingEntry(newTrack);
+		return folderAccess.saveFolder(savedFolder);
 
 	}
 
 	/**
-	 * Adds tracking information to the project after adding a feature
+	 * Adds tracking information to the project after adding a folder
 	 * 
-	 * @param feature Feature to be tracked
-	 * @param project Project containing feature
+	 * @param folder Folder to be tracked
+	 * @param project Project containing folder
 	 * @param httpRequest RequestObject RequestObject
 	 * @return return the updated project
 	 */
 	@Override
-	public Project trackAddedFeature(Feature feature, Project project, HttpServletRequest httpRequest) {
+	public Project trackAddedFolder(Folder folder, Project project, HttpServletRequest httpRequest) {
 
 		Locale locale = resolver.resolveLocale(httpRequest);
 		String mod = messages.getMessage("track.modified", null, locale);
-		String addFeature = messages.getMessage("track.addFeature", null, locale);
+		String addFolder = messages.getMessage("track.addFolder", null, locale);
 
 		Date currentDate = Calendar.getInstance().getTime();
 
 		// Setup the message for the new tracking entry
-		String modified = mod + SecurityContextHolder.getContext().getAuthentication().getName() + addFeature
-				+ feature.getTitle() + " - " + dateFormat.format(currentDate);
+		String modified = mod + SecurityContextHolder.getContext().getAuthentication().getName() + addFolder
+				+ folder.getTitle() + " - " + dateFormat.format(currentDate);
 		Tracking newTrack = new Tracking(project.getId(), TrackingType.PROJECT, currentDate, modified);
 		project.addTrackingEntry(newTrack);
 		return project;
@@ -256,39 +256,39 @@ public class TrackingService implements ITrackingService {
 	}
 
 	/**
-	 * Adds tracking information to the new feature after copying it from the parent
-	 * feature
+	 * Adds tracking information to the new folder after copying it from the parent
+	 * folder
 	 * 
-	 * @param parent ParentFeature of feature
-	 * @param newFeature new childFeature
+	 * @param parent ParentFolder of folder
+	 * @param newFolder new childFolder
 	 * @param httpRequest RequestObject RequestObject
-	 * @return return the copied feature
+	 * @return return the copied folder
 	 */
 	@Override
-	public Feature trackCopiedFeature(Feature parent, Feature newFeature, HttpServletRequest httpRequest) {
+	public Folder trackCopiedFolder(Folder parent, Folder newFolder, HttpServletRequest httpRequest) {
 
 		Locale locale = resolver.resolveLocale(httpRequest);
 		String copied = messages.getMessage("track.copied", null, locale);
-		String fromFeature = messages.getMessage("track.fromFeature", null, locale);
+		String fromFolder = messages.getMessage("track.fromFolder", null, locale);
 
 		Date currentDate = Calendar.getInstance().getTime();
 		List<Tracking> oldTracks = parent.getTrackingList();
 		Tracking tempTrack = null;
 
-		// Set the new Id for the trackings of the copied feature
+		// Set the new Id for the trackings of the copied folder
 		for (int i = 0; i < oldTracks.size(); i++) {
 			tempTrack = oldTracks.get(i);
-			tempTrack.setItemid(newFeature.getId());
-			newFeature.addTrackingEntry(tempTrack);
+			tempTrack.setItemid(newFolder.getId());
+			newFolder.addTrackingEntry(tempTrack);
 		}
 
 		// Setup the message for the new tracking entry
-		String copy = copied + SecurityContextHolder.getContext().getAuthentication().getName() + " " + fromFeature
+		String copy = copied + SecurityContextHolder.getContext().getAuthentication().getName() + " " + fromFolder
 				+ parent.getTitle() + " - " + dateFormat.format(currentDate);
-		Tracking newTrack = new Tracking(newFeature.getId(), TrackingType.FEATURE, currentDate, copy);
-		newFeature.addTrackingEntry(newTrack);
+		Tracking newTrack = new Tracking(newFolder.getId(), TrackingType.FOLDER, currentDate, copy);
+		newFolder.addTrackingEntry(newTrack);
 
-		return featureAccess.saveFeature(newFeature);
+		return folderAccess.saveFolder(newFolder);
 
 	}
 
@@ -379,27 +379,27 @@ public class TrackingService implements ITrackingService {
 	}
 
 	/**
-	 * Adds tracking information to the feature after editing it
+	 * Adds tracking information to the folder after editing it
 	 * 
-	 * @param feature Feature to be tracked
+	 * @param folder Folder to be tracked
 	 * @param httpRequest RequestObject
-	 * @return return the updated feature
+	 * @return return the updated folder
 	 */
 	@Override
-	public Feature trackFeatureInformation(Feature feature, HttpServletRequest httpRequest) {
+	public Folder trackFolderInformation(Folder folder, HttpServletRequest httpRequest) {
 
 		Locale locale = resolver.resolveLocale(httpRequest);
 		String mod = messages.getMessage("track.modified", null, locale);
-		String altFeature = messages.getMessage("track.altFeature", null, locale);
+		String altFolder = messages.getMessage("track.altFolder", null, locale);
 
 		Date currentDate = Calendar.getInstance().getTime();
 
 		// Setup the message for the new tracking entry
-		String modified = mod + SecurityContextHolder.getContext().getAuthentication().getName() + altFeature + " - "
+		String modified = mod + SecurityContextHolder.getContext().getAuthentication().getName() + altFolder + " - "
 				+ dateFormat.format(currentDate);
-		Tracking newTrack = new Tracking(feature.getId(), TrackingType.FEATURE, currentDate, modified);
-		feature.addTrackingEntry(newTrack);
-		return featureAccess.saveFeature(feature);
+		Tracking newTrack = new Tracking(folder.getId(), TrackingType.FOLDER, currentDate, modified);
+		folder.addTrackingEntry(newTrack);
+		return folderAccess.saveFolder(folder);
 
 	}
 
@@ -430,25 +430,25 @@ public class TrackingService implements ITrackingService {
 	}
 
 	/**
-	 * Adds tracking information to the project after deleting a feature
+	 * Adds tracking information to the project after deleting a folder
 	 * 
-	 * @param projectId ID of project containing feature
-	 * @param featureId ID of feature thats tracking will be deleted
+	 * @param projectId ID of project containing folder
+	 * @param folderId ID of folder thats tracking will be deleted
 	 * @param httpRequest RequestObject
 	 */
 	@Override
-	public void trackDeletedFeature(Integer projectId, Integer featureId, HttpServletRequest httpRequest) {
+	public void trackDeletedFolder(Integer projectId, Integer folderId, HttpServletRequest httpRequest) {
 
 		Locale locale = resolver.resolveLocale(httpRequest);
-		String delFeature = messages.getMessage("track.delFeature", null, locale);
+		String delFolder = messages.getMessage("track.delFolder", null, locale);
 		String by = messages.getMessage("track.by", null, locale);
 
 		Date currentDate = Calendar.getInstance().getTime();
 		Project project = projectAccess.selectProjectsByID(projectId);
-		Feature feature = featureAccess.selectFeaturesByID(featureId);
+		Folder folder = folderAccess.selectFoldersByID(folderId);
 
 		// Setup the message for the new tracking entry
-		String deleted = delFeature + feature.getTitle() + by
+		String deleted = delFolder + folder.getTitle() + by
 				+ SecurityContextHolder.getContext().getAuthentication().getName() + " - "
 				+ dateFormat.format(currentDate);
 		Tracking newTrack = new Tracking(project.getId(), TrackingType.PROJECT, currentDate, deleted);

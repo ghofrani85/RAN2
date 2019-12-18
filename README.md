@@ -1,6 +1,6 @@
 # RAN2
 
-Repository for Artificial Neural Networks (RAN2) is is an open source project for sharing and reusing the artifacts that are generated and used in the development of artificial neural networks (ANNs). Users can search, share, or reuse an existing artifact and submit their reviews to promote high value artifacts.
+Repository for Artificial Neural Networks (RAN2) is is an open source project for sharing and reusing the files that are generated and used in the development of artificial neural networks (ANNs). Users can search, share, or reuse an existing file and submit their reviews to promote high value files.
 Given the costs of developing ANNs---large datasets and high computational power---RAN2  facilitates reusability and therefore, saves time and resources. It aims at providing an infrastructure for a thorough investigation of reusability in the domain of ANNs. 
 
 ## Getting Started

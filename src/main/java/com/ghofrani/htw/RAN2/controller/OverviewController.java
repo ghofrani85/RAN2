@@ -20,11 +20,11 @@ import org.springframework.web.servlet.LocaleResolver;
 
 import com.ghofrani.htw.RAN2.controller.service.IUserService;
 import com.ghofrani.htw.RAN2.controller.service.TrackingService;
-import com.ghofrani.htw.RAN2.database.FeatureAccess;
+import com.ghofrani.htw.RAN2.database.FolderAccess;
 import com.ghofrani.htw.RAN2.database.ProductAccess;
 import com.ghofrani.htw.RAN2.database.ProjectAccess;
 import com.ghofrani.htw.RAN2.database.UserAccess;
-import com.ghofrani.htw.RAN2.model.Feature;
+import com.ghofrani.htw.RAN2.model.Folder;
 import com.ghofrani.htw.RAN2.model.Product;
 import com.ghofrani.htw.RAN2.model.Project;
 import com.ghofrani.htw.RAN2.model.User;
@@ -49,7 +49,7 @@ public class OverviewController {
 	private ProductAccess productAccess; // Added CHANGE
 	
 	@Autowired
-	private FeatureAccess featureAccess; // Added CHANGE
+	private FolderAccess folderAccess; // Added CHANGE
 
 	@Autowired
 	private TrackingService trackingService;
@@ -146,28 +146,28 @@ public class OverviewController {
 		}
 		
 		// fourFeatsList Added CHANGE
-		Feature learnFeat = featureAccess.saveFeature(new Feature("Learning Data", "Upload your learning data here"));
-		Feature testFeat = featureAccess.saveFeature(new Feature("Testing Data", "Upload your testing data here"));
-		Feature codeFeat = featureAccess.saveFeature(new Feature("Code", "Upload your code here"));
-		Feature modelFeat = featureAccess.saveFeature(new Feature("Model", "Upload your model here"));
+		Folder learnFeat = folderAccess.saveFolder(new Folder("Learning Data", "Upload your learning data here"));
+		Folder testFeat = folderAccess.saveFolder(new Folder("Testing Data", "Upload your testing data here"));
+		Folder codeFeat = folderAccess.saveFolder(new Folder("Code", "Upload your code here"));
+		Folder modelFeat = folderAccess.saveFolder(new Folder("Model", "Upload your model here"));
 		// nnProduct Added CHANGE
 		Product nnProduct = new Product ("Neural Network", "Upload your project here.");
-		nnProduct.addFeature(learnFeat);
-		nnProduct.addFeature(testFeat);
-		nnProduct.addFeature(codeFeat);
-		nnProduct.addFeature(modelFeat);
+		nnProduct.addFolder(learnFeat);
+		nnProduct.addFolder(testFeat);
+		nnProduct.addFolder(codeFeat);
+		nnProduct.addFolder(modelFeat);
 		nnProduct = productAccess.saveProduct(nnProduct);
 		
 		//CHANGE
 		//Project p = projectAccess.saveProject(new Project(null, title, description, Calendar.getInstance().getTime(),
-				//LinkedList<Product>(), new LinkedList<Feature>(), currentUser, null, false));
+				//LinkedList<Product>(), new LinkedList<Folder>(), currentUser, null, false));
 		Project p = projectAccess.saveProject(new Project(null, title, description, Calendar.getInstance().getTime(),
-									new LinkedList<Product>(), new LinkedList<Feature>(), currentUser, null, false));
+									new LinkedList<Product>(), new LinkedList<Folder>(), currentUser, null, false));
 		p.addProduct(nnProduct);
-		p.addFeature(learnFeat);
-		p.addFeature(testFeat);
-		p.addFeature(codeFeat);
-		p.addFeature(modelFeat);
+		p.addFolder(learnFeat);
+		p.addFolder(testFeat);
+		p.addFolder(codeFeat);
+		p.addFolder(modelFeat);
 		p = projectAccess.saveProject(p);
 
 		// Create Tracking for project

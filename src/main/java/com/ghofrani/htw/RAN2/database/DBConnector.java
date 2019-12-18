@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 import com.ghofrani.htw.RAN2.Application;
 import com.ghofrani.htw.RAN2.database.rowmapper.AssetRowMapper;
-import com.ghofrani.htw.RAN2.database.rowmapper.FeatureRowMapper;
+import com.ghofrani.htw.RAN2.database.rowmapper.FolderRowMapper;
 import com.ghofrani.htw.RAN2.database.rowmapper.ProductRowMapper;
 import com.ghofrani.htw.RAN2.database.rowmapper.ProjectRowMapper;
 import com.ghofrani.htw.RAN2.database.rowmapper.UserRowMapper;
@@ -40,7 +40,7 @@ public class DBConnector {
 		// create dummy tables...
 		// createDummyTableProjects();
 		// createDummyTableAssets();
-		// createDummyTableFeatures();
+		// createDummyTableFolders();
 		// createDummyTableProduct();
 		// createDummyTableUsers();
 	}
@@ -129,30 +129,30 @@ public class DBConnector {
 	}
 
 	/**
-	 * Creates a dummy table for features.
+	 * Creates a dummy table for folders.
 	 */
-	private void createDummyTableFeatures() {
-		// jdbc.execute("DROP TABLE features IF EXISTS");
-		// jdbc.execute("CREATE TABLE features(" + "id SERIAL, title VARCHAR(255),
+	private void createDummyTableFolders() {
+		// jdbc.execute("DROP TABLE folders IF EXISTS");
+		// jdbc.execute("CREATE TABLE folders(" + "id SERIAL, title VARCHAR(255),
 		// description VARCHAR(255))");
 
-		LinkedList<String> featurelist = new LinkedList<String>();
+		LinkedList<String> folderlist = new LinkedList<String>();
 		for (int i = 0; i <= 50; i = i + 1) {
-			featurelist.add(String.format("Feature%d Beschreibung%d", i, i));
+			folderlist.add(String.format("Folder%d Beschreibung%d", i, i));
 		}
 
 		// Split up the array of whole names into an array of first/last names
-		List<Object[]> splitUpNames = featurelist.stream().map(name -> name.split(" ")).collect(Collectors.toList());
+		List<Object[]> splitUpNames = folderlist.stream().map(name -> name.split(" ")).collect(Collectors.toList());
 
 		// Use a Java 8 stream to print out each tuple of the list
-		splitUpNames.forEach(name -> log.info(String.format("Inserting feature record for %s %s", name[0], name[1])));
+		splitUpNames.forEach(name -> log.info(String.format("Inserting folder record for %s %s", name[0], name[1])));
 
 		// Uses jdbc's batchUpdate operation to bulk load data
-		jdbc.batchUpdate("INSERT INTO features(title, description) VALUES (?,?)", splitUpNames);
+		jdbc.batchUpdate("INSERT INTO folders(title, description) VALUES (?,?)", splitUpNames);
 
-		log.info("Querying for feature records where title = 'Josh':");
-		jdbc.query("SELECT id, title, description FROM features WHERE title = ?", new Object[] { "Josh" },
-				new FeatureRowMapper()).forEach(feature -> log.info(feature.toString()));
+		log.info("Querying for folder records where title = 'Josh':");
+		jdbc.query("SELECT id, title, description FROM folders WHERE title = ?", new Object[] { "Josh" },
+				new FolderRowMapper()).forEach(folder -> log.info(folder.toString()));
 	}
 
 	/**

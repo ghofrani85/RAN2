@@ -43,7 +43,7 @@
                 <div class="modal-footer">
                     <form method="get" action="asset">
                         <input id="chooseAssetFormAssetId" type="hidden" name="id"></input>
-                        <input type="hidden" name="featureId" th:value="${feature.id}"></input>
+                        <input type="hidden" name="folderId" th:value="${folder.id}"></input>
                         <button id="chooseAssetFormSubmit" type="submit" class="btn btn-primary" disabled="disabled" th:text="#{asset.select}">choose Asset</button>
                         <button type="button" class="btn btn-default" data-dismiss="modal" data-target="#chooseAssetModal" th:text="#{message.cancel}">Close</button>
                     </form>

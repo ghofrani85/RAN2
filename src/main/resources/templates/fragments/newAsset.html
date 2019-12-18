@@ -20,7 +20,7 @@
                     
 						<label for="titleTextbar" th:text="#{asset.title}">Title:</label>
 						<input type="text" class="form-control" name="title" id="titleTextbar" required="true" maxlength="30" pattern=".*\S.*"></input>
-                        <input type="hidden" name="featureId" th:value="${feature.id}"></input>
+                        <input type="hidden" name="folderId" th:value="${folder.id}"></input>
 						<label for="descriptionTextarea" th:text="#{asset.description}">Description:</label>
 						<textarea class="form-control" name="description" rows="8" id="descriptionTextarea"></textarea>
                         

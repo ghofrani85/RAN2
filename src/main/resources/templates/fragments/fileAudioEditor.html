@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+    <title>RAN2</title>
+    <meta charset="utf-8"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"></link>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container-fluid" th:fragment="fileAudioEditor">
+    <div id="audioContainer">
+        <audio th:src="${audioSource}" id="mediaPlayer" controls="controls" preload="auto"></audio>
+    </div>
+
+    <div id="audioControls">
+        <form id="controlForm" th:action="${action}" method="post">
+            <div th:if="${folder}" class="row">
+                <div class="btn btn-default col-sm-4 col-sm-offset-2" th:text = "#{videoAudioEditor.transferStart}" onclick="transferStartTime()">transfer</div>
+                <div class="btn btn-default col-sm-4 col-sm-offset-2" th:text = "#{videoAudioEditor.transferEnd}" onclick="transferEndTime()">transfer</div>
+            </div>
+
+            <div th:if="${folder}" class="row">
+                <input type="hidden" name="folderId" th:value="${folder.Id}"></input>
+                <input type="hidden" name="assetId" th:value="${asset.Id}"></input>
+                <label class="col-sm-2" th:text="#{videoAudioEditor.from}">from</label>
+                <input class="col-sm-4" id="startTimeText" type="text" th:value="${startTimeAsText}" readonly="readonly"></input>
+                <input type="hidden" id="startTime" th:value="${startTime}" name="start"></input>
+                <label class="col-sm-2" th:text="#{videoAudioEditor.to}" >to</label>
+                <input class="col-sm-4" id="endTimeText" type="text" th:value="${endTimeAsText}" readonly="readonly"></input>
+                <input type="hidden" id="endTime" th:value="${endTime}"  name="end"></input>
+                <input th:if="${fileExists}" type="hidden" name="fileId" th:value="${fileId}"></input>
+                <input th:if="${fileExists}" type="hidden" name="title" th:value="${title}" ></input>
+            </div>
+            <!-- TODO: properly display errors -->
+            <div id="errorStartGtEnd" th:text="#{videoAudioEditor.errorStartGtEnd}" hidden="hidden"> </div>
+            <div class="row">
+                <span class="error"></span>
+            </div>
+            <div th:if="${folder}" id="submitArea" class="row">
+                <button th:if="${fileExists == false}" class="btn btn-success col-sm-4" type="button" onclick="btn_submitNew()" th:text="#{editor.addToFolder} + ' ' + ${folder.title}"></button>
+                <button th:if="${fileExists}" class="btn btn-success col-sm-4" th:text="#{editor.applyChanges}" type="button" onclick="btn_submitApply()"></button>
+                <div class="btn btn-default col-sm-4" th:text="#{videoAudioEditor.playRange}" onclick="playRange()">play Range</div>
+                <a class="btn btn-danger col-sm-4" th:href="'folder?id=' + ${folder.Id}" th:text="#{message.cancel}">cancel</a>
+            </div>
+            <div th:if="${fileExists == false}">
+                <div th:replace="fragments/inputFileTitle :: inputFileTitle"></div>
+            </div>
+        </form>
+
+    </div>
+
+
+</div>
+</body>
+</html>

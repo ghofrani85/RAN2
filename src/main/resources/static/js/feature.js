@@ -1,5 +1,5 @@
 /**
- *	JS behind the newFeature and editFeature HTML Templates
+ *	JS behind the newFolder and editFolder HTML Templates
  *
  *	Tim Gugel
  *
@@ -15,8 +15,8 @@
     xhr.setRequestHeader(header, token);
  });
  
-function cleanupFeatureModal() {
-	$("#featureform").trigger('reset');
+function cleanupFolderModal() {
+	$("#folderform").trigger('reset');
 }
 
 function selectValue(value) {    
@@ -44,9 +44,9 @@ function addSelectToHTML(includedInProjects) {
 
 function init_copy() {	
 	addSelectToHTML()
-	console.log("Load Feature")
-	//$.post("getFeature", {featId:document.getElementById("featId").value}, function(data, status){	
-	$.post("getFeature", {featId:1}, function(data, status){	
+	console.log("Load Folder")
+	//$.post("getFolder", {featId:document.getElementById("featId").value}, function(data, status){	
+	$.post("getFolder", {featId:1}, function(data, status){	
 		console.log("In function")
 		document.getElementById("titleTextbar_copy").value 			= data.title
 		document.getElementById("descriptionTextarea_copy").value 	= data.description
@@ -55,9 +55,9 @@ function init_copy() {
 
 
 function init_edit() {			
-	console.log("Load Feature")
-	//$.post("getFeature", {featId:document.getElementById("featId").value}, function(data, status){	
-	$.post("getFeature", {featId:1}, function(data, status){	
+	console.log("Load Folder")
+	//$.post("getFolder", {featId:document.getElementById("featId").value}, function(data, status){	
+	$.post("getFolder", {featId:1}, function(data, status){	
 		console.log("In function")
 		document.getElementById("titleTextbar_edit").value 			= data.title
 		document.getElementById("descriptionTextarea_edit").value 	= data.description

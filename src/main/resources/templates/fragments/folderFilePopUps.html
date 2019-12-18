@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<!-- Tim Gugel -->
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>New Folder File</title>
+    <meta charset="utf-8"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"></link>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+	<!-- Create a new FolderFile (PopUp) -->
+	<div th:fragment="createFolderFile" class="modal fade" th:id="createFolderFile">
+		<div class="modal-dialog">	
+			<!-- model content -->
+			<div class="modal-content">
+				<form action="#" th:action="@{createFolderFile}" method="post" onsubmit="closeModal()" id="folderform">
+					<!-- model header -->
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" onclick="cleanupFolderModal()">&times;</button>
+						<h4 class="modal-title" th:text="#{folder.newFolderFile}">New Folder</h4>
+					</div>
+					<!-- model body -->
+					<div class="modal-body">
+						<div class="form-group">
+							<label for="titleTextbar_create" th:text="#{folder.title}">Title:</label>
+							<input name="titleTextbar_create" type="text" class="form-control" id="titleTextbar_create" required="true" maxlength="30" pattern=".*\S.*"></input>
+						</div>
+						<div class="form-group">
+							<label for="descriptionTextarea_create" th:text="#{folder.description}">Description:</label>
+							<textarea name="descriptionTextarea_create" class="form-control" rows="8" id="descriptionTextarea_create"></textarea>
+						</div>
+						<input type="hidden" name="featId_create" id="featId_create" th:value="${folder.id}" />
+					</div>
+					<!-- model footer -->
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-primary" th:text="#{folder.createFolderFile}">Create</button>
+						<button type="reset" class="btn" data-dismiss="modal" onclick="cleanupFolderModal()" th:text="#{message.cancel}">Cancel</button>
+					</div>
+				</form>
+			</div>		
+		</div>
+	</div>
+	
+	<!-- Edit Folder (PopUp) -->
+	<div th:fragment="editFolder" class="modal" th:id="editFolder">
+		<div class="modal-dialog">	
+			<!-- model content -->
+			<div class="modal-content">
+				<form action="#" th:action="@{editFolder}" method="post" onsubmit="closeModal()" id="folderform">
+					<!-- model header -->
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" onclick="cleanupFolderModal()">&times;</button>
+						<h4 class="modal-title" th:text="#{folder.edit}">Edit Folder</h4>
+					</div>
+					<!-- model body -->
+					<div class="modal-body">
+						<div class="form-group">
+							<label for="titleTextbar_edit" th:text="#{folder.title}">Title:</label>
+							<input name="titleTextbar_edit" type="text" class="form-control" id="titleTextbar_edit" th:value="${folder.title}"></input>
+						</div>
+						<div class="form-group">
+							<label for="descriptionTextarea_edit" th:text="#{folder.description}">Description:</label>
+							<textarea name="descriptionTextarea_edit" class="form-control" rows="8" id="descriptionTextarea_edit"  th:text="${folder.description}"></textarea>
+						</div>
+						<input type="hidden" name="featId_edit" id="featId_edit" th:value="${folder.id}" />
+						<input type="hidden" name="folder_edit" id="folder_edit" th:value="${folder}" />
+					</div>
+					<!-- model footer -->
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-primary" th:text="#{folder.edit}">Edit</button>
+						<button type="reset" class="btn" data-dismiss="modal" onclick="cleanupFolderModal()" th:text="#{message.cancel}">Cancel</button>
+					</div>
+				</form>
+			</div>		
+		</div>
+	</div>
+	
+	
+	
+</body>
+</html>

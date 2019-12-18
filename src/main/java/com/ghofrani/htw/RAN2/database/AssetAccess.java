@@ -99,18 +99,18 @@ public class AssetAccess {
 	}
 
 	/**
-	 * Returns a list of assets for the given feature id.
+	 * Returns a list of assets for the given folder id.
 	 * 
 	 * @param id
-	 *            the id of the feature
-	 * @return a list of found assets for the given feature id
+	 *            the id of the folder
+	 * @return a list of found assets for the given folder id
 	 */
-	public List<Asset> selectAssetsByFeatureID(int id) {
+	public List<Asset> selectAssetsByFolderID(int id) {
 		LinkedList<Asset> result = new LinkedList<Asset>();
 
 		log.debug("Getting assets...");
 
-		jdbc.query(SELECT_SQL + " JOIN featuresxassets ON assetid = id WHERE featureid = ?", new Object[] { id },
+		jdbc.query(SELECT_SQL + " JOIN foldersxassets ON assetid = id WHERE folderid = ?", new Object[] { id },
 				new AssetRowMapper()).forEach(asset -> {
 					result.add(asset);
 				});

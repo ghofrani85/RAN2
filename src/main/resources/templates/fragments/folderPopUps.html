@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<!-- Tim Gugel -->
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>New Folder</title>
+    <meta charset="utf-8"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"></link>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+	<!-- Create a new Folder (PopUp) -->
+	<div th:fragment="createFolder" class="modal fade" th:id="createFolder">
+		<div class="modal-dialog">	
+			<!-- model content -->
+			<div class="modal-content">
+				<form action="#" th:action="@{createFolder}" method="post" onsubmit="closeModal()" id="folderform">
+					<!-- model header -->
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" onclick="cleanupFolderModal()">&times;</button>
+						<h4 class="modal-title" th:text="#{folder.new}">New Folder</h4>
+					</div>
+					<!-- model body -->
+					<div class="modal-body">
+						<div class="form-group">
+							<label for="titleTextbar_create" th:text="#{folder.title}">Title:</label>
+							<input name="titleTextbar_create" type="text" class="form-control" id="titleTextbar_create" required="true" maxlength="30" pattern=".*\S.*"></input>
+						</div>
+						<div class="form-group">
+							<label for="descriptionTextarea_create" th:text="#{folder.description}">Description:</label>
+							<textarea name="descriptionTextarea_create" class="form-control" rows="8" id="descriptionTextarea_create"></textarea>
+						</div>
+						<input type="hidden" name="projId_create" id="projId_create" th:value="${project.id}" />
+					</div>
+					<!-- model footer -->
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-primary" th:text="#{folder.create}">Create</button>
+						<button type="reset" class="btn" data-dismiss="modal" onclick="cleanupFolderModal()" th:text="#{message.cancel}">Cancel</button>
+					</div>
+				</form>
+			</div>		
+		</div>
+	</div>
+	
+	<!-- Edit Folder (PopUp) -->
+	<div th:fragment="editFolder" class="modal" th:id="editFolder">
+		<div class="modal-dialog">	
+			<!-- model content -->
+			<div class="modal-content">
+				<form action="#" th:action="@{editFolder}" method="post" onsubmit="closeModal()" id="folderform">
+					<!-- model header -->
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" onclick="cleanupFolderModal()">&times;</button>
+						<h4 class="modal-title" th:text="#{folder.edit}">Edit Folder</h4>
+					</div>
+					<!-- model body -->
+					<div class="modal-body">
+						<div class="form-group">
+							<label for="titleTextbar_edit" th:text="#{folder.title}">Title:</label>
+							<input name="titleTextbar_edit" type="text" class="form-control" id="titleTextbar_edit" th:value="${folder.title}"></input>
+						</div>
+						<div class="form-group">
+							<label for="descriptionTextarea_edit" th:text="#{folder.description}">Description:</label>
+							<textarea name="descriptionTextarea_edit" class="form-control" rows="8" id="descriptionTextarea_edit"  th:text="${folder.description}"></textarea>
+						</div>
+						<input type="hidden" name="featId_edit" id="featId_edit" th:value="${folder.id}" />
+						<input type="hidden" name="folder_edit" id="folder_edit" th:value="${folder}" />
+					</div>
+					<!-- model footer -->
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-primary" th:text="#{folder.edit}">Edit</button>
+						<button type="reset" class="btn" data-dismiss="modal" onclick="cleanupFolderModal()" th:text="#{message.cancel}">Cancel</button>
+					</div>
+				</form>
+			</div>		
+		</div>
+	</div>
+	
+	<!-- Copy Folder (PopUp) -->
+	<div th:fragment="copyFolder" class="modal" th:id="copyFolder">
+		<div class="modal-dialog">	
+			<!-- model content -->
+			<div class="modal-content">
+				<form action="#" th:action="@{copyFolder}" method="post" onsubmit="closeModal()" id="folderform">
+					<!-- model header -->
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" onclick="cleanupFolderModal()">&times;</button>
+						<h4 class="modal-title" th:text="#{folder.copy}">Copy Folder</h4>
+					</div>
+					<!-- model body -->
+					<div class="modal-body">
+						<div class="form-group">
+							<label for="titleTextbar_copy" th:text="#{folder.title}">Title:</label>
+							<input name="titleTextbar_copy" type="text" class="form-control" id="titleTextbar_copy" th:value="${folder.title}"></input>
+						</div>
+						<div class="form-group">
+							<label for="descriptionTextarea_copy" th:text="#{folder.description}">Description:</label>
+							<textarea name="descriptionTextarea_copy" class="form-control" rows="8" id="descriptionTextarea_copy"  th:text="${folder.description}"></textarea>
+						</div>
+						<div class="form-group">
+							<label for="projectSelect" th:text="#{folder.useIn}">Use in Project:</label>		
+							<select id="projectSelect" name="projectSelect" onchange="selectProject()" class="form-control">
+							<th th:each="project : ${projectList}">
+								<option th:value="${project.id}" th:text="${project.title}"></option>
+							</th>
+							</select>
+						</div>
+						<div th:unless="${listIsEmpty}"><input type="hidden" name="projId_copy" id="projId_copy" th:value="${projectList[0].id}" /></div>
+						<input type="hidden" name="featId_copy" id="featId_copy" th:value="${folder.id}" />
+						<input type="hidden" name="folder_copy" id="folder_copy" th:value="${folder}" />
+						<!--script> addSelectToHTML() </script-->
+					</div>
+					<!-- model footer -->
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-primary" th:text="#{folder.copy}">Edit</button>
+						<button type="reset" class="btn" data-dismiss="modal" th:text="#{message.cancel}">Cancel</button>
+					</div>
+				</form>
+			</div>		
+		</div>
+	</div>
+	
+</body>
+</html>

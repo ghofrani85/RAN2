@@ -27,22 +27,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.ghofrani.htw.RAN2.Application;
 import com.ghofrani.htw.RAN2.controller.service.IUserService;
 import com.ghofrani.htw.RAN2.controller.service.TrackingService;
-import com.ghofrani.htw.RAN2.database.ArtefactAccess;
+import com.ghofrani.htw.RAN2.database.FileAccess;
 import com.ghofrani.htw.RAN2.database.AssetAccess;
-import com.ghofrani.htw.RAN2.database.FeatureAccess;
+import com.ghofrani.htw.RAN2.database.FolderAccess;
 import com.ghofrani.htw.RAN2.database.UserAccess;
-import com.ghofrani.htw.RAN2.model.Artefact;
+import com.ghofrani.htw.RAN2.model.File;
 import com.ghofrani.htw.RAN2.model.Asset;
-import com.ghofrani.htw.RAN2.model.AudioArtefact;
-import com.ghofrani.htw.RAN2.model.Feature;
+import com.ghofrani.htw.RAN2.model.AudioFile;
+import com.ghofrani.htw.RAN2.model.Folder;
 import com.ghofrani.htw.RAN2.model.Metadata;
-import com.ghofrani.htw.RAN2.model.OtherArtefact;
-import com.ghofrani.htw.RAN2.model.PictureArtefact;
-import com.ghofrani.htw.RAN2.model.TextArtefact;
+import com.ghofrani.htw.RAN2.model.OtherFile;
+import com.ghofrani.htw.RAN2.model.PictureFile;
+import com.ghofrani.htw.RAN2.model.TextFile;
 import com.ghofrani.htw.RAN2.model.Tracking;
 import com.ghofrani.htw.RAN2.model.User;
-import com.ghofrani.htw.RAN2.model.VideoArtefact;
-import com.ghofrani.htw.RAN2.model.XMLArtefact;
+import com.ghofrani.htw.RAN2.model.VideoFile;
+import com.ghofrani.htw.RAN2.model.XMLFile;
 
 @Controller
 public class AssetController {
@@ -54,10 +54,10 @@ public class AssetController {
 	private AssetAccess assetAccess;
 
 	@Autowired
-	private FeatureAccess featureAccess;
+	private FolderAccess folderAccess;
 
 	@Autowired
-	private ArtefactAccess artefactAccess;
+	private FileAccess fileAccess;
 
 	@Autowired
 	IUserService userService;
@@ -73,10 +73,10 @@ public class AssetController {
 	 * 
 	 * @param id
 	 *            ID of the asset to be shown
-	 * @param featureId
-	 *            ID of the current opened Feature, null when no Feature is opened
-	 * @param artefactId
-	 *            ID artefact currently shown, null of no artefact is selected
+	 * @param folderId
+	 *            ID of the current opened Folder, null when no Folder is opened
+	 * @param fileId
+	 *            ID file currently shown, null of no file is selected
 	 * @param AssetDuplicateTitleError
 	 *            if not null, show duplicate Title Error Message
 	 * @param duplicateTitle
@@ -89,8 +89,8 @@ public class AssetController {
 	 */
 	@RequestMapping(path = "/asset", params = "id")
 	public String loadAsset(@RequestParam(value = "id", required = true) Integer id,
-			@RequestParam(value = "featureId", required = false) Integer featureId,
-			@RequestParam(value = "artefactId", required = false) Integer artefactId,
+			@RequestParam(value = "folderId", required = false) Integer folderId,
+			@RequestParam(value = "fileId", required = false) Integer fileId,
 			@RequestParam(value = "AssetDuplicateTitleError", required = false) String AssetDuplicateTitleError,
 			@RequestParam(value = "title", required = false) String duplicateTitle, Model model) throws Exception {
 
@@ -107,9 +107,9 @@ public class AssetController {
 		asset.setDescription(asset.getDescription().replaceAll("_", " "));
 
 		model.addAttribute("asset", asset);
-		if (featureId != null) {
-			Feature feature = featureAccess.selectFeaturesByID(featureId);
-			model.addAttribute("feature", feature);
+		if (folderId != null) {
+			Folder folder = folderAccess.selectFoldersByID(folderId);
+			model.addAttribute("folder", folder);
 		}
 
 		// Load Metadata from Asset and fill list
@@ -125,9 +125,9 @@ public class AssetController {
 		model.addAttribute("fileFormat",  metadataMap.get("FileFormat"));
 		model.addAttribute("uploadDate",  metadataMap.get("Uploaded on"));
 
-		// Retrieves List of Features the asset is included in
-		List<Feature> usedInFeatures = featureAccess.selectFeaturesByAssetID(asset.getId());
-		model.addAttribute("usedInFeatures", usedInFeatures);
+		// Retrieves List of Folders the asset is included in
+		List<Folder> usedInFolders = folderAccess.selectFoldersByAssetID(asset.getId());
+		model.addAttribute("usedInFolders", usedInFolders);
 
 		// Load Assetfile
 		InputStream fileInStream = asset.getURLResource().getInputStream();
@@ -142,58 +142,58 @@ public class AssetController {
 			model.addAttribute("hasEditRights", true);
 		}
 
-		Artefact artefact = null;
-		if (artefactId != null) {
-			artefact = artefactAccess.selectArtefactsByID(artefactId);
-			model.addAttribute("artefact", artefact);
+		File file = null;
+		if (fileId != null) {
+			file = fileAccess.selectFilesByID(fileId);
+			model.addAttribute("file", file);
 		}
 
-		// Load ArtefactEditor for type of Asset/Artefact
+		// Load FileEditor for type of Asset/File
 		switch (asset.getType()) {
 		case PICTURE:
-			PictureArtefact pictureArtefact = null;
-			if (artefact != null) {
-				pictureArtefact = (PictureArtefact) artefact;
+			PictureFile pictureFile = null;
+			if (file != null) {
+				pictureFile = (PictureFile) file;
 			}
-			loadImageEditor(model, asset, pictureArtefact);
+			loadImageEditor(model, asset, pictureFile);
 
 			break;
 		case VIDEO:
-			VideoArtefact videoArtefact = null;
-			if (artefact != null) {
-				videoArtefact = (VideoArtefact) artefact;
+			VideoFile videoFile = null;
+			if (file != null) {
+				videoFile = (VideoFile) file;
 			}
-			loadVideoEditor(model, asset, videoArtefact);
+			loadVideoEditor(model, asset, videoFile);
 
 			break;
 		case AUDIO:
-			AudioArtefact audioArtefact = null;
-			if (artefact != null) {
-				audioArtefact = (AudioArtefact) artefact;
+			AudioFile audioFile = null;
+			if (file != null) {
+				audioFile = (AudioFile) file;
 			}
-			loadAudioEditor(model, asset, audioArtefact);
+			loadAudioEditor(model, asset, audioFile);
 
 			break;
 		case XML:
-			XMLArtefact xmlArtefact = null;
-			if (artefact != null) {
-				xmlArtefact = (XMLArtefact) artefact;
+			XMLFile xmlFile = null;
+			if (file != null) {
+				xmlFile = (XMLFile) file;
 			}
-			loadXMLEditor(model, asset, xmlArtefact);
+			loadXMLEditor(model, asset, xmlFile);
 
 			break;
 		case TEXT:
-			TextArtefact textArtefact = null;
-			if (artefact != null) {
-				textArtefact = (TextArtefact) artefact;
+			TextFile textFile = null;
+			if (file != null) {
+				textFile = (TextFile) file;
 			}
-			loadTextEditor(model, asset.getURLResource().getInputStream(), textArtefact);
+			loadTextEditor(model, asset.getURLResource().getInputStream(), textFile);
 
 			break;
 		case OTHER:
-			OtherArtefact otherArtefact = null;
-			if (artefact != null) {
-				otherArtefact = (OtherArtefact) artefact;
+			OtherFile otherFile = null;
+			if (file != null) {
+				otherFile = (OtherFile) file;
 			}
 
 			if (metadataMap.get("FileFormat").equals("pdf")) {
@@ -227,8 +227,8 @@ public class AssetController {
 	 * 
 	 * @param model
 	 *            Model of the current controller
-	 * @param artefact
-	 *            The xml-Artefact to be displayed
+	 * @param file
+	 *            The xml-File to be displayed
 	 * @param asset
 	 *            The asset currently viewed
 	 * @throws IOException
@@ -236,7 +236,7 @@ public class AssetController {
 	 * @author Robert Völkner
 	 * @author Jannik Groeger
 	 */
-	public void loadXMLEditor(Model model, Asset asset, XMLArtefact artefact) throws IOException {
+	public void loadXMLEditor(Model model, Asset asset, XMLFile file) throws IOException {
 		model.addAttribute("assetIsXML", true);
 
 		String xmlContent = new BufferedReader(new InputStreamReader(asset.getURLResource().getInputStream())).lines()
@@ -244,8 +244,8 @@ public class AssetController {
 
 		model.addAttribute("xmlContent", xmlContent);
 
-		if (artefact != null) {
-			model.addAttribute("nodes", artefact.getNodes());
+		if (file != null) {
+			model.addAttribute("nodes", file.getNodes());
 		}
 
 	}
@@ -255,23 +255,23 @@ public class AssetController {
 	 * 
 	 * @param model
 	 *            Model of the current controller
-	 * @param artefact
+	 * @param file
 	 *            The image-artefct to be displayed
 	 * @param asset
 	 *            asset to be shown
 	 * @author Jannik Groeger
 	 */
-	public void loadImageEditor(Model model, Asset asset, PictureArtefact artefact) {
+	public void loadImageEditor(Model model, Asset asset, PictureFile file) {
 		model.addAttribute("assetIsImage", true);
 
 		// Set Imagedata
 		model.addAttribute("imageData", asset.getURL());
 
-		if (artefact != null) {
-			model.addAttribute("x", artefact.getX());
-			model.addAttribute("y", artefact.getY());
-			model.addAttribute("w", artefact.getWidth());
-			model.addAttribute("h", artefact.getHeight());
+		if (file != null) {
+			model.addAttribute("x", file.getX());
+			model.addAttribute("y", file.getY());
+			model.addAttribute("w", file.getWidth());
+			model.addAttribute("h", file.getHeight());
 		}
 
 	}
@@ -283,26 +283,26 @@ public class AssetController {
 	 *            model of the current controller
 	 * @param textFile
 	 *            textStream to be displayed
-	 * @param artefact
-	 *            the TextArtefact to be displayed
+	 * @param file
+	 *            the TextFile to be displayed
 	 * @author Lukas Beckmann
 	 */
-	public void loadTextEditor(Model model, InputStream textFile, TextArtefact artefact) {
+	public void loadTextEditor(Model model, InputStream textFile, TextFile file) {
 		model.addAttribute("assetIsText", true);
 
 		String text = new BufferedReader(new InputStreamReader(textFile)).lines().parallel()
 				.collect(Collectors.joining("\n"));
 		model.addAttribute("textData", text);
-		if (artefact != null) {
-			model.addAttribute("artefactExists", true);
-			model.addAttribute("artefactId", artefact.getId());
-			model.addAttribute("action", "/changeTextArtefact");
-			model.addAttribute("startPos", artefact.getStart());
-			model.addAttribute("endPos", artefact.getEnd());
-			model.addAttribute("title", artefact.getTitle());
+		if (file != null) {
+			model.addAttribute("fileExists", true);
+			model.addAttribute("fileId", file.getId());
+			model.addAttribute("action", "/changeTextFile");
+			model.addAttribute("startPos", file.getStart());
+			model.addAttribute("endPos", file.getEnd());
+			model.addAttribute("title", file.getTitle());
 		} else {
-			model.addAttribute("artefactExists", false);
-			model.addAttribute("action", "addTextArtefact");
+			model.addAttribute("fileExists", false);
+			model.addAttribute("action", "addTextFile");
 		}
 
 	}
@@ -330,25 +330,25 @@ public class AssetController {
 	 *            model of the current controller.
 	 * @param asset
 	 *            asset to load
-	 * @param videoArtefact
-	 *            The videoArtefact to be shown
+	 * @param videoFile
+	 *            The videoFile to be shown
 	 * @author Lukas Beckmann
 	 */
-	public void loadVideoEditor(Model model, Asset asset, VideoArtefact videoArtefact) {
+	public void loadVideoEditor(Model model, Asset asset, VideoFile videoFile) {
 		model.addAttribute("assetIsVideo", true);
 		model.addAttribute("videoSource", asset.getURL());
-		if (videoArtefact != null) {
-			model.addAttribute("artefactExists", true);
-			model.addAttribute("artefactId", videoArtefact.getId());
-			model.addAttribute("action", "/changeVideoArtefact");
-			model.addAttribute("startTime", videoArtefact.getStart());
-			model.addAttribute("startTimeAsText", getStringRepresentation(videoArtefact.getStart()));
-			model.addAttribute("endTime", videoArtefact.getEnd());
-			model.addAttribute("endTimeAsText", getStringRepresentation(videoArtefact.getEnd()));
-			model.addAttribute("title", videoArtefact.getTitle());
+		if (videoFile != null) {
+			model.addAttribute("fileExists", true);
+			model.addAttribute("fileId", videoFile.getId());
+			model.addAttribute("action", "/changeVideoFile");
+			model.addAttribute("startTime", videoFile.getStart());
+			model.addAttribute("startTimeAsText", getStringRepresentation(videoFile.getStart()));
+			model.addAttribute("endTime", videoFile.getEnd());
+			model.addAttribute("endTimeAsText", getStringRepresentation(videoFile.getEnd()));
+			model.addAttribute("title", videoFile.getTitle());
 		} else {
-			model.addAttribute("artefactExists", false);
-			model.addAttribute("action", "addVideoArtefact");
+			model.addAttribute("fileExists", false);
+			model.addAttribute("action", "addVideoFile");
 			model.addAttribute("startTime", 0);
 			model.addAttribute("startTimeAsText", "00:00.000");
 			model.addAttribute("endTime", 0);
@@ -363,25 +363,25 @@ public class AssetController {
 	 *            model of the current controller.
 	 * @param asset
 	 *            asset to load.
-	 * @param audioArtefact
-	 *            The audio-artefact to be shown
+	 * @param audioFile
+	 *            The audio-file to be shown
 	 * @author Lukas Beckmann
 	 */
-	public void loadAudioEditor(Model model, Asset asset, AudioArtefact audioArtefact) {
+	public void loadAudioEditor(Model model, Asset asset, AudioFile audioFile) {
 		model.addAttribute("assetIsAudio", true);
 		model.addAttribute("audioSource", asset.getURL());
-		if (audioArtefact != null) {
-			model.addAttribute("artefactExists", true);
-			model.addAttribute("artefactId", audioArtefact.getId());
-			model.addAttribute("action", "/changeAudioArtefact");
-			model.addAttribute("startTime", audioArtefact.getStart());
-			model.addAttribute("startTimeAsText", getStringRepresentation(audioArtefact.getStart()));
-			model.addAttribute("endTime", audioArtefact.getEnd());
-			model.addAttribute("endTimeAsText", getStringRepresentation(audioArtefact.getEnd()));
-			model.addAttribute("title", audioArtefact.getTitle());
+		if (audioFile != null) {
+			model.addAttribute("fileExists", true);
+			model.addAttribute("fileId", audioFile.getId());
+			model.addAttribute("action", "/changeAudioFile");
+			model.addAttribute("startTime", audioFile.getStart());
+			model.addAttribute("startTimeAsText", getStringRepresentation(audioFile.getStart()));
+			model.addAttribute("endTime", audioFile.getEnd());
+			model.addAttribute("endTimeAsText", getStringRepresentation(audioFile.getEnd()));
+			model.addAttribute("title", audioFile.getTitle());
 		} else {
-			model.addAttribute("artefactExists", false);
-			model.addAttribute("action", "addAudioArtefact");
+			model.addAttribute("fileExists", false);
+			model.addAttribute("action", "addAudioFile");
 			model.addAttribute("startTime", 0);
 			model.addAttribute("startTimeAsText", "00:00.000");
 			model.addAttribute("endTime", 0);
@@ -400,10 +400,10 @@ public class AssetController {
 	 *            The new title.
 	 * @param description
 	 *            The new description.
-	 * @param featureId
-	 *            ID of the current feature, null for none selected
-	 * @param artefactId
-	 *            ID of the current Artefact
+	 * @param folderId
+	 *            ID of the current folder, null for none selected
+	 * @param fileId
+	 *            ID of the current File
 	 * @param httpRequest
 	 *            httpRequest Object
 	 * @return A redirect to the AssetView of the current Asset, null for none
@@ -413,8 +413,8 @@ public class AssetController {
 	public String editAsset(@RequestParam(value = "id", required = true) Integer assetId,
 			@RequestParam(value = "title", required = true) String title,
 			@RequestParam(value = "description") String description,
-			@RequestParam(value = "featureId", required = false) Integer featureId,
-			@RequestParam(value = "artefactId", required = false) Integer artefactId, HttpServletRequest httpRequest) {
+			@RequestParam(value = "folderId", required = false) Integer folderId,
+			@RequestParam(value = "fileId", required = false) Integer fileId, HttpServletRequest httpRequest) {
 
 		log.debug("Called editAsset with id={} title={} description={}", assetId, title, description);
 		Asset asset = assetAccess.selectAssetsByID(assetId);
@@ -445,12 +445,12 @@ public class AssetController {
 
 		String url = REDIRECT + assetId;
 
-		if (featureId != null) {
-			url += "&featureId=" + featureId;
+		if (folderId != null) {
+			url += "&folderId=" + folderId;
 		}
 
-		if (artefactId != null) {
-			url += "&artefactId=" + artefactId;
+		if (fileId != null) {
+			url += "&fileId=" + fileId;
 		}
 
 		return url;
@@ -461,7 +461,7 @@ public class AssetController {
 	 * 
 	 * @param assetId
 	 *            The id of the Asset
-	 * @return A redirect to the Feature View of the current Project.
+	 * @return A redirect to the Folder View of the current Project.
 	 */
 	@PostMapping("/deleteasset")
 	public String deleteAsset(@RequestParam(value = "id", required = true) Integer assetId) {

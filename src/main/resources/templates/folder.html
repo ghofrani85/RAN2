@@ -25,7 +25,7 @@
 
 		<div class="container-fluid">
 
-			<!-- Row 1: folder Title-->
+			<!-- Row 1: Folder Title-->
 			<div class="row content">
 
 				<!-- Padding  -->
@@ -62,13 +62,13 @@
 				<!-- Padding  -->
 				<div class="col-sm-1"></div>
 
-				<!-- List of Projects/folders including folder  -->
+				<!-- List of Projects/Folders including folder  -->
 				<div class="col-sm-4">
 					<dl>
 						<dt th:text="#{folder.included}">Included in:</dt>
 						<a th:href="@{\project?id={id}(id=${parentProject.id})}"
 								th:text="${parentProject.title}"></a>
-						<dd th:each="folder : ${parentfolders}">
+						<dd th:each="folder : ${parentFolders}">
 							<a th:href="@{\folder?id={id}(id=${folder.id})}"
 									th:text="${folder.title} + '/'"></a>
 						</dd>
@@ -82,15 +82,15 @@
 				<!-- Padding  -->
 				<div class="col-sm-1"></div>
 
-				<!-- Copy folder Button  -->
-				<!-- Copy folder Button Deleted  -->
+				<!-- Copy Folder Button  -->
+				<!-- Copy Folder Button Deleted  -->
 				<!-- Padding  -->
 				<div class="col-sm-5"></div>
 
 				<!-- Notification for updated parent -->
 				<div class="col-sm-4">
-					<div class="alert alert-warning" th:if="${parentfolderId}">
-						<a th:href="@{\parentfolder?parentId={parentId}&amp;id={id}(parentId=${parentfolderId},id=${folder.id})}" 
+					<div class="alert alert-warning" th:if="${parentFolderId}">
+						<a th:href="@{\parentfolder?parentId={parentId}&amp;id={id}(parentId=${parentFolderId},id=${folder.id})}" 
 							 th:text="#{folder.notification}">Notification</a> 
 					</div>
 				</div>
@@ -102,9 +102,9 @@
 				<!-- Padding  -->
 				<div class="col-sm-1"></div>
 
-				<!-- Artefacts Header  -->
+				<!-- Files Header  -->
 				<div class="col-sm-6">
-					<h3 th:text="#{folder.artefacts}">Artefacts</h3>
+					<h3 th:text="#{folder.files}">Files</h3>
 				</div>
 
 				<!-- Padding  -->
@@ -117,13 +117,13 @@
 
 			</div>
 
-			<!-- Row 4: Artefacts Table & Tracking -->
+			<!-- Row 4: Files Table & Tracking -->
 			<div class="row content">
 
 				<!-- Padding  -->
 				<div class="col-sm-1"></div>
 
-				<!-- Artefacts  -->
+				<!-- Files  -->
 				<div class="col-sm-6">
 					<div class="row content">
 						<table class="table table-striped">
@@ -136,36 +136,36 @@
 								</tr>
 							</thead>
 							<tbody id="projectTableBody">
-								<tr th:each="artefact : ${artefacts}">
+								<tr th:each="file : ${files}">
 									<td>
 										<a
-												th:href="@{\asset?id={id}&amp;folderId={folderId}&amp;artefactId={artefactId}(id=${artefact.asset.id},folderId=${artefact.folder.id},artefactId=${artefact.id})}"
-												th:text="${artefact.title}"></a>
+												th:href="@{\asset?id={id}&amp;folderId={folderId}&amp;fileId={fileId}(id=${file.asset.id},folderId=${file.folder.id},fileId=${file.id})}"
+												th:text="${file.title}"></a>
 
 										<span th:if="${hasEditRights}"> 
-											<a th:href="'#editArtefactTitle' + ${artefact.id}" data-toggle="modal" th:data-target="'#editArtefactTitle' + ${artefact.id}"> 
+											<a th:href="'#editFileTitle' + ${file.id}" data-toggle="modal" th:data-target="'#editFileTitle' + ${file.id}"> 
 												<span class="glyphicon glyphicon-pencil">
 												</span>
 											</a>
-											<div th:replace="fragments/editArtefactTitle :: editArtefactTitle(artefact=${artefact})"></div>
+											<div th:replace="fragments/editFileTitle :: editFileTitle(file=${file})"></div>
 										</span>
 
 									</td>
-									<td th:text="${artefact.asset.type}"></td>
-									<td th:text="${artefact.asset.title}"></td>
+									<td th:text="${file.asset.type}"></td>
+									<td th:text="${file.asset.title}"></td>
 									<td>
 										<div class="col-sm-1" th:if="${hasEditRights}">
-											<span th:if="${artefact.asset.type.name() == 'TEXT'}">
+											<span th:if="${file.asset.type.name() == 'TEXT'}">
 												<button type="button" class="btn btn-xs btn-default"
 														data-toggle="modal"
-														th:attr="data-target='#confirmDeleteTextArtefact' + ${artefact.id}">
+														th:attr="data-target='#confirmDeleteTextFile' + ${file.id}">
 													<span class="glyphicon glyphicon-remove"></span>
 												</button>
 
 
 											</span>
 
-											<div th:id="'confirmDeleteTextArtefact' + ${artefact.id}"
+											<div th:id="'confirmDeleteTextFile' + ${file.id}"
 													class="modal fade">
 												<div class="modal-dialog">
 													<div class="modal-content">
@@ -175,14 +175,14 @@
 														</div>
 														<div class="modal-body">
 															<p
-																	th:text="#{folder.deleteConfirmArtefact}+ ' ' + ${artefact.title}"></p>
+																	th:text="#{folder.deleteConfirmFile}+ ' ' + ${file.title}"></p>
 														</div>
 														<div class="modal-footer">
-															<form action="#" th:action="@{removeTextArtefact}"
+															<form action="#" th:action="@{removeTextFile}"
 																	method="post">
-																<input type="hidden" name="artefactId"
-																		th:value="${artefact.id}" /> <input type="hidden"
-																		name="folderId" th:value="${artefact.folder.id}" />
+																<input type="hidden" name="fileId"
+																		th:value="${file.id}" /> <input type="hidden"
+																		name="folderId" th:value="${file.folder.id}" />
 																<button class="btn btn-danger btn-sm" type="submit"
 																		th:text="#{message.delete}"></button>
 																<button type="reset" class="btn btn-sm"
@@ -194,17 +194,17 @@
 											</div>
 
 
-											<span th:if="${artefact.asset.type.name() == 'PICTURE'}">
+											<span th:if="${file.asset.type.name() == 'PICTURE'}">
 
 												<button type="button" class="btn btn-xs btn-default"
 														data-toggle="modal"
-														th:attr="data-target='#confirmDeletePictureArtefact' + ${artefact.id}">
+														th:attr="data-target='#confirmDeletePictureFile' + ${file.id}">
 													<span class="glyphicon glyphicon-remove"></span>
 												</button>
 
 											</span>
 
-											<div th:id="'confirmDeletePictureArtefact' + ${artefact.id}"
+											<div th:id="'confirmDeletePictureFile' + ${file.id}"
 													class="modal fade">
 												<div class="modal-dialog">
 													<div class="modal-content">
@@ -214,14 +214,14 @@
 														</div>
 														<div class="modal-body">
 															<p
-																	th:text="#{folder.deleteConfirmArtefact}+ ' ' + ${artefact.title}"></p>
+																	th:text="#{folder.deleteConfirmFile}+ ' ' + ${file.title}"></p>
 														</div>
 														<div class="modal-footer">
-															<form action="#" th:action="@{removePictureArtefact}"
+															<form action="#" th:action="@{removePictureFile}"
 																	method="post">
-																<input type="hidden" name="artefactId"
-																		th:value="${artefact.id}" /> <input type="hidden"
-																		name="folderId" th:value="${artefact.folder.id}" />
+																<input type="hidden" name="fileId"
+																		th:value="${file.id}" /> <input type="hidden"
+																		name="folderId" th:value="${file.folder.id}" />
 																<button class="btn btn-danger btn-sm" type="submit"
 																		th:text="#{message.delete}"></button>
 																<button type="reset" class="btn btn-sm"
@@ -233,17 +233,17 @@
 											</div>
 
 
-											<span th:if="${artefact.asset.type.name() == 'AUDIO'}">
+											<span th:if="${file.asset.type.name() == 'AUDIO'}">
 
 												<button type="button" class="btn btn-xs btn-default"
 														data-toggle="modal"
-														th:attr="data-target='#confirmDeleteAudioArtefact' + ${artefact.id}">
+														th:attr="data-target='#confirmDeleteAudioFile' + ${file.id}">
 													<span class="glyphicon glyphicon-remove"></span>
 												</button>
 
 											</span>
 
-											<div th:id="'confirmDeleteAudioArtefact' + ${artefact.id}"
+											<div th:id="'confirmDeleteAudioFile' + ${file.id}"
 													class="modal fade">
 												<div class="modal-dialog">
 													<div class="modal-content">
@@ -253,14 +253,14 @@
 														</div>
 														<div class="modal-body">
 															<p
-																	th:text="#{folder.deleteConfirmArtefact}+ ' ' + ${artefact.title}"></p>
+																	th:text="#{folder.deleteConfirmFile}+ ' ' + ${file.title}"></p>
 														</div>
 														<div class="modal-footer">
-															<form action="#" th:action="@{removeAudioArtefact}"
+															<form action="#" th:action="@{removeAudioFile}"
 																	method="post">
-																<input type="hidden" name="artefactId"
-																		th:value="${artefact.id}" /> <input type="hidden"
-																		name="folderId" th:value="${artefact.folder.id}" />
+																<input type="hidden" name="fileId"
+																		th:value="${file.id}" /> <input type="hidden"
+																		name="folderId" th:value="${file.folder.id}" />
 																<button class="btn btn-danger btn-sm" type="submit"
 																		th:text="#{message.delete}"></button>
 																<button type="reset" class="btn btn-sm"
@@ -272,17 +272,17 @@
 											</div>
 
 
-											<span th:if="${artefact.asset.type.name() == 'VIDEO'}">
+											<span th:if="${file.asset.type.name() == 'VIDEO'}">
 
 												<button type="button" class="btn btn-xs btn-default"
 														data-toggle="modal"
-														th:attr="data-target='#confirmDeleteVideoArtefact' + ${artefact.id}">
+														th:attr="data-target='#confirmDeleteVideoFile' + ${file.id}">
 													<span class="glyphicon glyphicon-remove"></span>
 												</button>
 
 											</span>
 
-											<div th:id="'confirmDeleteVideoArtefact' + ${artefact.id}"
+											<div th:id="'confirmDeleteVideoFile' + ${file.id}"
 													class="modal fade">
 												<div class="modal-dialog">
 													<div class="modal-content">
@@ -292,14 +292,14 @@
 														</div>
 														<div class="modal-body">
 															<p
-																	th:text="#{folder.deleteConfirmArtefact}+ ' ' + ${artefact.title}"></p>
+																	th:text="#{folder.deleteConfirmFile}+ ' ' + ${file.title}"></p>
 														</div>
 														<div class="modal-footer">
-															<form action="#" th:action="@{removeVideoArtefact}"
+															<form action="#" th:action="@{removeVideoFile}"
 																	method="post">
-																<input type="hidden" name="artefactId"
-																		th:value="${artefact.id}" /> <input type="hidden"
-																		name="folderId" th:value="${artefact.folder.id}" />
+																<input type="hidden" name="fileId"
+																		th:value="${file.id}" /> <input type="hidden"
+																		name="folderId" th:value="${file.folder.id}" />
 																<button class="btn btn-danger btn-sm" type="submit"
 																		th:text="#{message.delete}"></button>
 																<button type="reset" class="btn btn-sm"
@@ -311,17 +311,17 @@
 											</div>
 
 
-											<span th:if="${artefact.asset.type.name() == 'XML'}">
+											<span th:if="${file.asset.type.name() == 'XML'}">
 
 												<button type="button" class="btn btn-xs btn-default"
 														data-toggle="modal"
-														th:attr="data-target='#confirmDeleteXMLArtefact' + ${artefact.id}">
+														th:attr="data-target='#confirmDeleteXMLFile' + ${file.id}">
 													<span class="glyphicon glyphicon-remove"></span>
 												</button>
 
 											</span>
 
-											<div th:id="'confirmDeleteXMLArtefact' + ${artefact.id}"
+											<div th:id="'confirmDeleteXMLFile' + ${file.id}"
 													class="modal fade">
 												<div class="modal-dialog">
 													<div class="modal-content">
@@ -331,14 +331,14 @@
 														</div>
 														<div class="modal-body">
 															<p
-																	th:text="#{folder.deleteConfirmArtefact}+ ' ' + ${artefact.title}"></p>
+																	th:text="#{folder.deleteConfirmFile}+ ' ' + ${file.title}"></p>
 														</div>
 														<div class="modal-footer">
-															<form action="#" th:action="@{removeXMLArtefact}"
+															<form action="#" th:action="@{removeXMLFile}"
 																	method="post">
-																<input type="hidden" name="artefactId"
-																		th:value="${artefact.id}" /> <input type="hidden"
-																		name="folderId" th:value="${artefact.folder.id}" />
+																<input type="hidden" name="fileId"
+																		th:value="${file.id}" /> <input type="hidden"
+																		name="folderId" th:value="${file.folder.id}" />
 																<button class="btn btn-danger btn-sm" type="submit"
 																		th:text="#{message.delete}"></button>
 																<button type="reset" class="btn btn-sm"
@@ -351,15 +351,15 @@
 
 
 
-											<span th:if="${artefact.asset.type.name() == 'OTHER'}">
+											<span th:if="${file.asset.type.name() == 'OTHER'}">
 												<button type="button" class="btn btn-xs btn-default"
 														data-toggle="modal"
-														th:attr="data-target='#confirmDeleteOtherArtefact' + ${artefact.id}">
+														th:attr="data-target='#confirmDeleteOtherFile' + ${file.id}">
 													<span class="glyphicon glyphicon-remove"></span>
 												</button>
 											</span>
 
-											<div th:id="'confirmDeleteOtherArtefact' + ${artefact.id}"
+											<div th:id="'confirmDeleteOtherFile' + ${file.id}"
 													class="modal fade">
 												<div class="modal-dialog">
 													<div class="modal-content">
@@ -369,14 +369,14 @@
 														</div>
 														<div class="modal-body">
 															<p
-																	th:text="#{folder.deleteConfirmArtefact}+ ' ' + ${artefact.title}"></p>
+																	th:text="#{folder.deleteConfirmFile}+ ' ' + ${file.title}"></p>
 														</div>
 														<div class="modal-footer">
-															<form action="#" th:action="@{removeOtherArtefact}"
+															<form action="#" th:action="@{removeOtherFile}"
 																	method="post">
-																<input type="hidden" name="artefactId"
-																		th:value="${artefact.id}" /> <input type="hidden"
-																		name="folderId" th:value="${artefact.folder.id}" />
+																<input type="hidden" name="fileId"
+																		th:value="${file.id}" /> <input type="hidden"
+																		name="folderId" th:value="${file.folder.id}" />
 																<button class="btn btn-danger btn-sm" type="submit"
 																		th:text="#{message.delete}"></button>
 																<button type="reset" class="btn btn-sm"
@@ -400,7 +400,7 @@
 							<div class="dropdown">
 								<button class="btn btn-primary dropdown-toggle" type="button"
 										data-toggle="dropdown">
-									<span th:text="#{folder.addArtefact}">Add Artefact</span> <span class="caret"></span>
+									<span th:text="#{folder.addFile}">Add File</span> <span class="caret"></span>
 								</button>
 								<ul class="dropdown-menu">
 									<li><a class="btn" data-toggle="modal"
@@ -435,9 +435,9 @@
 				<!-- Padding  -->
 				<div class="col-sm-1"></div>
 
-				<!-- Artefacts Header  -->
+				<!-- Files Header  -->
 				<div class="col-sm-6">
-					<h3 th:text="#{folder.folderArtefact}">Folders</h3>
+					<h3 th:text="#{folder.folderFile}">Folders</h3>
 				</div>
 			</div>
 
@@ -446,7 +446,7 @@
 				<!-- Padding  -->
 				<div class="col-sm-1"></div>
 
-				<!-- Folder(folder) Artefacts  -->
+				<!-- Folder(Folder) Files  -->
 				<div class="col-sm-6">
 					<div class="row content">
 						<table class="table table-striped">
@@ -458,13 +458,13 @@
 								</tr>
 							</thead>
 							<tbody id="projectTableBody">
-								<tr th:each="featart : ${folderArtefacts}">
+								<tr th:each="featart : ${folderFiles}">
 									<td> 
 										<a
 											th:href="@{\folder?id={id}(id=${featart.id})}"
 											data-toggle="tooltip" data-placement="bottom"
 											th:title="${featart.title} + '&#13;' + ${featart.description}"
-											th:text="${featart.title}">folder</a>
+											th:text="${featart.title}">Folder</a>
 
 									</td>
 									<td th:text="${featart.numOfFeatArt}"></td>
@@ -472,11 +472,11 @@
 										<div class="col-sm-1" th:if="${hasEditRights}">								
 											<button type="button" class="btn btn-xs btn-default"
 													data-toggle="modal"
-													th:attr="data-target='#confirmDeletefolder' + ${featart.id}">
+													th:attr="data-target='#confirmDeleteFolder' + ${featart.id}">
 												<span class="glyphicon glyphicon-remove"></span>
 											</button>
 
-											<div th:id="'confirmDeletefolder' + ${featart.id}"
+											<div th:id="'confirmDeleteFolder' + ${featart.id}"
 													class="modal fade">
 												<div class="modal-dialog">
 													<div class="modal-content">
@@ -486,12 +486,12 @@
 														</div>
 														<div class="modal-body">
 															<p
-																	th:text="#{folder.deleteConfirmfolderArtefact}+ ' ' + ${featart.title}"></p>
+																	th:text="#{folder.deleteConfirmFolderFile}+ ' ' + ${featart.title}"></p>
 														</div>
 														<div class="modal-footer">
-															<form action="#" th:action="@{deletefolderartefact}"
+															<form action="#" th:action="@{deletefolderfile}"
 																	method="post">
-																<input type="hidden" name="folderArtefactId"
+																<input type="hidden" name="folderFileId"
 																		th:value="${featart.id}" />
 																<button class="btn btn-danger btn-sm" type="submit"
 																		th:text="#{message.delete}"></button>
@@ -514,37 +514,37 @@
 					<div class="row content">
 						<span th:if="${hasEditRights}"><button
 							class="btn btn-primary" type="button" data-toggle="modal"
-							data-target="#createfolderArtefact">
-							<!-- Add folder button -->
+							data-target="#createFolderFile">
+							<!-- Add Folder button -->
 							<span class="glyphicon glyphicon-plus"></span><span
-								th:text="#{folder.newfolderArtefact}">New Folder</span>
+								th:text="#{folder.newFolderFile}">New Folder</span>
 						</button></span>
 					</div>
 				</div>
 			</div>
 		</div>
 
-		<div th:if="${hasEditRights}"> <!-- Modal for editing the folder details -->
-			<div th:replace="fragments/editfolder :: editfolder"></div> <!-- Modal for uploading Asset -->
+		<div th:if="${hasEditRights}"> <!-- Modal for editing the Folder details -->
+			<div th:replace="fragments/editFolder :: editfolder"></div> <!-- Modal for uploading Asset -->
 			<div th:replace="fragments/newAsset :: newAsset"></div>
 			<div th:replace="fragments/chooseAssetModal :: chooseAssetModal"></div>
 		</div>
 		<!-- temp replacement for folder copy and edit modal/call buttons -->
-		<div th:replace="fragments/folderPopUps :: copyfolder"></div>
+		<div th:replace="fragments/folderPopUps :: copyFolder"></div>
 
-		<!-- Modal for folders -->
+		<!-- Modal for Folders -->
 		<div th:if="${hasEditRights}">
-			<div th:replace="fragments/folderArtefactPopUps :: createfolderArtefact"></div>
+			<div th:replace="fragments/folderFilePopUps :: createFolderFile"></div>
 		</div>
 
 		<!--Modal to show for duplicateAssetTitleError -->
 		<div th:if="${showAssetDuplicateTitleError}"><div th:replace="fragments/duplicateTitleError :: duplicateTitleError(type='asset',title=${duplicateTitle})"></div></div>
 
-		<!--Modal to show for duplicatefolderTitleError -->
-		<div th:if="${showfolderDuplicateTitleError}"><div th:replace="fragments/duplicateTitleError :: duplicateTitleError(type='folder',title=${duplicateTitle})"></div></div>
+		<!--Modal to show for duplicateFolderTitleError -->
+		<div th:if="${showFolderDuplicateTitleError}"><div th:replace="fragments/duplicateTitleError :: duplicateTitleError(type='folder',title=${duplicateTitle})"></div></div>
 
-		<!--Modal to show for duplicateArtefactTitleError -->
-		<div th:if="${showArtefactDuplicateTitleError}"><div th:replace="fragments/duplicateTitleError :: duplicateTitleError(type='artefact',title=${duplicateTitle})"></div></div>
+		<!--Modal to show for duplicateFileTitleError -->
+		<div th:if="${showFileDuplicateTitleError}"><div th:replace="fragments/duplicateTitleError :: duplicateTitleError(type='file',title=${duplicateTitle})"></div></div>
 
 		<!--Modal to show for invalidFileError -->
 		<div th:if="${showInvalidFileError}"><div th:replace="fragments/invalidFileError :: invalidFileError(type='file')"></div></div>

@@ -14,9 +14,9 @@
 						</div>
 						<div class="modal-body">
 							<span th:if="${type} == 'project'" th:text="#{project.duplicateTitleError} + ${title}"></span>
-							<span th:if="${type} == 'feature'" th:text="#{feature.duplicateTitleError} + ${title}"></span>
+							<span th:if="${type} == 'folder'" th:text="#{folder.duplicateTitleError} + ${title}"></span>
 							<span th:if="${type} == 'asset'" th:text="#{asset.duplicateTitleError} + ${title}"></span>
-							<span th:if="${type} == 'artefact'" th:text="#{artefact.duplicateTitleError} + ${title}"></span>
+							<span th:if="${type} == 'file'" th:text="#{file.duplicateTitleError} + ${title}"></span>
 							<span th:if="${type} == 'product'" th:text="#{product.duplicateTitleError} + ${title}"></span>
 						</div>
 						<div class="modal-footer">

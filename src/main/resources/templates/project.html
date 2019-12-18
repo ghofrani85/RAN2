@@ -15,7 +15,7 @@
 <script
 	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script type="text/javascript" th:src="@{/js/project.js}"></script>
-<script type="text/javascript" th:src="@{/js/feature.js}"></script>
+<script type="text/javascript" th:src="@{/js/folder.js}"></script>
 <link rel="stylesheet" th:href="@{/css/style.css}"></link>
 <link rel="stylesheet" th:href="@{/css/project.css}"></link>
 </head>
@@ -74,20 +74,20 @@
 			</div>
 			<!-- /project abstract -->
 			<div class="row matrix">
-				<!-- product/feature matrix -->
+				<!-- product/folder matrix -->
 				<div class="container-fluid">
 					<div class="table-responsive">
 						<table class="table table-striped table-condensed">
 							<thead>
 								<tr>
 									<th th:text="#{project.products}">Application</th>
-									<!-- Feature row -->
-									<th th:each="feature : ${features}" th:class="${feature.updatedparent} ? 'warning' : '' " ><div class="tablecell"> <span
-										class="featuretitle"> <a
-											th:href="@{\feature?id={id}(id=${feature.id})}"
+									<!-- Folder row -->
+									<th th:each="folder : ${folders}" th:class="${folder.updatedparent} ? 'warning' : '' " ><div class="tablecell"> <span
+										class="foldertitle"> <a
+											th:href="@{\folder?id={id}(id=${folder.id})}"
 											data-toggle="tooltip" data-placement="bottom"
-											th:title="${feature.title} + '&#13;' + ${feature.description}"
-											th:text="${feature.title}">Feature</a>
+											th:title="${folder.title} + '&#13;' + ${folder.description}"
+											th:text="${folder.title}">Folder</a>
 									</span> <!-- Delete Button Deleted CHANGE -->
 								</div>
 								<!-- Delete Comfirmation Deleted CHANGE -->
@@ -102,19 +102,19 @@
 											th:href="'#edit' + ${prod.id}" data-toggle="tooltip"
 											th:title="${prod.description}" th:text="${prod.title}"></a>
 									</span></div></td>
-									<td th:each="feature : ${features}">
+									<td th:each="folder : ${folders}">
 										<div>
 											<!-- Checkbox enabled -->
 											<span th:if="${hasEditRights}"><input type="checkbox"
 												class="checkbox"
-												th:name="'p' + ${prod.id} + 'f' + ${feature.id}"
-												th:id="'p' + ${prod.id} + 'f' + ${feature.id}"
+												th:name="'p' + ${prod.id} + 'f' + ${folder.id}"
+												th:id="'p' + ${prod.id} + 'f' + ${folder.id}"
 												onchange="boxChanged(this)" /></span>
 											<!-- Checkbox disabled -->
 											<span th:unless="${hasEditRights}"><input
 												type="checkbox" class="checkbox"
-												th:name="'p' + ${prod.id} + 'f' + ${feature.id}"
-												th:id="'p' + ${prod.id} + 'f' + ${feature.id}"
+												th:name="'p' + ${prod.id} + 'f' + ${folder.id}"
+												th:id="'p' + ${prod.id} + 'f' + ${folder.id}"
 												onchange="boxChanged(this)" disabled="true" /></span>
 										</div>
 									</td>
@@ -144,7 +144,7 @@
 					</div>
 				</div>
 			</div>
-			<!-- /product/feature matrix -->
+			<!-- /product/folder matrix -->
 			<div class="row buttonarea">
 				<!-- interaction buttons -->
 				<!-- copy button -->
@@ -204,9 +204,9 @@
 			th:replace="fragments/product :: product (id='createapp',title='Create New',appid='',apptitle='',appdescription='')"></div>
 	</div>
 
-	<!-- Modal for Features -->
+	<!-- Modal for Folders -->
 	<div th:if="${hasEditRights}">
-		<div th:replace="fragments/featurePopUps :: createFeature"></div>
+		<div th:replace="fragments/folderPopUps :: createFolder"></div>
 	</div>
 
 
@@ -223,8 +223,8 @@
 		<div th:replace="fragments/copyProject :: copyproject"></div>
 	</div>
 	
-		<!--Modal to show for duplicateFeatureTitleError -->
-	<div th:if="${showFeatureDuplicateTitleError}"><div th:replace="fragments/duplicateTitleError :: duplicateTitleError(type='feature',title=${duplicateTitle})"></div></div>
+		<!--Modal to show for duplicateFolderTitleError -->
+	<div th:if="${showFolderDuplicateTitleError}"><div th:replace="fragments/duplicateTitleError :: duplicateTitleError(type='folder',title=${duplicateTitle})"></div></div>
 	
 		<!--Modal to show for duplicateProductTitleError -->
 	<div th:if="${showProductDuplicateTitleError}"><div th:replace="fragments/duplicateTitleError :: duplicateTitleError(type='product',title=${duplicateTitle})"></div></div>

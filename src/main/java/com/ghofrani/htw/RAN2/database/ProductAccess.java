@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 
 import com.ghofrani.htw.RAN2.Application;
 import com.ghofrani.htw.RAN2.database.helper.TrackingType;
-import com.ghofrani.htw.RAN2.database.rowmapper.FeatureRowMapper;
+import com.ghofrani.htw.RAN2.database.rowmapper.FolderRowMapper;
 import com.ghofrani.htw.RAN2.database.rowmapper.ProductRowMapper;
 import com.ghofrani.htw.RAN2.model.Product;
 
@@ -37,11 +37,11 @@ public class ProductAccess {
 	private static final String INSERT_SQL = "INSERT INTO products(title, description) VALUES(?, ?)";
 	private static final String UPDATE_SQL = "UPDATE products SET title = ?, description = ? WHERE id = ?";
 	private static final String DELETE_SQL = "DELETE FROM products WHERE id = ?";
-	private static final String INSERT_PRODUCTSXFEATURES_SQL = "INSERT INTO productsxfeatures(productid, featureid) VALUES(?, ?)";
-	private static final String DELETE_PRODUCTSXFEATURES_SQL = "DELETE FROM productsxfeatures WHERE productid = ?";
+	private static final String INSERT_PRODUCTSXFOLDERS_SQL = "INSERT INTO productsxfolders(productid, folderid) VALUES(?, ?)";
+	private static final String DELETE_PRODUCTSXFOLDERS_SQL = "DELETE FROM productsxfolders WHERE productid = ?";
 	private static final String DELETE_PROJECTSXPRODUCTS_SQL = "DELETE FROM projectsxproducts WHERE productid = ?";
-	private static final String SELECT_PRODUCTSXFEATURES_SQL = "SELECT features.id, title, description, parentid, updatedparent"
-			+ " FROM productsxfeatures JOIN features ON featureid = features.id";
+	private static final String SELECT_PRODUCTSXFOLDERS_SQL = "SELECT folders.id, title, description, parentid, updatedparent"
+			+ " FROM productsxfolders JOIN folders ON folderid = folders.id";
 
 	@Autowired
 	private JdbcTemplate jdbc;
@@ -94,7 +94,7 @@ public class ProductAccess {
 		if (!resultlist.isEmpty()) {
 			result = resultlist.get(0);
 
-			selectProductsXFeatures(result);
+			selectProductsXFolders(result);
 		}
 
 		if (result != null) {
@@ -106,17 +106,17 @@ public class ProductAccess {
 	}
 
 	/**
-	 * Fills the featureList of the given product model.
+	 * Fills the folderList of the given product model.
 	 * 
 	 * @param product
-	 *            the product to get the featureList for
+	 *            the product to get the folderList for
 	 */
-	private void selectProductsXFeatures(Product product) {
-		log.debug(String.format("Getting features to product %d", product.getId()));
+	private void selectProductsXFolders(Product product) {
+		log.debug(String.format("Getting folders to product %d", product.getId()));
 
-		jdbc.query(SELECT_PRODUCTSXFEATURES_SQL + " WHERE productid = ?", new Object[] { product.getId() },
-				new FeatureRowMapper()).forEach(feature -> {
-					product.addFeature(feature);
+		jdbc.query(SELECT_PRODUCTSXFOLDERS_SQL + " WHERE productid = ?", new Object[] { product.getId() },
+				new FolderRowMapper()).forEach(folder -> {
+					product.addFolder(folder);
 				});
 	}
 
@@ -139,8 +139,8 @@ public class ProductAccess {
 			result = updateProduct(product);
 		}
 
-		// save the features for the product...
-		saveProductsXFeatures(result);
+		// save the folders for the product...
+		saveProductsXFolders(result);
 
 		// save tracking...
 		trackacc.saveTracking(result.getTrackingList());
@@ -193,18 +193,18 @@ public class ProductAccess {
 	}
 
 	/**
-	 * Inserts the features in the given products featureList into the database.
+	 * Inserts the folders in the given products folderList into the database.
 	 * 
 	 * @param product
-	 *            the product whose featureList entries should be saved
+	 *            the product whose folderList entries should be saved
 	 */
-	private void saveProductsXFeatures(Product product) {
-		// delete every productxfeature connection beforehand...
-		jdbc.update(DELETE_PRODUCTSXFEATURES_SQL, product.getId());
+	private void saveProductsXFolders(Product product) {
+		// delete every productxfolder connection beforehand...
+		jdbc.update(DELETE_PRODUCTSXFOLDERS_SQL, product.getId());
 
 		// redo connections...
-		product.getFeatureList()
-				.forEach(feat -> jdbc.update(INSERT_PRODUCTSXFEATURES_SQL, product.getId(), feat.getId()));
+		product.getFolderList()
+				.forEach(feat -> jdbc.update(INSERT_PRODUCTSXFOLDERS_SQL, product.getId(), feat.getId()));
 	}
 
 	/**
@@ -218,8 +218,8 @@ public class ProductAccess {
 		// delete every projectxproduct connection...
 		jdbc.update(DELETE_PROJECTSXPRODUCTS_SQL, product.getId());
 
-		// delete every productxfeature connection...
-		jdbc.update(DELETE_PRODUCTSXFEATURES_SQL, product.getId());
+		// delete every productxfolder connection...
+		jdbc.update(DELETE_PRODUCTSXFOLDERS_SQL, product.getId());
 
 		// delete tracking...
 		trackacc.deleteTracking(product.getId(), TrackingType.PRODUCT);

@@ -18,7 +18,7 @@ import com.ghofrani.htw.RAN2.database.helper.AssetType;
 /**
  * The representation of a file of any type.
  * 
- * Assets are needed for artefacts.
+ * Assets are needed for files.
  * 
  * @author Stefan Schmidt
  *

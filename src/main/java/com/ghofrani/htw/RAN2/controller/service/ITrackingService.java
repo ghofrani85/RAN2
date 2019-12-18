@@ -2,9 +2,9 @@ package com.ghofrani.htw.RAN2.controller.service;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.ghofrani.htw.RAN2.model.Artefact;
+import com.ghofrani.htw.RAN2.model.File;
 import com.ghofrani.htw.RAN2.model.Asset;
-import com.ghofrani.htw.RAN2.model.Feature;
+import com.ghofrani.htw.RAN2.model.Folder;
 import com.ghofrani.htw.RAN2.model.Product;
 import com.ghofrani.htw.RAN2.model.Project;
 
@@ -17,73 +17,73 @@ import com.ghofrani.htw.RAN2.model.Project;
 public interface ITrackingService {
 
 	/**
-	 * Adds tracking information to the feature after adding an artefact
+	 * Adds tracking information to the folder after adding an file
 	 * 
-	 * @param artefact Artefact to be tracked
-	 * @param feature Feature that contains artefact 
+	 * @param file File to be tracked
+	 * @param folder Folder that contains file 
 	 * @param httpRequest RequestObject RequestObject
-	 * @return return the updated feature
+	 * @return return the updated folder
 	 */
-	Feature trackAddedArtefact(Artefact artefact, Feature feature, HttpServletRequest httpRequest);
+	Folder trackAddedFile(File file, Folder folder, HttpServletRequest httpRequest);
 
 	/**
-	 * Adds tracking information to the feature and asset after editing an artefact
+	 * Adds tracking information to the folder and asset after editing an file
 	 * 
-	 * @param artefact Artefact to be tracked
-	 * @param feature Feature that contains artefact 
+	 * @param file File to be tracked
+	 * @param folder Folder that contains file 
 	 * @param httpRequest RequestObject RequestObject
-	 * @return return the updated feature
+	 * @return return the updated folder
 	 */
-	Feature trackArtefactInformation(Artefact artefact, Feature feature, HttpServletRequest httpRequest);
+	Folder trackFileInformation(File file, Folder folder, HttpServletRequest httpRequest);
 
 	/**
-	 * Adds tracking information to the feature and asset after deleting an artefact
+	 * Adds tracking information to the folder and asset after deleting an file
 	 * 
-	 * @param artefact Artefact to be tracked
-	 * @param feature Feature that contains artefact 
+	 * @param file File to be tracked
+	 * @param folder Folder that contains file 
 	 * @param httpRequest RequestObject RequestObject
-	 * @return return the updated feature
+	 * @return return the updated folder
 	 */
-	Feature trackDeletedArtefact(Artefact artefact, Feature feature, HttpServletRequest httpRequest);
+	Folder trackDeletedFile(File file, Folder folder, HttpServletRequest httpRequest);
 
 	/**
-	 * Adds tracking information for the creation to the feature
+	 * Adds tracking information for the creation to the folder
 	 * 
-	 * @param feature Feature to be tracked
+	 * @param folder Folder to be tracked
 	 * @param httpRequest RequestObject RequestObject
-	 * @return return the updated feature
+	 * @return return the updated folder
 	 */
-	Feature trackCreatedFeature(Feature feature, HttpServletRequest httpRequest);
+	Folder trackCreatedFolder(Folder folder, HttpServletRequest httpRequest);
 
 	/**
-	 * Adds tracking information to the new feature after copying it from the parent
-	 * feature
+	 * Adds tracking information to the new folder after copying it from the parent
+	 * folder
 	 * 
-	 * @param parent ParentFeature of feature
-	 * @param newFeature new childFeature
+	 * @param parent ParentFolder of folder
+	 * @param newFolder new childFolder
 	 * @param httpRequest RequestObject RequestObject
-	 * @return return the copied feature
+	 * @return return the copied folder
 	 */
-	Feature trackCopiedFeature(Feature parent, Feature newFeature, HttpServletRequest httpRequest);
+	Folder trackCopiedFolder(Folder parent, Folder newFolder, HttpServletRequest httpRequest);
 
 	/**
-	 * Adds tracking information to the feature after editing it
+	 * Adds tracking information to the folder after editing it
 	 * 
-	 * @param feature Feature to be tracked
+	 * @param folder Folder to be tracked
 	 * @param httpRequest RequestObject
-	 * @return return the updated feature
+	 * @return return the updated folder
 	 */
-	Feature trackFeatureInformation(Feature feature, HttpServletRequest httpRequest);
+	Folder trackFolderInformation(Folder folder, HttpServletRequest httpRequest);
 
 	/**
-	 * Adds tracking information to the project after adding a feature
+	 * Adds tracking information to the project after adding a folder
 	 * 
-	 * @param feature Feature to be tracked
-	 * @param project Project containing feature
+	 * @param folder Folder to be tracked
+	 * @param project Project containing folder
 	 * @param httpRequest RequestObject RequestObject
 	 * @return return the updated project
 	 */
-	Project trackAddedFeature(Feature feature, Project project, HttpServletRequest httpRequest);
+	Project trackAddedFolder(Folder folder, Project project, HttpServletRequest httpRequest);
 
 	/**
 	 * Adds tracking information to the project after adding a product
@@ -115,13 +115,13 @@ public interface ITrackingService {
 	void trackCopiedProject(Integer parentId, Project newProject, HttpServletRequest httpRequest);
 
 	/**
-	 * Adds tracking information to the project after deleting a feature
+	 * Adds tracking information to the project after deleting a folder
 	 * 
-	 * @param projectId ID of project containing feature
-	 * @param featureId ID of feature thats tracking will be deleted
+	 * @param projectId ID of project containing folder
+	 * @param folderId ID of folder thats tracking will be deleted
 	 * @param httpRequest RequestObject
 	 */
-	void trackDeletedFeature(Integer projectId, Integer featureId, HttpServletRequest httpRequest);
+	void trackDeletedFolder(Integer projectId, Integer folderId, HttpServletRequest httpRequest);
 
 	/**
 	 * Adds tracking information to the project after deleting a product

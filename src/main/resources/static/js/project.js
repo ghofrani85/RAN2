@@ -36,7 +36,7 @@ $(document).ajaxSend(function(e, xhr, options) {
 });
 
 /**
- * Sets the status of checkboxes in the Product/Feature-Matrix on load.
+ * Sets the status of checkboxes in the Product/Folder-Matrix on load.
  * 
  * @returns
  */
@@ -48,19 +48,19 @@ function setCheckboxes() {
 		var fPos = id.indexOf('f');
 		var p = id.slice(1, fPos);
 		var f = id.slice(fPos + 1, id.length);
-		checkFeature(p, f, boxes[i]);
+		checkFolder(p, f, boxes[i]);
 	}
 }
 
 /**
- * Checks if a Product contains a feature.
+ * Checks if a Product contains a folder.
  * 
  * @returns
  */
-function checkFeature(product, feature, box) {
-	$.post("checkfeature", {
+function checkFolder(product, folder, box) {
+	$.post("checkfolder", {
 		p : product,
-		f : feature
+		f : folder
 	}, function(data, status) {
 		if (status == 'success') {
 			if (data.content == 'true') {
@@ -86,9 +86,9 @@ function boxChanged(box) {
 	var f = id.slice(fPos + 1, id.length);
 
 	if (box.checked == true) {
-		addFeature(p, f);
+		addFolder(p, f);
 	} else {
-		removeFeature(p, f);
+		removeFolder(p, f);
 	}
 
 	if ($('#btn' + p).hasClass('btn-success')) {
@@ -113,30 +113,30 @@ function resetDownloadButton(productId) {
 }
 
 /**
- * Sends a Request to add a feature to a product.
+ * Sends a Request to add a folder to a product.
  * 
  * @param product
- * @param feature
+ * @param folder
  * @returns
  */
-function addFeature(product, feature) {
-	$.post("addfeature", {
+function addFolder(product, folder) {
+	$.post("addfolder", {
 		p : product,
-		f : feature
+		f : folder
 	})
 }
 
 /**
- * Sends a Request to remove a feature from a product.
+ * Sends a Request to remove a folder from a product.
  * 
  * @param product
- * @param feature
+ * @param folder
  * @returns
  */
-function removeFeature(product, feature) {
-	$.post("removefeature", {
+function removeFolder(product, folder) {
+	$.post("removefolder", {
 		p : product,
-		f : feature
+		f : folder
 	})
 }
 

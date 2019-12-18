@@ -13,7 +13,7 @@ public class Product {
 	private Integer id;
 	private String title;
 	private String description;
-	private List<Feature> featureList;
+	private List<Folder> folderList;
 	private List<Tracking> trackingList;
 	
 	/**
@@ -25,14 +25,14 @@ public class Product {
 	 *            title of the product
 	 * @param description
 	 *            description of the product
-	 * @param features
-	 *            all features in the product
+	 * @param folders
+	 *            all folders in the product
 	 */
-	public Product(Integer id, String title, String description, List<Feature> features) {
+	public Product(Integer id, String title, String description, List<Folder> folders) {
 		this.id = id;
 		this.title = title;
 		this.description = description;
-		this.featureList = features;
+		this.folderList = folders;
 		this.trackingList = new LinkedList<>();
 	}
 
@@ -44,7 +44,7 @@ public class Product {
 		this.id = null;
 		this.title = "";
 		this.description = "";
-		this.featureList = new ArrayList<>();
+		this.folderList = new ArrayList<>();
 		this.trackingList = new LinkedList<>();
 	}
 
@@ -61,7 +61,7 @@ public class Product {
 		this.title = title;
 		this.description = description;
 		this.id = null;
-		this.featureList = new ArrayList<>();
+		this.folderList = new ArrayList<>();
 		this.trackingList = new LinkedList<>();
 	}
 
@@ -79,7 +79,7 @@ public class Product {
 		this.id = id;
 		this.title = title;
 		this.description = description;
-		this.featureList = new ArrayList<>();
+		this.folderList = new ArrayList<>();
 	}
 
 	/**
@@ -128,29 +128,29 @@ public class Product {
 	}
 
 	/**
-	 * @return the feature names
+	 * @return the folder names
 	 */
-	public List<String> getFeatureNames() {
-		List<String> featureNames = new ArrayList<>();
-		for (Feature f : featureList) {
-			featureNames.add(f.getTitle());
+	public List<String> getFolderNames() {
+		List<String> folderNames = new ArrayList<>();
+		for (Folder f : folderList) {
+			folderNames.add(f.getTitle());
 		}
-		return featureNames;
+		return folderNames;
 	}
 
 	/**
-	 * @return the features
+	 * @return the folders
 	 */
-	public List<Feature> getFeatureList() {
-		return featureList;
+	public List<Folder> getFolderList() {
+		return folderList;
 	}
 
 	/**
-	 * @param features
-	 *            the list of features to set
+	 * @param folders
+	 *            the list of folders to set
 	 */
-	public void setFeatureList(List<Feature> features) {
-		this.featureList = features;
+	public void setFolderList(List<Folder> folders) {
+		this.folderList = folders;
 	}
 
 	/**
@@ -183,7 +183,7 @@ public class Product {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((description == null) ? 0 : description.hashCode());
-		result = prime * result + ((featureList == null) ? 0 : featureList.hashCode());
+		result = prime * result + ((folderList == null) ? 0 : folderList.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((title == null) ? 0 : title.hashCode());
 		result = prime * result + ((trackingList == null) ? 0 : trackingList.hashCode());
@@ -212,15 +212,15 @@ public class Product {
 		return this.id.equals(other.getId());
 	}
 
-	public void addFeature(Feature feature) {
-		if (featureList == null) {
-			featureList = new ArrayList<>();
+	public void addFolder(Folder folder) {
+		if (folderList == null) {
+			folderList = new ArrayList<>();
 		}
-		featureList.add(feature);
+		folderList.add(folder);
 	}
 
-	public void removeFeature(Feature feature) {
-		featureList.remove(feature);
+	public void removeFolder(Folder folder) {
+		folderList.remove(folder);
 	}
 
 	/**
