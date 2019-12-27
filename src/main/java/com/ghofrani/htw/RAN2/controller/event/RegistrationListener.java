@@ -62,14 +62,14 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
 		log.info("peparing email");
 
 		String recipientAddress = user.getEmail();
-		String subject = "ProdLinRe Registration Confirmation";
+		String subject = "RAN2 Registration Confirmation";
 		String confirmationUrl = event.getAppUrl() + "/registrationconfirm?token=" + token;
 		String message = messages.getMessage("message.regSucc", null, event.getLocale());
 
 		log.info("sending email is commented");
-/*
+
 		SimpleMailMessage email = new SimpleMailMessage();
-		email.setFrom("ProductLinRE");
+		email.setFrom("RAN2");
 		email.setTo(recipientAddress);
 		email.setSubject(subject);
 		email.setText(message + " \r\n" + confirmationUrl);
@@ -79,7 +79,7 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
 			log.error("Error while trying to send mail");
 			throw e;
 		}
-*/
+
 		log.info("email sent");
 	}
 

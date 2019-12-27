@@ -61,12 +61,12 @@ public class ForgotPasswordListener implements ApplicationListener<OnForgotPassw
 		userService.createPasswordResetToken(user, token);
 
 		String recipientAddress = user.getEmail();
-		String subject = "ProdLinRe Password Reset";
+		String subject = "RAN2 Password Reset";
 		String confirmationUrl = event.getAppUrl() + "/passwordreset?token=" + token;
 		String message = messages.getMessage("message.passwordReset", null, event.getLocale());
 
 		SimpleMailMessage email = new SimpleMailMessage();
-		email.setFrom("ProductLinRE");
+		email.setFrom("RAN2");
 		email.setTo(recipientAddress);
 		email.setSubject(subject);
 		email.setText(message + " \r\n" + confirmationUrl);
