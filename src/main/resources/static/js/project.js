@@ -44,6 +44,7 @@ function setCheckboxes() {
 	var boxes = document.getElementsByClassName("checkbox");
 
 	for (var i = 0; i < boxes.length; i++) {
+		hideDownloadButton(p);
 		var id = boxes[i].id;
 		var fPos = id.indexOf('f');
 		var p = id.slice(1, fPos);
@@ -65,6 +66,7 @@ function checkFolder(product, folder, box) {
 		if (status == 'success') {
 			if (data.content == 'true') {
 				box.checked = true;
+				showDownloadButton(product);
 			} else {
 				box.checked = false;
 			}
@@ -84,11 +86,21 @@ function boxChanged(box) {
 	var fPos = id.indexOf('f');
 	var p = id.slice(1, fPos);
 	var f = id.slice(fPos + 1, id.length);
-
+	
 	if (box.checked == true) {
 		addFolder(p, f);
+		showDownloadButton(p);
 	} else {
 		removeFolder(p, f);
+		var boxes = [];
+
+  		$('[id^=p'+ p +'f]').each(function () {
+    		boxes.push($(this).attr('id'));
+  		});
+		
+		if ($('#' + boxes[0]).prop('checked') == false && $('#' + boxes[1]).prop('checked') == false && $('#' + boxes[2]).prop('checked') == false && $('#' + boxes[3]).prop('checked') == false) {
+		hideDownloadButton(p);
+		}
 	}
 
 	if ($('#btn' + p).hasClass('btn-success')) {
@@ -110,6 +122,14 @@ function resetDownloadButton(productId) {
 	$("#submit" + productId).attr('action', '#');
 	$("#dlpath" + productId).attr('value', '');
 	$("#dlSuccess").hide();
+}
+
+function hideDownloadButton(productId) {
+	$("#btn" + productId).hide();
+}
+
+function showDownloadButton(productId) {
+	$("#btn" + productId).show();
 }
 
 /**
