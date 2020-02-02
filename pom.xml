@@ -122,9 +122,9 @@
 	</build>
 
 
-	<url>se.uni-hannover.de</url>
+	<url>www.htw-dresden.de</url>
 	<organization>
-		<name>Leibniz Universität Hannover, Fachgebiet Software Engineering</name>
-		<url>http://www.se.uni-hannover.de</url>
+		<name>HTW Dresden University of Applied Sciences</name>
+		<url>http://www.htw-dresden.de</url>
 	</organization>
 </project>
